@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "本月情况登记",
+  "usingComponents": {
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
+  }
+}

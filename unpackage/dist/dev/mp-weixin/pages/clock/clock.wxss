@@ -1,0 +1,142 @@
+
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
+}
+.background-image {
+	position: absolute; /* 设置为绝对定位，使其占据整个容器 */
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1; /* 将图片置于内容下方 */
+}
+.map-container {
+  width: 90%;
+  margin-top: 30vh;
+}
+.location-info {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 5px;
+}
+.location-text {
+  font-size: 14px; /* 调整字体大小 */
+  color: #666; /* 调整字体颜色为浅色 */
+  text-align: center; /* 文字水平居中 */
+  width: 100%; /* 使文本容器宽度为 100% */
+}
+.location-button {
+  text-align: center;
+  padding: 10px 20px;
+  background-color: #1E90FF;
+  color: #ffffff;
+  border-radius: 5px;
+  align-self: flex-end;
+}
+.main-container{
+	width: 80%;
+	padding: 0;
+	margin: 0 auto;
+	margin-top: 10vh;
+	border-radius: 100%;
+}
+.map-container {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 100%;
+}
+.refresh-button {
+	  vertical-align: middle;
+  padding: 5px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+  background-color: transparent;
+  text-align: center;
+  align-self: center;
+  border: none;
+  border-radius: 100%;
+}
+.refresh-icon {
+		vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.calendar-card{
+		position: relative;
+		width: 100%;
+		height: 80px;
+}
+.calendarText{
+  font-size: 16px;
+  line-height: 43px;
+  margin-left: 6px;
+  position: absolute;
+  bottom: 0;
+	color: #285AC8;
+}
+.calendarImg{
+		width: 200px;
+		height: 200px;
+		position: absolute;
+		top: -45px;
+		right: -80px;
+}
+.options {
+  width: 90%;
+  margin-top: 15px;
+  margin-bottom: 10vh;
+}
+.option-button {
+  width: 85%;
+  height: 60px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #405ac8;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  margin-top: 0px;
+  margin-bottom: 30px;
+}
+.option-button.healthy {
+  font-weight: 700;
+  background-color: white;
+  color: #405ac8;
+}
+.option-button.symptom {
+  font-weight: 700;
+  background-color: white;
+  color: orangered;
+}
+.clockIcon{
+	  width: 24px;
+}
+.text-container1{
+	  margin-left: 18px;
+}
+.text-container2{
+	  margin-left: 12px;
+}
+.tabbar{
+	z-index: 999;
+}
+input{
+	opacity: 0.7;
+}
+

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "每日打卡",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
+  }
+}

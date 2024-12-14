@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "历次打卡",
+  "usingComponents": {
+    "uni-calendar": "/uni_modules/uni-calendar/components/uni-calendar/uni-calendar",
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
+  }
+}

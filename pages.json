@@ -1,0 +1,138 @@
+{
+	"pages": [ 
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/workEnvironment/workEnvironment",
+			"style": {
+				"navigationBarTitleText": "当月工作环境基本信息"
+			}
+		},
+		{
+			"path": "pages/experimentalInput/experimentalInput",
+			"style": {
+				"navigationBarTitleText": "录入实验资料"
+			}
+		},
+		{
+			"path": "pages/healthProtection/healthProtection",
+			"style": {
+				"navigationBarTitleText": "健康防护"
+			}
+		},
+		{
+			"path": "pages/diagnosis/diagnosis",
+			"style": {
+				"navigationBarTitleText": "录入诊断信息"
+			}
+		},
+		{
+			"path": "pages/changePassword/changePassword",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		},
+		{
+			"path": "pages/feedback/feedback",
+			"style": {
+				"navigationBarTitleText": "意见反馈"
+			}
+		},
+		{
+			"path": "pages/surveyInfo/surveyInfo",
+			"style": {
+				"navigationBarTitleText": "调查信息"
+			}
+		},
+		{
+			"path": "pages/clockRecord/clockRecord",
+			"style": {
+				"navigationBarTitleText": "历次打卡"
+			}
+		},
+		{
+			"path": "pages/clock/clock",
+			"style": {
+				"navigationBarTitleText": "每日打卡",
+				"enablePullDownRefresh" : true
+			}
+		},
+		{
+			"path": "pages/clockFail/clockFail",
+			"style": {
+				"navigationBarTitleText": "打卡失败"
+			}
+		},
+		{
+			"path" : "pages/clockSuccess/clockSuccess",
+			"style" : 
+			{
+				"navigationBarTitleText" : "打卡成功",
+				"enablePullDownRefresh" : true
+			}
+		},
+		{
+			"path" : "pages/todaySymptoms/todaySymptoms",
+			"style" : 
+			{
+				"navigationBarTitleText" : "今日症状"
+			}
+		},
+		{
+			"path" : "pages/environmentInfo/environmentInfo",
+			"style" : 
+			{
+				"navigationBarTitleText" : "工作环境基本信息"
+			}
+		},
+		{
+			"path" : "pages/registerSituation/registerSituation",
+			"style" : 
+			{
+				"navigationBarTitleText" : "本月情况登记"
+			}
+		},
+		{
+			"path" : "pages/scoring/scoring",
+			"style" : 
+			{
+				"navigationBarTitleText" : "打分"
+			}
+		},
+		{
+			"path" : "pages/publicityMaterial/publicityMaterial",
+			"style" : 
+			{
+				"navigationBarTitleText" : "宣传资料"
+			}
+		},
+		{
+			"path" : "pages/webview/webview",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#FFFFFF",//修改全局底色
+		"navigationStyle": "custom",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {},
+	"easycom": {
+		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
+	},
+	"usingComponents": {
+	    "uni-calendar": "/uni_modules/uni-calendar/components/uni-calendar/uni-calendar",
+		 "van-checkbox": "/node_modules/@vant/weapp/dist/checkbox/index",
+		  "van-checkbox-group": "/node_modules/@vant/weapp/dist/checkbox-group/index"
+	},
+	"lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,213 @@
+
+.container.data-v-3102d9c0 {
+	width: 100%;
+	height: 100%;
+	position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
+}
+.background-image.data-v-3102d9c0 {
+	position: absolute; /* 设置为绝对定位，使其占据整个容器 */
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1; /* 将图片置于内容下方 */
+}
+.icons.data-v-3102d9c0{
+	width: 26px;
+	margin-left: 7px;
+}
+.content.data-v-3102d9c0{
+	position: relative;
+	padding-top: 11vh;
+	border-top-left-radius: 40px;
+	border-top-right-radius: 40px;
+	padding-bottom: 13vh;
+}
+.tabbar.data-v-3102d9c0 {
+  z-index: 999;
+}
+.header.data-v-3102d9c0 {
+  position: relative;
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  padding: 0 10px;
+}
+.title.data-v-3102d9c0 {
+  position: relative;
+}
+.title.data-v-3102d9c0::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background-color: #285AC8;
+}
+.diseases-list.data-v-3102d9c0 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.disease-item.data-v-3102d9c0 {
+  padding-top: 20px;
+  padding-bottom: 17px;
+  padding-left: 16px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.disease-item.data-v-3102d9c0:hover,
+.disease-item.hovered.data-v-3102d9c0 {
+  background-color: #e0e0e0;
+  border-color: #405ac8;
+}
+.disease-name.data-v-3102d9c0 {
+  font-size: 16px;
+  color: #333333;
+}
+.indexNumber.data-v-3102d9c0{
+	color: #285AC8;
+	font-size: 20;
+	margin-right: 16px;
+	font-style: italic;
+	font-size: 20px;
+}
+.examine.data-v-3102d9c0{
+	margin: 6px 0;
+	font-size: 12px;
+	margin-right: 15px;
+	float: right;
+	color: #285AC8;
+}
+.back-image.data-v-3102d9c0{
+	width: 36%;
+	position: absolute;
+	right: 0;
+	top: 6vh;
+	z-index: 0;
+}
+.section-title.data-v-3102d9c0{
+	margin-left: -3px;
+	padding-left: 4px;
+	border-left: 8px solid #285AC8;
+	margin: 10px 0;
+	font-weight: 600;
+}
+.label.data-v-3102d9c0 {
+  font-size: 16px;
+  color: #333333;
+  display: block;
+}
+.section.data-v-3102d9c0 {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  color: #333333;
+}
+.media-item.data-v-3102d9c0 {
+  margin-bottom: 20px;
+  padding: 10px;
+}
+.media-title.data-v-3102d9c0 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.media-image.data-v-3102d9c0 {
+  width: 100%;
+  height: auto;
+}
+.media-video.data-v-3102d9c0 {
+  width: 100%;
+  height: auto;
+}
+.media-item.data-v-3102d9c0 {
+  display: flex;
+  flex-direction: column; /* 垂直布局，确保标题和视频换行 */
+  margin-bottom: 20px; /* 每个视频项之间的间距 */
+}
+.media-title.data-v-3102d9c0 {
+  font-size: 16px;
+  margin-bottom: 5px; /* 标题和视频之间的间距 */
+}
+.media-video.data-v-3102d9c0 {
+  width: 100%; /* 根据需要调整视频宽度 */
+}
+input.data-v-3102d9c0{
+	opacity: 0.7;
+}
+.pdf-item.data-v-3102d9c0 {
+  display: flex;
+  align-items: center;
+  background-color: #f5f7fa;
+  border-radius: 12px;
+  margin: 10px 0;
+  padding: 12px;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.pdf-item.data-v-3102d9c0:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.pdf-icon-container.data-v-3102d9c0 {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e4e8;
+  border-radius: 8px;
+}
+.pdf-icon.data-v-3102d9c0 {
+  width: 30px;
+  height: 30px;
+}
+.pdf-info.data-v-3102d9c0 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+.pdf-title.data-v-3102d9c0 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+}
+.open-pdf-btn.data-v-3102d9c0 {
+  background-color: #285ac8;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+.open-pdf-btn.data-v-3102d9c0:hover {
+  background-color: #1e4aa1;
+}
+.open-link-btn.data-v-3102d9c0 {
+  background-color: #285ac8;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+.open-link-btn.data-v-3102d9c0:hover {
+  background-color: #1e4aa1;
+}
+
+

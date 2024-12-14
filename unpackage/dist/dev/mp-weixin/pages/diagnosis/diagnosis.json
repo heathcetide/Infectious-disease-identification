@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "录入诊断信息",
+  "usingComponents": {
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar",
+    "uni-file-picker": "/uni_modules/uni-file-picker/components/uni-file-picker/uni-file-picker"
+  }
+}

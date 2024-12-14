@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/workEnvironment/workEnvironment",
+    "pages/experimentalInput/experimentalInput",
+    "pages/healthProtection/healthProtection",
+    "pages/diagnosis/diagnosis",
+    "pages/changePassword/changePassword",
+    "pages/feedback/feedback",
+    "pages/surveyInfo/surveyInfo",
+    "pages/clockRecord/clockRecord",
+    "pages/clock/clock",
+    "pages/clockFail/clockFail",
+    "pages/clockSuccess/clockSuccess",
+    "pages/todaySymptoms/todaySymptoms",
+    "pages/environmentInfo/environmentInfo",
+    "pages/registerSituation/registerSituation",
+    "pages/scoring/scoring",
+    "pages/publicityMaterial/publicityMaterial",
+    "pages/webview/webview"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationStyle": "custom",
+    "backgroundColor": "#F8F8F8"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序定位"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "usingComponents": {
+    "xtabbar": "/components/xtabbar"
+  }
+}

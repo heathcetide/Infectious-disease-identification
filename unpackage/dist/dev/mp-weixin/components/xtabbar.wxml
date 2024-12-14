@@ -1,0 +1,1 @@
+<view><view class="tabbar"><u-tabbar vue-id="cc714c0a-1" list="{{list}}" mid-button="{{true}}" active-color="#5098ff" data-event-opts="{{[['^change',[['changeIndex']]]]}}" bind:change="__e" bind:__l="__l"></u-tabbar></view></view>

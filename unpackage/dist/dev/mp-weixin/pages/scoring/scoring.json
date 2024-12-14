@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "打分",
+  "usingComponents": {
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
+  }
+}

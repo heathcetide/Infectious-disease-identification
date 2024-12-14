@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "健康防护",
+  "usingComponents": {
+    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
+  }
+}
