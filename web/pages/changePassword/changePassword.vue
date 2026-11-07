@@ -1,5 +1,6 @@
 <script>
 import { rePasswordService } from '../../services/login'
+import { tip } from '../../utils/tip'
 
 export default {
   data() {
@@ -10,183 +11,193 @@ export default {
         confirmPassword: '',
       },
       isPasswordValid: false,
-    };
+      showPasswordRule: false,
+      submitting: false,
+    }
   },
   computed: {
     canSubmit() {
-      // 确保所有条件都符合
-      return this.isPasswordValid &&
-             this.formData.newPassword === this.formData.confirmPassword &&
-             this.formData.oldPassword.trim() !== '';
-    }
+      return (
+        this.isPasswordValid &&
+        this.formData.newPassword === this.formData.confirmPassword &&
+        this.formData.oldPassword.trim() !== ''
+      )
+    },
   },
   methods: {
-	submitError(response) {
-		console.error('密码修改失败', error);
-		uni.showToast({ 
-			title: '密码修改失败，请检查手机号和密码',
-			icon: 'none', // 可选，默认为none，还有success, loading, warning, error等
-			duration: 2000, // 显示持续时间，单位为毫秒，默认为1500
-		});
-	},
-	submitSuccess(response) {
-	    if (response.code == 200) {
-	        uni.showToast({
-	          title: '密码修改成功',
-	          icon: 'success'
-	        });
-	    } else {
-	        uni.showModal({
-	            title: '密码修改失败',
-	            content: '密码修改失败，请检查您的密码是否正确。',
-	            showCancel: false,
-	            confirmText: '确定',
-	            success: function (res) {
-	                if (res.confirm) {
-	                    console.log('用户点击确定');
-	                }
-	            }
-	        });
-	    }
-	},
+    goBack() {
+      if (getCurrentPages().length > 1) {
+        uni.navigateBack({ delta: 1 })
+      } else {
+        uni.redirectTo({ url: '/pages/clock/clock' })
+      }
+    },
+    async submitError(error) {
+      console.error('密码修改失败', error)
+      await tip.alert(
+        (error && (error.msg || error.message)) || '密码修改失败，请检查原密码是否正确',
+        '修改失败'
+      )
+    },
+    async submitSuccess(response) {
+      if (response && (response.code === 200 || response.code === 1)) {
+        tip.success('密码修改成功')
+        this.formData.oldPassword = ''
+        this.formData.newPassword = ''
+        this.formData.confirmPassword = ''
+        this.isPasswordValid = false
+        this.showPasswordRule = false
+        return
+      }
+      await tip.alert(
+        (response && (response.msg || response.message)) || '密码修改失败，请检查原密码是否正确',
+        '修改失败'
+      )
+    },
+    onNewPasswordInput() {
+      this.showPasswordRule = true
+      this.validatePassword()
+    },
     validatePassword() {
-      const password = this.formData.newPassword;
-      const regex = /^\d{8,}$/;
-      this.isPasswordValid = regex.test(password);
+      const password = this.formData.newPassword
+      const regex = /^\d{8,}$/
+      this.isPasswordValid = regex.test(password)
     },
     changePassword() {
       if (!this.canSubmit) {
-        let message = '请完善信息';
-
         if (this.formData.oldPassword.trim() === '') {
-          message = '请输入原始密码';
+          tip.fail('请输入原始密码')
         } else if (this.formData.newPassword !== this.formData.confirmPassword) {
-          message = '两次输入的密码不一致';
+          tip.fail('两次输入的密码不一致')
         } else if (!this.isPasswordValid) {
-          message = '密码不符合规则';
+          tip.fail('密码不符合规则')
+        } else {
+          tip.fail('请完善信息')
         }
-	  }
-		rePasswordService(this.formData)
-			.then(res => this.submitSuccess(res))
-			.catch(error => this.submitError(error));
-      // 清空表单数据
-      this.formData.oldPassword = '';
-      this.formData.newPassword = '';
-      this.formData.confirmPassword = '';
-      this.isPasswordValid = false;
-    }
-  }
+        return
+      }
+      if (this.submitting) return
+      this.submitting = true
+      tip.loading('提交中')
+      rePasswordService(this.formData)
+        .then((res) => this.submitSuccess(res))
+        .catch((error) => this.submitError(error))
+        .finally(() => {
+          tip.hide()
+          this.submitting = false
+        })
+    },
+  },
 }
 </script>
 
 <template>
   <view class="container">
-    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
+    <image src="../../static/other-background.png" mode="widthFix" class="background-image" />
     <view class="form-container">
       <view class="form-item">
-        <text class="label">原密码：</text>
-        <input type="password" placeholder="请输入原始密码" v-model="formData.oldPassword" class="input"/>
+        <text class="label">原密码</text>
+        <input type="password" placeholder="请输入原始密码" v-model="formData.oldPassword" class="input" />
       </view>
       <view class="form-item">
-        <text class="label">新密码：</text>
-        <input type="password" placeholder="请输入新密码" v-model="formData.newPassword" class="input" @input="validatePassword"/>
+        <text class="label">新密码</text>
+        <input
+          type="password"
+          placeholder="请输入新密码"
+          v-model="formData.newPassword"
+          class="input"
+          @input="onNewPasswordInput"
+        />
+        <text
+          v-if="showPasswordRule"
+          class="password-rule"
+          :class="{ invalid: !isPasswordValid }"
+        >密码规则：至少8位数字</text>
       </view>
       <view class="form-item">
-        <text class="label">再次输入新密码：</text>
-        <input type="password" placeholder="请再次输入新密码" v-model="formData.confirmPassword" class="input"/>
-        <text v-if="formData.newPassword !== formData.confirmPassword && formData.confirmPassword" class="error-text">两次输入的密码不一致</text>
-        <view>
-          <text class="password-rule" :class="{ invalid: !isPasswordValid }">密码规则：数字和字母组合，至少8位</text>
-        </view>
+        <text class="label">再次输入新密码</text>
+        <input
+          type="password"
+          placeholder="请再次输入新密码"
+          v-model="formData.confirmPassword"
+          class="input"
+        />
+        <text
+          v-if="formData.newPassword !== formData.confirmPassword && formData.confirmPassword"
+          class="error-text"
+        >两次输入的密码不一致</text>
       </view>
-      <button class="submit-button" :disabled="!canSubmit" @tap="changePassword">提交</button>
+      <button class="submit-btn" :disabled="submitting" @tap="changePassword">确认修改</button>
     </view>
-    <uni-custom-tabbar class="tabbar"></uni-custom-tabbar>
+    <uni-custom-tabbar class="tabbar" />
   </view>
 </template>
 
-<style scoped>
+<style>
 .container {
   width: 100%;
-  height: 100%;
-  position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 .background-image {
-  position: absolute; /* 设置为绝对定位，使其占据整个容器 */
+  position: absolute;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  z-index: -1; /* 将图片置于内容下方 */
+  z-index: 0;
 }
-
-.tabbar {
-  position: fixed; /* 固定到页面底部 */
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 11vh; /* 与原来的 footer 样式相匹配 */
-  z-index: 999;
-  background-color: #ffffff;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .form-container {
-  position: relative; /* 设置为相对定位，避免固定位缓冲与 tabbar 重叠 */
-  bottom: 0;
-  padding: 24vh 20px; /* 下移形式，使表单位置下移 */
-  padding-bottom: 15vh; /* 增加底部间距，避免与 tabbar 重叠 */
-  overflow-y: auto; /* 如果内容超出容器，则显示滚动条 */
-  z-index: 20;
+  position: relative;
+  z-index: 1;
+  padding: 12vh 24px 14vh;
 }
-
 .form-item {
-  margin: 30px 20px;
+  margin-bottom: 18px;
 }
-
 .label {
-  font-size: 16px;
-  color: #333333;
-  margin-bottom: 5px;
   display: block;
-}
-
-.input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
   font-size: 14px;
-  margin-bottom: 5px;
-  border: none;
-  background-color: #FFFFFF;
-  height: 33px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
-input {
-  opacity: 0.7;
-}
-.password-rule {
-  font-size: 12px;
-  color: #999;
-}
-
-.password-rule.invalid {
-  color: #A6A6A6;
+.input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 15px;
 }
 .error-text {
+  display: block;
+  margin-top: 6px;
+  color: #e53e3e;
   font-size: 12px;
-  color: #ff4d4f;
-  margin-top: 5px;
 }
-
-.submit-button {
-  padding: 10px;
-  background-color: #285AC8;
-  color: #ffffff;
-  border-radius: 5px;
-  text-align: center;
+.password-rule {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #718096;
+}
+.password-rule.invalid {
+  color: #e53e3e;
+}
+.submit-btn {
+  margin-top: 24px;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 10px;
+  background: #285ac8;
+  color: #fff;
   font-size: 16px;
-  margin: 60px 20px;
+  border: none;
+}
+.submit-btn::after {
+  border: none;
+}
+.tabbar {
+  z-index: 999;
 }
 </style>

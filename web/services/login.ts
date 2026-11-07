@@ -1,5 +1,6 @@
 
 import { http } from '@/utils/http'
+import { normalizeEmployeeProfilePayload } from '@/utils/form'
 
 type LoginResult = {
   accessToken: string
@@ -13,6 +14,8 @@ type LoginResult = {
     role: string
   }
   informationComplete: boolean
+  userName?: string
+  userType?: string
 }
 type LoginParams = {
   phoneNumber: string
@@ -27,6 +30,7 @@ export const postLoginService = (data: LoginParams) => {
     method: 'POST',
     url: '/api/v1/auth/login',
     data,
+    quiet: true,
   })
 }
 
@@ -36,11 +40,12 @@ type rePasswordParams = {
 	confirmPassword: string
 }
 
-export const rePasswordService = (data: rePasswordParams) =>{
+export const rePasswordService = (data: rePasswordParams) => {
 	return http({
 		method: 'PUT',
 		url: '/api/v1/employee/password',
 		data,
+		quiet: true,
 	})
 }
 
@@ -119,10 +124,13 @@ type submitUserInfoParams = {
 
 
 export const submitUserInfoService = (data: submitUserInfoParams) =>{
+	const payload = normalizeEmployeeProfilePayload(
+		data as unknown as Record<string, unknown>
+	)
 	return http({
 		method: 'PUT',
 		url: '/api/v1/employee/profile',
-		data,
+		data: payload,
 	})
 }
 

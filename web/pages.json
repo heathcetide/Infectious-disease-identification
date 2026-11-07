@@ -33,7 +33,7 @@
 		{
 			"path": "pages/changePassword/changePassword",
 			"style": {
-				"navigationBarTitleText": "修改密码"
+				"navigationBarTitleText": ""
 			}
 		},
 		{
@@ -58,7 +58,8 @@
 			"path": "pages/clock/clock",
 			"style": {
 				"navigationBarTitleText": "每日打卡",
-				"enablePullDownRefresh" : true
+				"disableScroll": true,
+				"enablePullDownRefresh": false
 			}
 		},
 		{
@@ -120,7 +121,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "突发传染病症状筛查与预警系统",
 		"navigationBarBackgroundColor": "#FFFFFF",//修改全局底色
 		"navigationStyle": "custom",
 		"backgroundColor": "#F8F8F8"

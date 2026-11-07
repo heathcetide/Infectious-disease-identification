@@ -1,239 +1,269 @@
 <script>
-import store from '../../store/index.ts';
-import { clockSituationService } from '../../services/clock';
+import store from '../../store/index.ts'
+import { clockSituationService } from '../../services/clock'
+
 export default {
-  methods: {
-	formatDate(date) {
-	    const year = date.getFullYear();
-	    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以加1
-	    const day = String(date.getDate()).padStart(2, '0');
-	    return `${year}-${month}-${day}`;
-	},
-    checkSuccess(response) {
-      console.log("666666666", response);
-      // 接收到的数据进行排序
-      const sortedDiseases = response.data.diseasescoringList.sort((a, b) => b.score - a.score);
-      this.diseases = sortedDiseases;
-    },
-	checkError(response){
-		console.log(response)
-	},  
-  },
-  mounted() {
-    // 获取 store 中的 diseasescoring 数据
-    const diseasescoring = store.state.diseasescoring;
-    // 将 diseasescoring 转换为符合当前数据结构的形式
-    const formattedDiseases = diseasescoring.map((item) => ({
-      diseaseTypeName: item.diseaseTypeName,
-      score: item.score,
-      link: '/pages/healthProtection/healthProtection',
-    }));
-    // 对 formattedDiseases 进行排序
-    formattedDiseases.sort((a, b) => b.score - a.score);
-    // 将排序后的数据赋值给 diseases
-    this.diseases = formattedDiseases;
-	
-	const now = new Date();
-	const formattedDate = this.formatDate(now);
-	// 设置到 feedBackForm 中
-	this.dateForm.date = formattedDate;
-	clockSituationService(this.dateForm)
-		.then(res => this.checkSuccess(res))
-		.catch(error => this.checkError(error));
-  },
   data() {
     return {
-	  dateForm:{
-	  		date: '',
-	  },
-      diseases: [
-        { diseaseTypeName: '新型冠状病毒', score: 90, link: '/pages/healthProtection/healthProtection' },
-        { diseaseTypeName: '流感', score: 80, link: '/pages/healthProtection/healthProtection' },
-        { diseaseTypeName: '鼠疫', score: 75, link: '/pages/healthProtection/healthProtection' },
-        { diseaseTypeName: '感染性腹泻', score: 60, link: '/pages/healthProtection/healthProtection' },
-        { diseaseTypeName: '炭疽', score: 50, link: '/pages/healthProtection/healthProtection' },
-      ],
-    };
+      dateForm: { date: '' },
+      diseases: [],
+      loading: false,
+    }
   },
-};
+  mounted() {
+    const diseasescoring = store.state.diseasescoring || []
+    this.diseases = this.formatScores(diseasescoring)
+
+    const now = new Date()
+    this.dateForm.date = this.formatDate(now)
+    this.loading = true
+    clockSituationService(this.dateForm)
+      .then((res) => this.checkSuccess(res))
+      .catch((error) => this.checkError(error))
+      .finally(() => {
+        this.loading = false
+      })
+  },
+  methods: {
+    formatDate(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
+    formatScores(list) {
+      return (list || [])
+        .map((item) => ({
+          diseaseTypeName: item.diseaseTypeName,
+          score: Math.round(Number(item.score) || 0),
+          link:
+            '/pages/publicityMaterial/publicityMaterial?diseaseTypeName=' +
+            encodeURIComponent(item.diseaseTypeName || ''),
+        }))
+        .sort((a, b) => b.score - a.score)
+    },
+    checkSuccess(response) {
+      const list =
+        (response && response.data && response.data.diseasescoringList) || []
+      if (list.length) {
+        this.diseases = this.formatScores(list)
+      }
+    },
+    checkError(response) {
+      console.log(response)
+    },
+    openProtection(item) {
+      uni.navigateTo({ url: item.link })
+    },
+  },
+}
 </script>
 
 <template>
-  <view class="container">
-    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-    <image src="../../static/virus.png" mode="aspectFit" class="virus-image"></image>
-    <view class="clock-info">
-      <view class="clock-text">
-        <text>您已打卡</text>
-        <image src="../../static/icon-Symptomatic.png" mode="aspectFit" class="symptomatic-icon"></image>
-      </view>
-      <text>
-        <text class="clock-texts">根据您提交的症状</text>
-        <text class="clock-texts">您可能的疾病是：</text>
-      </text>
-    </view>
-    <view class="content">
-      <view class="list-container">
-        <view class="list-item" v-for="(item, index) in diseases" :key="index">
-          <view class="disease-info">
-            <view class="index-box">
-              <text class="index">{{ index + 1 }}</text>
-            </view>
-            <view class="text-box">
-              <text class="disease-name">{{ item.diseaseTypeName }}</text>
-              <navigator class="health-protection" :url="item.link">
-                <text>健康防护</text>
-                <text>></text>
-              </navigator>
-            </view>
+  <view class="page">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+
+    <view class="body">
+      <view class="hero">
+        <view class="hero-text">
+          <view class="hero-title-row">
+            <text class="hero-title">您已打卡</text>
+            <image
+              class="status-icon"
+              src="/static/icon-Symptomatic.png"
+              mode="aspectFit"
+            />
           </view>
-          <view class="rate-box">
-            <text class="rate">{{ item.score }}%</text>
-            <text class="rate-label">患病率</text>
-          </view>
+          <text class="hero-desc">根据您提交的症状，您可能的疾病是：</text>
         </view>
+        <image class="hero-art" src="/static/virus.png" mode="aspectFit" />
+      </view>
+
+      <view class="panel">
+        <scroll-view scroll-y class="list-scroll" :show-scrollbar="false">
+          <view v-if="diseases.length" class="list">
+            <view
+              class="list-item"
+              v-for="(item, index) in diseases"
+              :key="index"
+              @tap="openProtection(item)"
+            >
+              <text class="index">{{ index + 1 }}</text>
+              <view class="main">
+                <text class="disease-name">{{ item.diseaseTypeName }}</text>
+                <text class="protect-link">健康防护 ›</text>
+              </view>
+              <view class="rate-box">
+                <text class="rate">{{ item.score }}%</text>
+                <text class="rate-label">患病率</text>
+              </view>
+            </view>
+          </view>
+          <view v-else class="empty">
+            <text>{{ loading ? '加载中…' : '暂无疾病风险记录' }}</text>
+          </view>
+        </scroll-view>
       </view>
     </view>
-    <uni-custom-tabbar class="tabbar"></uni-custom-tabbar>
+
+    <uni-custom-tabbar class="tabbar" />
   </view>
 </template>
 
-<style scoped>
-.container {
+<style>
+.page {
+  position: relative;
   width: 100%;
-  height: 100%;
-  position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
+  height: 100vh;
+  overflow: hidden;
+  background: #eef3fb;
 }
-
-.background-image {
-  position: absolute; /* 设置为绝对定位，使其占据整个容器 */
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1; /* 将图片置于内容下方 */
-}
-
-.clock-info {
-  position: fixed;
-  bottom: 65vh; /* 调整位置，使其离下面的内容更近 */
-  font-size: 20px;
-  color: #646464;
-  left: 5vh;
-}
-
-.clock-text {
-  display: flex; /* 使用 flex 布局，使文字和图标在同一行 */
-  align-items: center; /* 垂直居中对齐 */
-  margin-bottom: -10vh; /* 减小底部间距 */
-}
-
-.clock-texts {
-  font-size: 18px;
-  display: block;
-  font-weight: 800;
-}
-
-.virus-image {
+.bg {
   position: absolute;
-  width: 170px;
-  right: -20px;
-  top: 12vh;
-}
-
-.content {
-  position: fixed;
-  bottom: 85px;
   left: 0;
-  right: 0;
+  top: 0;
   width: 100%;
-  height: 45vh; /* 调整高度，避免覆盖 tabbar */
-  overflow-y: auto; /* 如果内容超出容器，则显示滚动条 */
-  background-color: #ffffff;
-  z-index: 20;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
+  height: 38vh;
+  z-index: 0;
 }
-
-.tabbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 11vh;
-  z-index: 1000; /* 确保 tabbar 的层级高于其他内容 */
-  background-color: #ffffff;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+.body {
+  position: relative;
+  z-index: 1;
+  height: calc(100vh - 11vh);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 9vh 0 0;
 }
-
-.list-container {
-  padding: 16px;
+.hero {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px 10px;
 }
-
+.hero-text {
+  flex: 1;
+  min-width: 0;
+  padding-right: 8px;
+  padding-bottom: 8px;
+}
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2a3348;
+}
+.status-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: 8px;
+}
+.hero-desc {
+  display: block;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4a5568;
+  font-weight: 600;
+}
+.hero-art {
+  width: 118px;
+  height: 118px;
+  flex-shrink: 0;
+}
+.panel {
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -6px 24px rgba(40, 90, 200, 0.08);
+  padding: 18px 16px 8px;
+  box-sizing: border-box;
+}
+.list-scroll {
+  height: 100%;
+}
+.list {
+  padding-bottom: 12px;
+}
 .list-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: #ffffff;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  padding: 14px 10px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  background: #f7f9fc;
 }
-
-.disease-info {
-  display: flex;
-  justify-content: space-between;
+.index {
+  width: 28px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #c5cedb;
 }
-
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+}
 .disease-name {
-  font-size: 16px;
-  color: #333333;
-  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2a44;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
-
-.health-protection {
-  display: flex;
-  align-items: center;
-  color: #007aff;
-  font-size: 14px;
-  text-decoration: none;
+.protect-link {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #285ac8;
 }
-
 .rate-box {
+  flex-shrink: 0;
+  width: 64px;
+  min-height: 52px;
+  padding: 8px 4px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: #285ac8;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #285AC8;
-  color: #ffffff;
-  padding: 8px;
-  border-radius: 8px;
-  min-width: 39px;
-  min-height: 47px;
+  justify-content: center;
 }
-
 .rate {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
 }
-
 .rate-label {
-  font-size: 12px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.2;
+  white-space: nowrap;
 }
-
-.index-box {
-  margin-right: 12px;
+.empty {
+  padding: 48px 12px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
 }
-
-.index {
-  font-size: 16px;
-  color: #E5E5E5;
-  font-weight: bold;
-}
-
-.symptomatic-icon {
-  width: 24px;
-  margin-left: 8px; /* 控制图标和文字之间的间距 */
+.tabbar {
+  position: relative;
+  z-index: 10;
 }
 </style>

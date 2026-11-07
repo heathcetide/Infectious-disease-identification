@@ -1,5 +1,7 @@
 <script>
-import { submitUserInfoService, getUserInfoService } from '../../services/login';
+import { tip } from '../../utils/tip'
+import { submitUserInfoService, getUserInfoService } from '../../services/login'
+import { formatDate } from '../../utils/date'
 export default {
   data() {
     return {
@@ -79,15 +81,17 @@ export default {
   methods: {
 	getInfoSuccess(response) {
 		console.log(response)
-	    this.submitForm = response.data;
+		const data = (response && response.data) || {}
+		this.submitForm = {
+			...this.submitForm,
+			...data,
+			workOnPlateauStartDate: formatDate(data.workOnPlateauStartDate || data.WorkOnPlateauStartDate),
+			birthDate: formatDate(data.birthDate || data.BirthDate),
+		}
 	},
 	getInfoError(error) {
 	    console.error('获取信息失败', error);
-		uni.showToast({ 
-			title: '获取信息失败，请联系管理员',
-			icon: 'none', // 可选，默认为none，还有success, loading, warning, error等
-			duration: 2000, // 显示持续时间，单位为毫秒，默认为1500
-		});
+		tip.fail('获取信息失败，请联系管理员')
 	},
 	handleDrinkingStatusChange(e){
 		this.submitForm.drinkingStatus = this.staticForm.drinkingStatusRange[e.detail.value];
@@ -114,35 +118,18 @@ export default {
 		this.submitForm.hasMedicalHistory = hasMedicalHistory
 	},
 	submitError(error) {
-		uni.showToast({ 
-			title: '信息失败',
-			icon: 'none', // 可选，默认为none，还有success, loading, warning, error等
-			duration: 8000, // 显示持续时间，单位为毫秒，默认为1500
-		});
+		tip.fail('信息失败')
 	},
 	submitSuccess(response) {
-		console.log('提交信息成功',response)
-	    if (response.code == 200) {
-	        uni.showToast({
-	          title: '信息修改成功',
-	          icon: 'success',
-			  duration:8000,
-			  success: function(res){
-				  uni.redirectTo({
-				  	url:'/pages/clock/clock'
-				  })
-			  }
-	        });
-	    } else {
-	        uni.showModal({
-	            title: '信息修改失败',
-	            content: '信息修改失败。',
-	            showCancel: false,
-	            confirmText: '确定',
-	            success: function (res) {
-	            }
-	        });
-	    }
+		console.log('提交信息成功', response)
+		if (response.code == 200 || response.code == 1) {
+			tip.success('信息修改成功')
+			setTimeout(() => {
+				uni.redirectTo({ url: '/pages/clock/clock' })
+			}, 1200)
+		} else {
+			tip.alert('信息修改失败。', '修改失败')
+		}
 	},
     handleSubmit() {
 	  if( this.pages >= 4){
@@ -175,8 +162,11 @@ export default {
 		this.submitForm.pregnant = pregnantValue
 		console.log('pregnant为',this.pregnant)
 	},
+	formatDateDisplay(value) {
+	  return formatDate(value)
+	},
 	onDateChange(e) {
-	  this.submitForm.workOnPlateauStartDate = e.detail.value;
+	  this.submitForm.workOnPlateauStartDate = formatDate(e.detail.value) || e.detail.value
 	},
     handleCheckboxChange(propName) {
       this.submitForm[propName] = !this.submitForm[propName];
@@ -269,9 +259,16 @@ export default {
 						<view class="row">
 							<view class="form-item">
 								<text style="float: left;">来高原工作时间</text>
-								<picker mode="date" value="2024-01-01" start="2024-01-01" end="2099-12-31" @change="onDateChange" class="time-picker">
+								<picker
+									mode="date"
+									:value="submitForm.workOnPlateauStartDate || '2019-01-01'"
+									start="1980-01-01"
+									end="2099-12-31"
+									@change="onDateChange"
+									class="time-picker"
+								>
 								  <view style="float: right;">
-								    {{ submitForm.workOnPlateauStartDate || '请选择日期' }}
+								    {{ formatDateDisplay(submitForm.workOnPlateauStartDate) || '请选择日期' }}
 								  </view>
 								</picker>
 							</view>

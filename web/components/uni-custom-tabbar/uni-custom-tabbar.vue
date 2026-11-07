@@ -2,10 +2,9 @@
 export default {
   data() {
     return {
-      currentPath: '', // 用于存储当前路径
+      currentPath: '',
       navBarTitle: '',
-      showDropdown: false, // 控制下拉框的显示
-      dropdownItems: [] // 存储下拉框的选项
+      showHeader: true,
     };
   },
   mounted() {
@@ -13,20 +12,24 @@ export default {
     this.currentPath = getCurrentPages().pop().route;
   },
   computed: {
+    headerTitle() {
+      return this.navBarTitle || '';
+    },
     healthProtectionIcon() {
-      const heathProtectPaths = [
+      const paths = [
         'pages/healthProtection/healthProtection',
         'pages/clock/clock',
         'pages/clockSuccess/clockSuccess',
         'pages/clockFail/clockFail',
         'pages/todaySymptoms/todaySymptoms',
+        'pages/publicityMaterial/publicityMaterial',
       ];
-      return heathProtectPaths.includes(this.currentPath)
+      return paths.includes(this.currentPath)
         ? '/static/tabs/tabicon-1-healthprotect-selected.png'
         : '/static/tabs/tabicon-1-healthprotect-Notselected.png';
     },
     healthStatusIcon() {
-      const healthStatusPaths = [
+      const paths = [
         'pages/clockRecord/clockRecord',
         'pages/diagnosis/diagnosis',
         'pages/experimentalInput/experimentalInput',
@@ -34,153 +37,131 @@ export default {
         'pages/environmentInfo/environmentInfo',
         'pages/registerSituation/registerSituation',
       ];
-      return healthStatusPaths.includes(this.currentPath)
+      return paths.includes(this.currentPath)
         ? '/static/tabs/tabicon-2-healthsolution-selected.png'
         : '/static/tabs/tabicon-1-healthsolution-Notselected.png';
     },
     myInfoIcon() {
-      const myInfoPaths = [
+      const paths = [
         'pages/changePassword/changePassword',
         'pages/surveyInfo/surveyInfo',
         'pages/scoring/scoring',
         'pages/feedback/feedback',
       ];
-      return myInfoPaths.includes(this.currentPath)
+      return paths.includes(this.currentPath)
         ? '/static/tabs/tabicon-3-me-selected.png'
         : '/static/tabs/tabicon-3-me-Notselected.png';
-    }
+    },
   },
   methods: {
     returnBack() {
       if (getCurrentPages().length > 1) {
-        wx.navigateBack({
-          delta: 1
-        });
+        uni.navigateBack({ delta: 1 });
+      } else {
+        uni.redirectTo({ url: '/pages/clock/clock' });
       }
     },
     setNavBarTitle() {
       const pages = getCurrentPages();
-      const currentPage = pages[pages.length - 1]; // 获取当前页面实例
-      this.currentPath = currentPage.route; // 获取当前页面的路径
+      const currentPage = pages[pages.length - 1];
+      this.currentPath = currentPage.route;
 
-      // 页面配置信息
+      if (this.currentPath === 'pages/clock/clock') {
+        this.navBarTitle = '';
+        this.showHeader = false;
+        return;
+      }
+      this.showHeader = true;
+
       const pageConfigs = [
-		{ path: "pages/publicityMaterial/publicityMaterial", title: "宣传资料"},
-        { path: "pages/index/index", title: "首页" },
-        { path: "pages/save/save", title: "省钱" },
-        { path: "pages/scan/scan", title: "扫码" },
-        { path: "pages/money/money", title: "钱包" },
-        { path: "pages/user/user", title: "个人中心" },
-        { path: "pages/workEnvironment/workEnvironment", title: "当月工作环境基本信息" },
-        { path: "pages/experimentalInput/experimentalInput", title: "录入实验资料" },
-        { path: "pages/healthProtection/healthProtection", title: "健康防护" },
-        { path: "pages/clockSuccess/clockSuccess", title: "打卡成功" },
-        { path: "pages/clockFail/clockFail", title: "症状打卡" },
-        { path: "pages/diagnosis/diagnosis", title: "录入诊断信息" },
-        { path: "pages/changePassword/changePassword", title: "修改密码" },
-        { path: "pages/feedback/feedback", title: "意见反馈" },
-        { path: "pages/surveyInfo/surveyInfo", title: "个人信息" },
-        { path: "pages/clockRecord/clockRecord", title: "历次打卡" },
-        { path: "pages/todaySymptoms/todaySymptoms", title: "今日症状" },
-        { path: "pages/scoring/scoring", title: "用户打分" }
+        { path: 'pages/publicityMaterial/publicityMaterial', title: '宣传资料' },
+        { path: 'pages/workEnvironment/workEnvironment', title: '当月工作环境基本信息' },
+        { path: 'pages/experimentalInput/experimentalInput', title: '录入实验资料' },
+        { path: 'pages/healthProtection/healthProtection', title: '健康防护' },
+        { path: 'pages/clockSuccess/clockSuccess', title: '打卡成功' },
+        { path: 'pages/clockFail/clockFail', title: '症状打卡' },
+        { path: 'pages/diagnosis/diagnosis', title: '录入诊断信息' },
+        { path: 'pages/changePassword/changePassword', title: '修改密码' },
+        { path: 'pages/feedback/feedback', title: '意见反馈' },
+        { path: 'pages/surveyInfo/surveyInfo', title: '个人信息' },
+        { path: 'pages/clockRecord/clockRecord', title: '历次打卡' },
+        { path: 'pages/todaySymptoms/todaySymptoms', title: '今日症状' },
+        { path: 'pages/scoring/scoring', title: '用户打分' },
+        { path: 'pages/environmentInfo/environmentInfo', title: '工作环境基本信息' },
+        { path: 'pages/registerSituation/registerSituation', title: '本月情况登记' },
       ];
-
-      // 查找当前路径的配置
-      const currentConfig = pageConfigs.find(config => config.path === this.currentPath);
-      if (currentConfig) {
-        this.navBarTitle = currentConfig.title;
-      } else {
-        this.navBarTitle = ''; // 如果没有匹配，使用默认值
+      const currentConfig = pageConfigs.find((c) => c.path === this.currentPath);
+      this.navBarTitle = currentConfig ? currentConfig.title : '';
+    },
+    go(url) {
+      if (url === '/' + this.currentPath) return;
+      uni.navigateTo({ url });
+    },
+    handleTab(name) {
+      if (name === '健康防护') {
+        this.go('/pages/healthProtection/healthProtection');
+        return;
+      }
+      if (name === '健康状况') {
+        uni.showActionSheet({
+          itemList: ['历次打卡', '录入诊断信息', '录入实验资料', '当月工作环境基本信息'],
+          success: (res) => {
+            const map = [
+              '/pages/clockRecord/clockRecord',
+              '/pages/diagnosis/diagnosis',
+              '/pages/experimentalInput/experimentalInput',
+              '/pages/workEnvironment/workEnvironment',
+            ];
+            this.go(map[res.tapIndex]);
+          },
+        });
+        return;
+      }
+      if (name === '我的信息') {
+        uni.showActionSheet({
+          itemList: ['修改密码', '个人信息', '意见反馈', '用户打分'],
+          success: (res) => {
+            const map = [
+              '/pages/changePassword/changePassword',
+              '/pages/surveyInfo/surveyInfo',
+              '/pages/feedback/feedback',
+              '/pages/scoring/scoring',
+            ];
+            this.go(map[res.tapIndex]);
+          },
+        });
       }
     },
-    handleTextClick(text) {
-      if (text === '我的信息') {
-        this.dropdownItems = ['修改密码', '个人信息', '意见反馈', '用户打分'];
-        this.showDropdown = true;
-      } else if (text === '健康状况') {
-        this.dropdownItems = ['历次打卡', '录入诊断信息', '录入实验资料', '当月工作环境基本信息'];
-        this.showDropdown = true;
-      } else if (text === '健康防护') {
-        const targetUrl = '/pages/healthProtection/healthProtection';
-        if (targetUrl !== '/' + this.currentPath) {
-          uni.navigateTo({
-            url: targetUrl,
-          });
-        }
-      }
-    },
-    handleOption(action) {
-      let url = '';
-      switch (action) {
-        case '用户打分':
-          url = '/pages/scoring/scoring';
-          break;
-        case '修改密码':
-          url = '/pages/changePassword/changePassword';
-          break;
-        case '个人信息':
-          url = '/pages/surveyInfo/surveyInfo';
-          break;
-        case '意见反馈':
-          url = '/pages/feedback/feedback';
-          break;
-        case '历次打卡':
-          url = '/pages/clockRecord/clockRecord';
-          break;
-        case '录入诊断信息':
-          url = '/pages/diagnosis/diagnosis';
-          break;
-        case '录入实验资料':
-          url = '/pages/experimentalInput/experimentalInput';
-          break;
-        case '当月工作环境基本信息':
-          url = '/pages/workEnvironment/workEnvironment';
-          break;
-        default:
-          break;
-      }
-      if (url !== '/' + this.currentPath) {
-        uni.navigateTo({ url });
-      }
-      this.showDropdown = false; // 关闭下拉框
-    },
-    closeDropdown() {
-      this.showDropdown = false;
-    }
-  }
+  },
 };
 </script>
 <template>
   <view>
-    <view class="header">
-      <image v-show="navBarTitle!=''" src="../../static/arrow-left.svg" mode="widthFix" class="returnIcon" @tap="returnBack()"></image>
-      <text>{{navBarTitle}}</text>
+    <view v-if="showHeader" class="header">
+      <image
+        v-show="navBarTitle != ''"
+        src="../../static/arrow-left.svg"
+        mode="widthFix"
+        class="returnIcon"
+        @tap="returnBack()"
+      />
+      <text>{{ headerTitle }}</text>
     </view>
     <view class="footer">
-      <view class="footer-item" @tap="handleTextClick('健康防护')">
-        <image :src="healthProtectionIcon" mode="aspectFit"></image>
+      <view class="footer-item" @tap="handleTab('健康防护')">
+        <image :src="healthProtectionIcon" mode="aspectFit" />
         <text>健康防护</text>
       </view>
-      <view class="footer-item" @tap="handleTextClick('健康状况')">
-        <image :src="healthStatusIcon" mode="aspectFit"></image>
+      <view class="footer-item" @tap="handleTab('健康状况')">
+        <image :src="healthStatusIcon" mode="aspectFit" />
         <text>健康状况</text>
       </view>
-      <view class="footer-item" @tap="handleTextClick('我的信息')">
-        <image :src="myInfoIcon" mode="aspectFit"></image>
+      <view class="footer-item" @tap="handleTab('我的信息')">
+        <image :src="myInfoIcon" mode="aspectFit" />
         <text>我的信息</text>
       </view>
     </view>
-	<!-- 自定义下拉框 -->
-	<view v-if="showDropdown" class="dropdown">
-	  <view class="dropdown-overlay" @tap="closeDropdown"></view>
-	  <view class="dropdown-content">
-	    <view v-for="(item, index) in dropdownItems" :key="index" class="dropdown-item" @tap="handleOption(item)">
-	      <button class="dropdown-button">{{ item }}</button>
-	    </view>
-	  </view>
-	</view>
   </view>
-
 </template>
 
 <style scoped>
@@ -193,6 +174,7 @@ export default {
   padding-top: 6vh;
   font-size: 17px;
   font-weight: 500;
+  z-index: 5;
 }
 .footer {
   height: 11vh;
@@ -206,62 +188,25 @@ export default {
   background-color: #ffffff;
   padding: 10px 0;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  box-sizing: border-box;
 }
-
 .footer-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 14px;
+  font-size: 12px;
   color: #000000;
+  flex: 1;
 }
-
 .footer-item image {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 5px;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 4px;
 }
 .returnIcon {
   position: absolute;
   left: 15px;
   width: 20px;
-}
-/* 下拉框样式 */
-.dropdown {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-}
-.dropdown-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-.dropdown-content {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #ffffff;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-.dropdown-item {
-  padding: 10px;
-  text-align: center;
-}
-.dropdown-button {
-  width: 100%;
-  padding: 10px;
-  background: none;
-  border: none;
-  font-size: 16px;
-  color: #000;
 }
 </style>

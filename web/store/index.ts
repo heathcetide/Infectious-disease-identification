@@ -56,6 +56,7 @@ Vue.use(Vuex);
 // 定义状态类型
 interface State {
   jwt: string | null;
+  userName: string;
   clockFormParams: {
     city: string;
     county: string;
@@ -79,6 +80,7 @@ interface Diseasescoring {
 // 定义 mutations 类型
 interface Mutations {
   setJwt(state: State, jwt: string): void;
+  setUserName(state: State, userName: string): void;
   setClockFormParams(state: State, clockFormParams: State['clockFormParams']): void;
   setDiseasescoring(state: State, diseascoring: Diseasescoring[]): void;
 }
@@ -86,14 +88,24 @@ interface Mutations {
 // 定义 actions 类型
 interface Actions {
   setJwt({ commit }: { commit: (type: keyof Mutations, payload: string) => void }, jwt: string): void;
+  setUserName({ commit }: { commit: (type: keyof Mutations, payload: string) => void }, userName: string): void;
   setClockFormParams({ commit }: { commit: (type: keyof Mutations, payload: State['clockFormParams']) => void }, clockFormParams: State['clockFormParams']): void;
   setDiseasescoring({ commit }: { commit: (type: keyof Mutations, payload: { diseascoring: Diseasescoring[] }) => void }, diseascoring: Diseasescoring[]): void;
+}
+
+function readStoredUserName(): string {
+  try {
+    return uni.getStorageSync('userName') || ''
+  } catch {
+    return ''
+  }
 }
 
 // 创建 store
 const store = new Vuex.Store<State>({
   state: {
     jwt: null, // 存储 JWT 信息
+    userName: readStoredUserName(),
     clockFormParams: {
       city: '',
       county: '',
@@ -109,6 +121,18 @@ const store = new Vuex.Store<State>({
     setJwt(state, jwt: string) {
       state.jwt = jwt;
     },
+    setUserName(state, userName: string) {
+      state.userName = userName || '';
+      try {
+        if (userName) {
+          uni.setStorageSync('userName', userName);
+        } else {
+          uni.removeStorageSync('userName');
+        }
+      } catch {
+        // ignore storage failures in mini-program tooling
+      }
+    },
     setClockFormParams(state, clockFormParams: State['clockFormParams']) {
       state.clockFormParams = { ...clockFormParams };
     },
@@ -119,6 +143,9 @@ const store = new Vuex.Store<State>({
   actions: {
     setJwt({ commit }, jwt: string) {
       commit('setJwt', jwt);
+    },
+    setUserName({ commit }, userName: string) {
+      commit('setUserName', userName);
     },
     setClockFormParams({ commit }, clockFormParams: State['clockFormParams']) {
       commit('setClockFormParams', clockFormParams);

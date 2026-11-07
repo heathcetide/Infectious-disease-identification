@@ -2,64 +2,109 @@
 </script>
 
 <template>
-  <view class="container">
-    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-    <view class="clock-info">
-      <view class="clock-text">
-        <text>您已打卡</text>
-        <image src="../../static/icon-health.png" mode="aspectFit" class="health-icon"></image>
+  <view class="page">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+
+    <view class="body">
+      <view class="hero">
+        <view class="hero-text">
+          <view class="hero-title-row">
+            <text class="hero-title">您已打卡</text>
+            <image class="status-icon" src="/static/icon-health.png" mode="aspectFit" />
+          </view>
+          <text class="hero-desc">
+            今日
+            <text class="hero-em">健康</text>
+          </text>
+        </view>
       </view>
-      <text>今日<text style="font-size: 24px; color: #285AC8;">健康</text></text>
+
+      <view class="panel">
+        <image class="train-art" src="/static/train-back.png" mode="widthFix" />
+        <text class="tip">继续保持良好作息与防护习惯</text>
+      </view>
     </view>
-    <image src="../../static/train-back.png" mode="widthFix" class="train-image"></image>
-    <uni-custom-tabbar></uni-custom-tabbar>
+
+    <uni-custom-tabbar />
   </view>
 </template>
 
 <style>
-.container {
-  width: 100%;
-  height: 100%;
-  position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
-}
-
-.background-image {
-  position: absolute; /* 设置为绝对定位，使其占据整个容器 */
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+.page {
+  position: relative;
   width: 100%;
   height: 100vh;
-  z-index: -1; /* 将图片置于内容下方 */
+  overflow: hidden;
+  background: #eef3fb;
 }
-
-.clock-info {
-  position: fixed;
-  bottom: 65vh;
-  font-size: 20px;
-  color: #646464;
-  left: 5vh;
-}
-
-.clock-text {
-  width: 100%;
-  display: flex; /* 使用flex布局，使文字和图标在同一行 */
-  align-items: center; /* 垂直居中对齐 */
-  margin-bottom: -10vh;
-}
-
-.train-image {
-  width: 133%;
+.bg {
   position: absolute;
-  right: 0;
   left: 0;
-  top: 36vh;
+  top: 0;
+  width: 100%;
+  height: 38vh;
   z-index: 0;
 }
-
-.health-icon {
-  width: 24px;
-  margin-left: 8px; /* 添加左边距使图标和文字之间有间隔 */
+.body {
+  position: relative;
+  z-index: 1;
+  height: calc(100vh - 11vh);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 9vh 0 0;
+}
+.hero {
+  flex-shrink: 0;
+  padding: 0 24px 12px;
+}
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2a3348;
+}
+.status-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: 8px;
+}
+.hero-desc {
+  font-size: 20px;
+  color: #4a5568;
+  font-weight: 600;
+}
+.hero-em {
+  font-size: 26px;
+  color: #285ac8;
+  font-weight: 700;
+}
+.panel {
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -6px 24px rgba(40, 90, 200, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 28px 16px 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.train-art {
+  width: 112%;
+  margin-left: -6%;
+  margin-top: 4px;
+}
+.tip {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #94a3b8;
 }
 </style>

@@ -964,66 +964,86 @@ export default {
 }
 
 .list-container1 {
-  padding: 16px;
+  padding: 12px 12px 8px;
 }
 
 .list-item1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  background-color: #f7f9fc;
+  padding: 14px 10px;
+  margin-bottom: 6px;
+  border-radius: 12px;
 }
 
 .disease-info1 {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding-right: 10px;
 }
 
 .disease-name1 {
-  font-size: 16px;
-  color: #333333;
-  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2a44;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 
 .health-protection1 {
   display: flex;
   align-items: center;
-  color: #007aff;
-  font-size: 14px;
+  color: #285ac8;
+  font-size: 13px;
   text-decoration: none;
+  margin-top: 4px;
 }
 
 .rate-box1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: #285AC8;
   color: #ffffff;
-  padding: 8px;
-  border-radius: 8px;
-  min-width: 39px;
-  min-height: 47px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  width: 64px;
+  min-height: 52px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .rate1 {
   font-size: 16px;
   font-weight: bold;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .rate-label1 {
-  font-size: 12px;
+  font-size: 11px;
+  margin-top: 2px;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .index-box1 {
-  margin-right: 12px;
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
 .index1 {
-  font-size: 16px;
-  color: #E5E5E5;
+  font-size: 18px;
+  color: #c5cedb;
   font-weight: bold;
 }
 // .content {

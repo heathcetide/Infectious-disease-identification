@@ -1,5 +1,6 @@
 <!-- 全身症状页面 -->
 <script>
+import { tip } from '../../utils/tip'
 import store from '../../store/index.ts'
 import { clockSubmitService, submitAllCheckService, getDailyReportService } from '../../services/clock'
 export default {
@@ -322,11 +323,7 @@ export default {
         });
 	},
 	submitError(error) {
-		uni.showToast({ 
-			title: '信息提交失败',
-			icon: 'none', // 可选，默认为none，还有success, loading, warning, error等
-			duration: 1500, // 显示持续时间，单位为毫秒，默认为1500
-		});
+		tip.fail('信息提交失败');
 	},
 	submitSuccess(response) {
 		console.log(response);
@@ -334,11 +331,7 @@ export default {
 		const scores = response.data.diseasescoringList || response.data;
 		store.dispatch('setDiseasescoring', scores);
 	    if (response.code == 200) {
-	        uni.showToast({
-	          title: '信息提交成功',
-	          icon: 'success',
-			  duration:1800,
-	        });
+	        tip.success('信息提交成功');
 			setTimeout(() => {
 				// 进行页面跳转
 				uni.navigateTo({
@@ -549,24 +542,28 @@ export default {
 				<view class="section-title">
 					<text class="label">发热情况</text>
 				</view>
-				<view class="row">
-					<text class="label">是否发热</text>
-					<radio-group class="options">
-						<label class="radio">
+				<view class="field-row">
+					<text class="field-label">是否发热</text>
+					<radio-group class="choice-inline">
+						<label class="choice-pill">
 							<radio :disabled="isViewMode" @tap="handleCheckboxChange('hasFever')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasFever" color="#285AC8" >是</radio>
 						</label>
-						<label class="radio">
-							<radio :disabled="isViewMode" @tap="handleCheckboxChange('hasFever')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasFever" color="#285AC8"  >否</radio>
+						<label class="choice-pill">
+							<radio :disabled="isViewMode" @tap="handleCheckboxChange('hasFever')" :checked="!isViewMode ? false : !AllCheckInfo.generalsymptoms.hasFever" color="#285AC8"  >否</radio>
 						</label>
 					</radio-group>
 				</view>
+				<view class="field-stack">
+					<view class="field-block">
+						<text class="field-label">最高温度（℃）</text>
+						<input :disabled="isViewMode" class="field-input" type="digit" v-model="AllCheckInfo.generalsymptoms.highestTemperature" placeholder="例如 38.5"/>
+					</view>
+					<view class="field-block">
+						<text class="field-label">持续时间（小时）</text>
+						<input :disabled="isViewMode" class="field-input" type="digit" v-model="AllCheckInfo.generalsymptoms.feverDuration" placeholder="例如 6"/>
+					</view>
+				</view>
 			</view>
-	        <view class="row">
-	          <text class="label">最高温度</text>
-			  <input :disabled="isViewMode" type="text" v-model="AllCheckInfo.generalsymptoms.highestTemperature" placeholder="请输入温度" style="width: 10vh;"/>
-	          <text class="label">持续时间</text>
-	          <input :disabled="isViewMode" type="text" v-model="AllCheckInfo.generalsymptoms.feverDuration" placeholder="请输入小时数" style="width: 10vh;"/>
-	        </view>
 	      </view>
 	  
 			<!-- 第二个 -->
@@ -575,32 +572,26 @@ export default {
 				  <view class="section-title">
 				  	<text class="label">请选择症状</text>
 				  </view>
-	        <view class="row">
-	          <checkbox-group class="options">
-				<view class="order-options">
-	            <label class="checkbox1">
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" value="chills" @tap="handleCheckboxChange('hasChills')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasChills">寒战</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" value="sweating"  @tap="handleCheckboxChange('hasSweating')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasSweating">大汗</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" value="fatigue" @tap="handleCheckboxChange('hasFatigue')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasFatigue">乏力</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" value="thirst" @tap="handleCheckboxChange('hasHeadache')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasHeadache">头痛</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				<label class="checkbox">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" value="masule" @tap="handleCheckboxChange('hasMusclePain')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasMusclePain">肌肉酸痛</checkbox>
 				</label>
-				<label class="checkbox">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" value="masule" @tap="handleCheckboxChange('hasJointPain')" :checked="!isViewMode ? false : AllCheckInfo.generalsymptoms.hasJointPain">关节酸痛</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
-	        </view>
 			</view>
 	      </view>
 	  
@@ -761,56 +752,46 @@ export default {
 				  	<text class="label">请选择症状</text>
 				  </view>
 	        <view class="row">
-	          <checkbox-group class="options">
-				<view class="order-options" style="margin-bottom: -5px;">
-	            <label class="checkbox1">
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasCough')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasCough">咳嗽</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasSputum')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasSputum" >咳痰</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBloodySputum')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasBloodySputum">血痰</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasHemoptysis')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasHemoptysis">咳血</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-bottom: -5px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasSoreThroat')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasSoreThroat">咽痛</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8"  @tap="handleRespiratorysymptomsBox('hasDryThroat')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasDryThroat">咽干</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasNasalCongestion')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasNasalCongestion">鼻塞</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasRunnyNose')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasRunnyNose">流涕</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-bottom: -5px; margin-right: 142px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasChestTightness')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasChestTightness">胸闷</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasShortnessOfBreath')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasShortnessOfBreath">气促</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-bottom: -5px; margin-right: 85px; ">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBreathingDifficulty')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasBreathingDifficulty">呼吸困难</checkbox>
 				</label>
-				<label class="checkbox1" >
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasHoarseness')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasHoarseness">声音嘶哑</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-bottom: -5px; margin-right: 110px;">
-				<label class="checkbox1">
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBronchitis')" :checked="!isViewMode ? false : AllCheckInfo.respiratorysymptoms.hasBronchitis">支气管炎/支气管肺炎</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
 	        </view>
 			</view>
@@ -835,37 +816,33 @@ export default {
 						<view class="section-title">
 							<text class="label">腹泻情况</text>
 						</view>
-						<view class="row">
-							<text class="label">腹泻次数</text>
-							<radio-group class="options">
-								<label class="radio">
+						<view class="field-block">
+							<text class="field-label">腹泻次数</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('arrheaFrequencyGEThreeTimesPerDay')" :checked="!isViewMode ? false : !AllCheckInfo.digestivesymptoms.arrheaFrequencyGEThreeTimesPerDay" >少于3次/天</radio>
 								</label>
-								<label class="radio">
-									<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('arrheaFrequencyGEThreeTimesPerDay')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.arrheaFrequencyGEThreeTimesPerDay">大于等于3次/天</radio>
+								<label class="chip-item">
+									<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('arrheaFrequencyGEThreeTimesPerDay')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.arrheaFrequencyGEThreeTimesPerDay">≥3次/天</radio>
 								</label>
 							</radio-group>
 						</view>
-						<input type="number" placeholder="请输入具体次数" v-model="AllCheckInfo.digestivesymptoms.diarrheaTimesPerDay" v-show="!AllCheckInfo.digestivesymptoms.arrheaFrequencyGEThreeTimesPerDay"/>
-						<view class="row">
-							<text class="label">腹泻方式</text>
-							<radio-group class="options">
-								<view class="option-button">
-								<label class="radio">
+						<input class="field-input" type="number" placeholder="请输入具体次数" v-model="AllCheckInfo.digestivesymptoms.diarrheaTimesPerDay" v-show="!AllCheckInfo.digestivesymptoms.arrheaFrequencyGEThreeTimesPerDay"/>
+						<view class="field-block" style="margin-top: 12px;">
+							<text class="field-label">腹泻方式</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('里急后重')"  :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.diarrheaMode == '里急后重'">里急后重</radio>
 								</label>
-								<label class="radio" style="margin-top: 10px;">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('失禁')"  :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.diarrheaMode == '失禁'">失禁</radio>
 								</label>
-								</view>
-								<view class="option-button">
-								<label class="radio">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('畅通')"  :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.diarrheaMode == '畅通'">畅通</radio>
 								</label>
-								<label class="radio" style="margin-top: 10px;">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('绞痛')"  :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.diarrheaMode == '绞痛'">绞痛</radio>
 								</label>
-								</view>
 							</radio-group>
 						</view>
 					</view>
@@ -876,64 +853,62 @@ export default {
 						<view class="section-title">
 							<text class="label">粪便情况</text>
 						</view>
-						<view class="row">
-							<text class="label">粪便量</text>
-							<radio-group class="options">
-								<label class="radio">
+						<view class="field-block">
+							<text class="field-label">粪便量</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolAmount('多')" :checked="!isViewMode ? false: AllCheckInfo.riskFactorsAndExposure.stoolAmount == '多'">多</radio>
 								</label>
-								<label class="radio">
-									<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolAmount('少')" :checked="!isViewMode ? false: AllCheckInfo.riskFactorsAndExposure.stoolAmount == '少'">>少</radio>
+								<label class="chip-item">
+									<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolAmount('少')" :checked="!isViewMode ? false: AllCheckInfo.riskFactorsAndExposure.stoolAmount == '少'">少</radio>
 								</label>
 							</radio-group>
 						</view>
-						<view class="row">
-							<text class="label">粪便气味</text>
-							<radio-group class="options">
-								<label class="radio">
+						<view class="field-block" style="margin-top: 12px;">
+							<text class="field-label">粪便气味</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolOdor('恶臭')" :checked="!isViewMode ? false : AllCheckInfo.riskFactorsAndExposure.stoolOdor  == '恶臭'">恶臭</radio>
 								</label>
-								<label class="radio">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolOdor('无恶臭')" :checked="!isViewMode ? false : AllCheckInfo.riskFactorsAndExposure.stoolOdor  == '无恶臭'">无恶臭</radio>
 								</label>
 							</radio-group>
 						</view>
-						<view class="checkboxs" >
+						<view class="field-block" style="margin-top: 12px;">
 						      <checkbox-group>
-								<view style="display: flex; flex-direction: column;">
-						        <label @tap="temporaryChoice1 = !temporaryChoice1">
+						        <label class="chip-item chip-wide" @tap="temporaryChoice1 = !temporaryChoice1">
 	  					          <checkbox :checked="temporaryChoice1 == true" value="粪便性状1" color="#285AC8" :disabled="temporaryChoice2 == true"/>
 						          粪便性状1
 						        </label>
-								<radio-group class="options" v-show="temporaryChoice1">
-									<label class="radio">
+								<radio-group class="chip-grid" v-show="temporaryChoice1" style="margin-top: 8px;">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('水样')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType1Detail == '水样'">水样</radio>
 									</label>
-									<label class="radio">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('米泔样')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType1Detail == '米泔样'">米泔样</radio>
 									</label>
-									<label class="radio">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('洗肉水样')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType1Detail == '洗肉水样'">洗肉水样</radio>
 									</label>
 								</radio-group>
-						        <label style="margin-top: 10px;" @tap="temporaryChoice2 = !temporaryChoice2">
+						        <label class="chip-item chip-wide" style="margin-top: 8px;" @tap="temporaryChoice2 = !temporaryChoice2">
 								  <checkbox :checked="temporaryChoice2 == true" value="粪便性状2" color="#285AC8" :disabled="temporaryChoice1 == true" />
 						          粪便性状2
 						        </label>
-								<radio-group class="options" v-show="temporaryChoice2">
-									<label class="radio">
+								<radio-group class="chip-grid" v-show="temporaryChoice2" style="margin-top: 8px;">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('黑便')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType2Detail == '黑便'">黑便</radio>
 									</label>
-									<label class="radio">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('脓血')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType2Detail == '脓血'">脓血</radio>
 									</label>
-									<label class="radio">
+									<label class="chip-item">
 										<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('大块粘膜')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.stoolType2Detail == '大块粘膜'">大块粘膜</radio>
 									</label>
 								</radio-group>
-								</view>
 						      </checkbox-group>
-						    </view>
+						</view>
 					</view>
 		</view>
 		
@@ -944,33 +919,29 @@ export default {
 						<view class="section-title">
 							<text class="label">呕吐情况</text>
 						</view>
-						<view class="row">
-							<text class="label">是否呕吐</text>
-							<radio-group class="options">
-								<label class="radio">
+						<view class="field-block">
+							<text class="field-label">是否呕吐</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('hasVomiting')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasVomiting">是</radio>
 								</label>
-								<label class="radio">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('hasVomiting')" :checked="!isViewMode ? false : !AllCheckInfo.digestivesymptoms.hasVomiting">否</radio>
 								</label>
 							</radio-group>
 						</view>
-						<view class="row">
-							<text class="label">呕吐方式</text>
-							<radio-group class="options">
-								<view class="option-button" style="margin-top: 20px;">
-								<label class="radio">
+						<view class="field-block" style="margin-top: 12px;">
+							<text class="field-label">呕吐方式</text>
+							<radio-group class="chip-grid">
+								<label class="chip-item">
 									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('喷射状')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.vomitingMode == '喷射状'">喷射状</radio>
 								</label>
-								<label class="radio" style="margin-top: 10px;">
-									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先泻后吐')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.vomitingMode == '先泻后吐'">先泄后吐</radio>
+								<label class="chip-item">
+									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先泻后吐')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.vomitingMode == '先泻后吐'">先泻后吐</radio>
 								</label>
-								</view>
-								<view class="option-button" style="margin-top: 20px;">
-								<label class="radio">
-									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先吐后泻')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.vomitingMode == '先吐后泻'">先吐后泄</radio>
+								<label class="chip-item">
+									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先吐后泻')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.vomitingMode == '先吐后泻'">先吐后泻</radio>
 								</label>
-								</view>
 							</radio-group>
 						</view>
 					</view>
@@ -982,48 +953,40 @@ export default {
 								<text class="label">请选择其他消化系统症状</text>
 							</view>
 						</view>
-						<view class="checkboxs" style="margin-top: 10px;" >
-						      <checkbox-group>
-								<view class="order-options" style="margin-left: 60px;">
-						        <label>
+						<checkbox-group class="chip-grid" style="margin-top: 10px;">
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="恶心" @tap="handleDigestFrequency('hasNausea')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasNausea"/>
 						          恶心
 						        </label>
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="腹胀" @tap="handleDigestFrequency('hasAbdominalDistension')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasAbdominalDistension"/>
 						          腹胀
 						        </label>
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="上腹部不适" @tap="handleDigestFrequency('hasUpperAbdominalDiscomfort')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasUpperAbdominalDiscomfort" />
 						          上腹部不适
 						        </label>
-								</view>
-								<view class="order-options" style="margin-left: 60px;">
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="腹痛" @tap="handleDigestFrequency('hasAbdominalPain')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasAbdominalPain"/>
 						          腹痛
 						        </label>
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="腹鸣" @tap="handleDigestFrequency('hasBorborygmus')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasBorborygmus"/>
 						          腹鸣
 						        </label>
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="便秘"  @tap="handleDigestFrequency('hasConstipation')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasConstipation"/>
 						          便秘
 						        </label>
-								</view>
-								<view class="order-options" style="margin-left: 60px;">
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="少尿或无尿" @tap="handleDigestFrequency('hasOliguriaOrAnuria')" :checked="!isViewMode ? false: AllCheckInfo.digestivesymptoms.hasOliguriaOrAnuria"/>
 						          少尿或无尿
 						        </label>
-						        <label>
+						        <label class="chip-item">
 						          <checkbox :disabled="isViewMode" color="#285AC8" value="食欲减退" @tap="handleDigestFrequency('hasAppetiteLoss')" :checked="!isViewMode ? false : AllCheckInfo.digestivesymptoms.hasAppetiteLoss"/>
 						          食欲减退
 						        </label>
-								</view>
-						      </checkbox-group>
-						    </view>
+						</checkbox-group>
 			</view>
 	      <view class="button-container">
 	      <button class="return-button" @tap="handlereturn">上一步</button>
@@ -1044,26 +1007,22 @@ export default {
 				  	<text class="label">请选择症状</text>
 				  </view>
 	        <view class="row">
-	          <checkbox-group class="options">
-				<view class="order-options" >
-	            <label class="checkbox">
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
 	              <checkbox  :disabled="isViewMode" color="#285AC8" @tap="handleCirculatorysymptoms('hasArrhythmia')" :checked="!isViewMode ? false : AllCheckInfo.circulatorysymptoms.hasArrhythmia">心律不齐</checkbox>
 	            </label>
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCirculatorysymptoms('hasChestPain')" :checked="!isViewMode ? false : AllCheckInfo.circulatorysymptoms.hasChestPain">胸痛</checkbox>
 	            </label>
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCirculatorysymptoms('hasRapidPulse')" :checked="!isViewMode ? false : AllCheckInfo.circulatorysymptoms.hasRapidPulse">脉搏细速</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 130px;">
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCirculatorysymptoms('hasPalpitation')" :checked="!isViewMode ? false : AllCheckInfo.circulatorysymptoms.hasPalpitation">心悸</checkbox>
 	            </label>
-				<label class="checkbox">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCirculatorysymptoms('hasLowBloodPressure')" :checked="!isViewMode ? false : AllCheckInfo.circulatorysymptoms.hasLowBloodPressure">低血压</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
 	        </view>
 			</view>
@@ -1087,63 +1046,49 @@ export default {
 				  	<text class="label">请选择症状</text>
 				  </view>
 	        <view class="row">
-	          <checkbox-group class="options">
-				<view class="order-options">
-	            <label class="checkbox1">
-	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDelirium')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasDelirium">儋妄</checkbox>
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
+	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDelirium')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasDelirium">谵妄</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasConvulsion')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasConvulsion">抽搐</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDrowsiness')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasDrowsiness">昏睡</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasComa')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasComa">昏迷</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 91px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasStiffNeck')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasStiffNeck">颈部强直</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasRestlessness')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasRestlessness">烦躁不安</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 106px;">
-				<label class="checkbox1">
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasMuscleParalysisNeckShoulder')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasMuscleParalysisNeckShoulder">颈肩部肌肉迟缓性瘫痪</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 120px;">
-				<label class="checkbox1">
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasMuscleParalysisLimbs')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasMuscleParalysisLimbs">肢体肌肉迟缓性瘫痪</checkbox>
 				</label>
-				</view>
-				<view class="order-options"  style="margin-right: 91px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasSwallowingDifficulty')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasSwallowingDifficulty">吞咽困难</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasSpeechDisorder')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasSpeechDisorder">语言障碍</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 10px;">
-				<label class="checkbox1" >
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasConsciousnessDisorder')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasConsciousnessDisorder">意识障碍或惊厥</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDizziness')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasDizziness">头晕</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasTinnitus')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasTinnitus">耳鸣</checkbox>
 				</label>
-				</view>
-				<view class="order-options"  style="margin-right: 190px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleNeurologicalSymptoms('hasHearingLoss')" :checked="!isViewMode ? false : AllCheckInfo.neurologicalSymptoms.hasHearingLoss">听力减退</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
 	        </view>
 			</view>
@@ -1167,65 +1112,49 @@ export default {
 				  	<text class="label">请选择症状</text>
 				  </view>
 	        <view class="row">
-	          <checkbox-group class="options" >
-				<view class="order-options" style="margin-right: 50px;">
-	            <label class="checkbox1">
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasConjunctivitis')" :checked="!isViewMode ? false :AllCheckInfo.localSymptoms.hasConjunctivitis">结膜炎</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item chip-wide">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasConjunctivalCongestion')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasConjunctivalCongestion">眼结膜充血、肿胀疼痛</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 25px;">
-	            <label class="checkbox1">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasEyelidEdema')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasEyelidEdema">上下眼睑水肿</checkbox>
 	            </label>
-	            <label class="checkbox1">
+	            <label class="chip-item chip-wide">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSmellTasteLoss')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasSmellTasteLoss">嗅觉味觉减退或丧失</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 10px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasFacialRednessOrPallor')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasFacialRednessOrPallor">颜面潮红或苍白</checkbox>
 				</label>
-				<label class="checkbox1">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasRednessNeckChest')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasRednessNeckChest">潮红（颈部、胸部）</checkbox>
+				<label class="chip-item">
+					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasRednessNeckChest')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasRednessNeckChest">潮红（颈/胸）</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 65px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasLipCyanosis')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasLipCyanosis">口唇发绀</checkbox>
 				</label>
-				<label class="checkbox1">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSkinPallorOrBruising')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasSkinPallorOrBruising">皮肤苍白或带青紫</checkbox>
+				<label class="chip-item">
+					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSkinPallorOrBruising')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasSkinPallorOrBruising">皮肤苍白或青紫</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 120px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasGumBleeding')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasGumBleeding">牙龈出血</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasKidneyPain')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasKidneyPain">肾区疼痛</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 160px;">
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasLowBackPain')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasLowBackPain">腰痛</checkbox>
 				</label>
-				<label class="checkbox1">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasOrbitalPain')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasOrbitalPain">眼眶痛</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 105px;">
-				<label class="checkbox1">
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasMucosalBleedingInOralOrNasal')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasMucosalBleedingInOralOrNasal">口腔、鼻腔等处黏膜有出血点</checkbox>
 				</label>
-				</view>
-				<view class="order-options" style="margin-right: 35px;" >
-				<label class="checkbox1">
+				<label class="chip-item chip-wide">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSkinBleedingPoints')" :checked="!isViewMode ? false : AllCheckInfo.localSymptoms.hasSkinBleedingPoints">腋下/上臂/胸部或其他部位有皮肤出血点</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
 	        </view>
 			</view>
@@ -1249,28 +1178,22 @@ export default {
 				  	<text class="label">发病情况</text>
 				  </view>
 	        <view class="row">
-	          <checkbox-group class="options">
-				<view class="order-options" style="margin-right: 70px;">
-	            <label class="checkbox">
+	          <checkbox-group class="chip-grid">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasSuddenOnset')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.hasSuddenOnset">突然发病</checkbox>
 	            </label>
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasRapidProgress')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.hasRapidProgress">病情进展迅速</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 80px;">
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasPeriodicAttack')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.hasPeriodicAttack">周期性发作</checkbox>
 	            </label>
-	            <label class="checkbox">
+	            <label class="chip-item">
 	              <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasForcedPosture')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.hasForcedPosture">强迫体位</checkbox>
 	            </label>
-				</view>
-				<view class="order-options" style="margin-right: 200px;">
-				<label class="checkbox">
+				<label class="chip-item">
 					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasCalfMusclePain')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.hasCalfMusclePain">腓肠肌疼痛</checkbox>
 				</label>
-				</view>
 	          </checkbox-group>
 	        </view>
 			</view>
@@ -1279,66 +1202,66 @@ export default {
 				<view class="section-title">
 					<text class="label">生活情况</text>
 				</view>
-				<view class="row">
-					<text class="label">睡眠状况</text>
-					<radio-group class="options">
-						<label class="radio">
+				<view class="field-block">
+					<text class="field-label">睡眠状况</text>
+					<radio-group class="chip-grid">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSleepQuality('好')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.sleepQuality == '好'">好</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSleepQuality('一般')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.sleepQuality == '一般'">一般</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSleepQuality('差')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.sleepQuality == '差'">差</radio>
 						</label>
 					</radio-group>
 				</view>
-				<view class="row">
-					<text class="label">营养状况</text>
-					<radio-group class="options">
-						<label class="radio">
+				<view class="field-block" style="margin-top: 12px;">
+					<text class="field-label">营养状况</text>
+					<radio-group class="chip-grid">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showNutritionStatus('好')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.nutritionStatus == '好'">好</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showNutritionStatus('一般')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.nutritionStatus == '一般'">一般</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showNutritionStatus('差')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.nutritionStatus == '差'">差</radio>
 						</label>
 					</radio-group>
 				</view>
-				<view class="row">
-					<text class="label">工作和生活压力</text>
-				</view>
-				<view class="row">
-					<radio-group class="options">
-						<label class="radio">
+				<view class="field-block" style="margin-top: 12px;">
+					<text class="field-label">工作和生活压力</text>
+					<radio-group class="chip-grid">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showWorkLifeStress('大')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.workLifeStress == '大'">大</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showWorkLifeStress('一般')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.workLifeStress == '一般'">一般</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showWorkLifeStress('小')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.workLifeStress == '小'">小</radio>
 						</label>
 					</radio-group>
 				</view>
-				<view class="row">
-					<text class="label" style="width: 100px;">自我感觉症状的严重程度</text>
-					<radio-group class="options">
-						<label class="radio">
+				<view class="field-block" style="margin-top: 12px;">
+					<text class="field-label">自我感觉症状严重程度</text>
+					<radio-group class="chip-grid">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSymptomSeverity('轻')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.symptomSeverity == '轻'">轻</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSymptomSeverity('中')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.symptomSeverity == '中'">中</radio>
 						</label>
-						<label class="radio">
+						<label class="chip-item">
 							<radio :disabled="isViewMode" color="#285AC8" @tap="showSymptomSeverity('重')" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.symptomSeverity == '重'">重</radio>
 						</label>
 					</radio-group>
 				</view>
-				<checkbox :disabled="isViewMode" color="#285AC8" style="margin-bottom: 10px;" @tap="otherChoices = !otherChoices" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.otherSymptomsName != ''">其他</checkbox>
-				<input type="text" placeholder="请填写其他症状" v-show="otherChoices" v-model="AllCheckInfo.otherSymptoms.otherSymptomsName"/>
+				<label class="chip-item chip-wide" style="margin-top: 12px;" @tap="otherChoices = !otherChoices">
+					<checkbox :disabled="isViewMode" color="#285AC8" :checked="!isViewMode ? false : AllCheckInfo.otherSymptoms.otherSymptomsName != ''">其他症状</checkbox>
+				</label>
+				<input class="field-input" type="text" placeholder="请填写其他症状" v-show="otherChoices" v-model="AllCheckInfo.otherSymptoms.otherSymptomsName" style="margin-top: 8px;"/>
 			</view>
 	      </view>
 		  <view class="button-container">
@@ -1973,7 +1896,10 @@ export default {
 	padding-top: 11vh;
 	border-top-left-radius: 40px;
 	border-top-right-radius: 40px;
-	padding-bottom: 13vh;
+	padding-bottom: 16vh;
+	padding-left: 12px;
+	padding-right: 12px;
+	box-sizing: border-box;
 }
 .header {
   position: relative;
@@ -1997,15 +1923,16 @@ export default {
     background-color: #285AC8;
   }
 .section {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   background-color: #ffffff;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(40, 90, 200, 0.05);
 }
 .section-title{
-	margin-left: -3px;
-	padding-left: 4px;
-	border-left: 8px solid #285AC8;
+	margin-bottom: 12px;
+	padding-left: 8px;
+	border-left: 3px solid #285AC8;
 }
 .row {
   display: flex;
@@ -2013,6 +1940,67 @@ export default {
   align-items: center;
   margin-top: 6px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.field-block {
+  width: 100%;
+}
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.field-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: #f5f7fb;
+  font-size: 15px;
+}
+.choice-inline {
+  display: flex;
+  gap: 8px;
+}
+.choice-pill {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f5f7fb;
+}
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.chip-item {
+  width: calc(50% - 5px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f5f7fb;
+}
+.chip-item.chip-wide {
+  width: 100%;
 }
 .checkboxs{
 
@@ -2021,26 +2009,28 @@ export default {
 	margin-left: 5vh;
 }
 .label {
-  font-size: 16px;
-  color: #333333;
+  font-size: 15px;
+  color: #1f2a44;
+  font-weight: 600;
 }
 
 .options {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  gap: 8px 12px;
 }
 .checkbox1{
   display: flex;
   align-items: center;
-  margin-left: 7.5px;
-  margin-right: 7.5px;
+  margin: 0;
+  min-width: 42%;
 }
 .radio, .checkbox {
   display: flex;
   align-items: center;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin-left: 0;
+  margin-right: 12px;
 }
 
 .picker {
@@ -2084,15 +2074,21 @@ export default {
 	margin: 0 24px;
 }
 .order-options{
-	display: block; 
-	margin: 15px 0; 
-	display: flex; 
-	justify-content: space-between; 
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 12px;
+	margin: 10px 0;
+	justify-content: flex-start;
 }
 .choice-item{
-	margin: 5px 0;
+	margin: 6px 0;
+	display: flex;
+	align-items: flex-start;
+	line-height: 1.45;
+	font-size: 14px;
+	color: #334155;
 }
 input{
-	opacity: 0.7;
+	opacity: 1;
 }
 </style>

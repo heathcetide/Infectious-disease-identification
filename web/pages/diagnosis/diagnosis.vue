@@ -1,7 +1,9 @@
 <script>
 import { diagnosisSubmitService,getReportService } from '../../services/clock'
 import { baseURL } from '../../utils/http'
+import ReportUpload from '../../components/report-upload/report-upload.vue'
 export default {
+  components: { ReportUpload },
   data() {
     return {
 		formData: {
@@ -272,10 +274,12 @@ export default {
 					this.AllCheckInfo.files.forEach(file => {
 					    const field = file.reportId; // 假设fileId是你想用的字段
 						console.log('id为',field);
+					    const fileUrl = `${baseURL}/api/v1/infect-files/diagnosis/${field}`;
 					    const newFile = {
-					        name: `${file.reportType}_report_${field}.pdf`, // 文件名可自定义
-					        extname: "pdf", // 假设都是pdf格式，若有不同可根据实际情况修改
-					        url: `${baseURL}/api/v1/infect-files/diagnosis/${field}`
+					        name: `${file.reportType}_report_${field}.pdf`,
+					        extname: "pdf",
+					        url: fileUrl,
+					        path: fileUrl,
 					    };
 									
 					    if (file.reportType === "粪便常规检查报告") {
@@ -308,44 +312,27 @@ export default {
 	onDateChange1(e) {
 	  this.AllCheckInfo.diagnosisResultsEmpDTO.diagnosisDate = e.detail.value;
 	},
-	chooseFile(reportType) {
-	  wx.chooseMessageFile({
-	    count: 3, // 最多可以选择3个文件
-	    type: 'file',
-	    extension: ['pdf', 'jpg', 'png'], // 支持的文件类型
-	    success: (res) => {
-	      const files = res.tempFiles.map(file => ({
-	        path: file.path,
-	        name: file.name
-	      }));
-	      this.formData[reportType] = [...this.formData[reportType], ...files];
-	    }
-	  });
-	},
-	
 	uploadFile(filePath, reportType, index) {
 	  return new Promise((resolve, reject) => {
-	    wx.uploadFile({
+	    uni.uploadFile({
 	      url: '/api/v1/diagnosis/file',
 	      filePath: filePath,
-	      name: 'file',  // 根据你的接口定义
+	      name: 'file',
 	      formData: {
-	        reportType: reportType,  // 上传的报告类型
-	        index: index,             // 当前文件的索引
-	      },
-	      header: {
-	        'Content-Type': 'application/x-www-form-urlencoded'
+	        reportType: reportType,
+	        index: String(index),
 	      },
 	      success: (res) => {
-	        console.log(`文件上传成功: ${res}`);
-			const body = JSON.parse(res.data);
-			const fileId = body.data?.report?.reportId ?? body.data;
-			console.log('添加了id',this.AllCheckInfo.fileIdList,"666",fileId)
-	        this.AllCheckInfo.fileIdList.push(fileId);
-	        resolve(res);
+			try {
+			  const body = JSON.parse(res.data);
+			  const fileId = body.data?.report?.reportId ?? body.data;
+			  if (fileId != null) this.AllCheckInfo.fileIdList.push(fileId);
+			  resolve(res);
+			} catch (err) {
+			  reject(err);
+			}
 	      },
 	      fail: (err) => {
-	        console.error(`文件上传失败: ${err}`);
 	        reject(err);
 	      }
 	    });
@@ -372,25 +359,20 @@ export default {
 	        // 上传所有报告的文件
 	        const uploadPromises = [];
 	        // 上传粪便检查报告
-	        this.formData.stoolReport.forEach((file, index) => {
-	          uploadPromises.push(this.uploadFile(file.path, '粪便常规检查报告', index));
-	        });
-	        // 上传血液检查报告
-	        this.formData.bloodReport.forEach((file, index) => {
-	          uploadPromises.push(this.uploadFile(file.path, '血液检查报告', index));
-	        });
-			this.formData.imageReport.forEach((file,index) => {
-			  uploadPromises.push(this.uploadFile(file.path, '影像学检查报告', index));
-			});
-			this.formData.ultrasoundReport.forEach((file,index) => {
-			  uploadPromises.push(this.uploadFile(file.path, 'B超报告', index));
-			});
-			this.formData.urineReport.forEach((file,index) => {
-			  uploadPromises.push(this.uploadFile(file.path, '尿常规检查报告', index));
-			});
-			this.formData.medicalRecord.forEach((file,index) => {
-			  uploadPromises.push(this.uploadFile(file.path, '病案首页', index));
-			});
+	        const enqueue = (list, type) => {
+	          list.forEach((file, index) => {
+	            if (file.path && !String(file.path).startsWith('http')) {
+	              uploadPromises.push(this.uploadFile(file.path, type, index));
+	            }
+	          });
+	        };
+	        this.AllCheckInfo.fileIdList = [];
+	        enqueue(this.formData.stoolReport, '粪便常规检查报告');
+	        enqueue(this.formData.bloodReport, '血液检查报告');
+	        enqueue(this.formData.imageReport, '影像学检查报告');
+	        enqueue(this.formData.ultrasoundReport, 'B超报告');
+	        enqueue(this.formData.urineReport, '尿常规检查报告');
+	        enqueue(this.formData.medicalRecord, '病案首页');
 	        try {
 	          // 等待所有文件上传完成
 	          await Promise.all(uploadPromises);
@@ -528,16 +510,16 @@ export default {
 		this.AllCheckInfo.diagnosisothersymptoms[propName] = !this.AllCheckInfo.diagnosisothersymptoms[propName];
 	},
 	showSleepQuality(maleValue){
-		this.AllCheckInfo.diagnosisotherSymptoms.sleepQuality = maleValue;
-		console.log('已经选择',this.AllCheckInfo.diagnosisotherSymptoms.sleepQuality)
+		this.AllCheckInfo.diagnosisothersymptoms.sleepQuality = maleValue;
+		console.log('已经选择',this.AllCheckInfo.diagnosisothersymptoms.sleepQuality)
 	},
 	showNutritionStatus(maleValue){
-		this.AllCheckInfo.diagnosisotherSymptoms.nutritionStatus = maleValue;
-		console.log('已经选择',this.AllCheckInfo.diagnosisotherSymptoms.nutritionStatus)
+		this.AllCheckInfo.diagnosisothersymptoms.nutritionStatus = maleValue;
+		console.log('已经选择',this.AllCheckInfo.diagnosisothersymptoms.nutritionStatus)
 	},
 	showWorkLifeStress(maleValue){
-		this.AllCheckInfo.diagnosisotherSymptoms.workLifeStress = maleValue;
-		console.log('已经选择',this.AllCheckInfo.diagnosisotherSymptoms.workLifeStress)
+		this.AllCheckInfo.diagnosisothersymptoms.workLifeStress = maleValue;
+		console.log('已经选择',this.AllCheckInfo.diagnosisothersymptoms.workLifeStress)
 	},
 	shwoContactWithFeverPatient(maleValue){
 		this.AllCheckInfo.diagnosisriskFactorsAndExposure.contactWithFeverPatient = maleValue;
@@ -644,7 +626,7 @@ export default {
 		this.AllCheckInfo.diagnosisgeneralsymptoms[propName] = !this.AllCheckInfo.diagnosisgeneralsymptoms[propName];
 	},
 	handleDiagnosisexaminations(propName){
-		console.log(`Changing ${propName}:`, this.AllCheckInfo.diagnosisexaminations[propName]);
+		if (this.isViewMode) return;
 		this.AllCheckInfo.diagnosisexaminations[propName] = !this.AllCheckInfo.diagnosisexaminations[propName];
 	},
 	showAnthraxSubtype(value){
@@ -655,1700 +637,776 @@ export default {
 		console.log(`Changing ${propName}:`, this.AllCheckInfo.diagnosiscomplications[propName]);
 		this.AllCheckInfo.diagnosiscomplications[propName] = !this.AllCheckInfo.diagnosiscomplications[propName];
 	},
-	handleFileChange(event, reportType) {
-	    console.log(event, '66666');
-	
-		const selectFile =  [{
-			path: event.tempFilePaths[0],
-			name: event.tempFiles[0].name,
-		}]
-		console.log('666666666655555',selectFile)
-	    this.formData[reportType] = [...this.formData[reportType], ...selectFile];
-	
-	    console.log(this.formData);
+	setReportFiles(reportType, files) {
+	  this.formData[reportType] = files || [];
 	},
   },
 };
 </script>
+
 <template>
-	<view class="container">
-	  <!-- part1 -->
-		<view class="content3" v-show="pages == 1">
-		  <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	      <view class="header">
-	        <text class="title">确诊</text>疾病（必填）
-	      </view>
-		  <view class="part1" v-show="sonpages == 1">
-	      <view class="section">
-			  <view class="sections1">
-				  <view class="section-title3">
-				  	<text class="label">确诊疾病</text>
-				  </view>
-				  <view class="row3">
-					<radio-group>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('新型冠状病毒感染')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '新型冠状病毒感染'">新型冠状病毒感染</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('流感')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '流感'" >流感</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('鼠疫')"  :checked="AllCheckInfo.diagnosisresults.diseaseType == '鼠疫'" >鼠疫</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('感染性腹泻')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '感染性腹泻'" >感染性腹泻</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('炭疽')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '炭疽'">炭疽</radio>
-						</view>
-						<view style="margin: 5px 0; margin-left: 25px;" v-show="AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '炭疽'">
-							<radio-group>
-							<view class="option-button" style="margin-top: 10px;">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="showAnthraxSubtype('皮肤炭疽')" :checked="AllCheckInfo.diagnosisresults.anthraxSubtype == '皮肤炭疽'">皮肤炭疽</radio>
-							<radio :disabled="isViewMode" color="#285AC8" @tap="showAnthraxSubtype('肠炭疽')" :checked="AllCheckInfo.diagnosisresults.anthraxSubtype == '肠炭疽'"  style="margin-left: 20px;">肠炭疽</radio>
-							</view>
-							<view class="option-button" style="margin-top: 10px;">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="showAnthraxSubtype('肺炭疽')"  :checked="AllCheckInfo.diagnosisresults.anthraxSubtype == '肺炭疽'">肺炭疽</radio>
-							<radio :disabled="isViewMode" color="#285AC8" @tap="showAnthraxSubtype('脑膜炎型炭疽')" style="margin-left: 20px;" :checked="AllCheckInfo.diagnosisresults.anthraxSubtype == '脑膜炎型炭疽'" >脑膜炎型炭疽</radio>
-							</view>
-							<view class="option-button" style="margin-top: 10px;">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="showAnthraxSubtype('败血症型炭疽')" :checked="AllCheckInfo.diagnosisresults.anthraxSubtype == '败血症型炭疽'" >败血症型炭疽</radio>
-							</view>
-							</radio-group>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('登革热（蚊媒传染病）')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '登革热（蚊媒传染病）'" >登革热（蚊媒传染病）</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('疟疾（蚊媒传染病）')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '疟疾（蚊媒传染病）'" >疟疾（蚊媒传染病）</radio>
-						</view>
-						<view style="margin: 5px 0"> 
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('森林脑炎（蜱媒传染病）')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '森林脑炎（蜱媒传染病）'" >森林脑炎（蜱媒传染病）</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('发热伴血小板减少综合征（蜱媒传染病）')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '发热伴血小板减少综合征（蜱媒传染病）'" >发热伴血小板减少综合征（蜱媒传染病）</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('斑疹伤寒')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '斑疹伤寒'">斑疹伤寒</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('流行性出血热')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '流行性出血热'" >流行性出血热</radio>
-						</view>
-						<view style="margin: 5px 0">
-							<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseTypeChange('其他')" :checked="AllCheckInfo.diagnosisresults.diseaseType == '其他'" >其他</radio>
-							<input :disabled="isViewMode" type="text" placeholder="请输入其他疾病名称" v-model="AllCheckInfo.diagnosisResultsEmpDTO.otherDiseaseName" class="text-input" style="float: right;background-color: #FAFAFA;" v-show="AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '其他'"/>
-						</view>
-					</radio-group>
-				</view>
-			</view>
-	      </view>
-		  
-		  <view class="section">
-			<view class="sections1">
-		  		<view class="section-title3">
-		  			<text class="label">病例发现途径</text>
-		  		</view>
-			<view class="row3">
-				<radio-group>
-					<view style="margin: 10px 0">
-						<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiscoveryMethodChange('APP填报')" :checked="AllCheckInfo.diagnosisresults.discoveryMethod == 'APP填报'" >APP填报</radio>
-						<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiscoveryMethodChange('主动就诊')" :checked="AllCheckInfo.diagnosisresults.discoveryMethod == '主动就诊'"  style="float: right; margin-left: 8vh;">主动就诊</radio>
-					</view>
-					<view style="margin: 10px 0">
-						<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiscoveryMethodChange('常规监测发现')" :checked="AllCheckInfo.diagnosisresults.discoveryMethod == '常规监测发现'" >常规监测发现</radio>
-					</view>
-					<view style="margin: 10px 0">
-						<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiscoveryMethodChange('其他')" :checked="AllCheckInfo.diagnosisresults.discoveryMethod == '其他'" >其他</radio>
-					</view>
-				</radio-group>
-			</view>
-		  	</view>
-			<view class="row3" v-show="!isViewMode">
-			  <view class="form-item3">
-			    <view class="section-title3" style="margin-left: -25px;">
-			      <text class="label">提交时间</text>
-			    </view>
-			    <picker mode="date" value="2024-01-01" start="2024-01-01" end="2099-12-31" @change="onDateChange1" class="time-picker">
-			      <view class="picker">
-			        {{ AllCheckInfo.diagnosisResultsEmpDTO.diagnosisDate || '请选择日期' }}
-			      </view>
-			    </picker>
-			  </view>
-			</view>
-		  </view>
-		  <view class="section">
-			<view class="sections1">
-				<view class="section-title3">
-				  	<text class="label">疾病转归</text>
-				</view>
-				  <view class="row3">
-				  	<radio-group>
-				    <view style="margin: 10px 0">
-				        <radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseOutcomeChange('治愈')" :checked="AllCheckInfo.diagnosisresults.diseaseOutcome == '治愈'" >治愈</radio>
-				  		<radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseOutcomeChange('好转')" :checked="AllCheckInfo.diagnosisresults.diseaseOutcome == '好转'"  style="float: right; margin-left: 8vh;">好转</radio>
-				    </view>
-				    <view style="margin: 10px 0">
-				      <radio :disabled="isViewMode" color="#285AC8" @tap="handleDiseaseOutcomeChange('未愈')" :checked="AllCheckInfo.diagnosisresults.diseaseOutcome == '未愈'" >未愈</radio>
-				    </view>
-				    </radio-group>
-				  </view>
-				</view>
-			</view>
-			<button class="single-submit-button" @tap="handleSubmit()">下一步</button>
-			</view>
-		  <view class="part2" v-show="sonpages == 2">
-		  <view class="section">
-		  			  <view class="sections1">
-		  				  <view class="section-title3">
-		  				  	<text class="label">确诊医院名称</text>
-		  				  </view>
-		  				  <view class="row3">
-							<input type="text" placeholder="请输入确诊医院名称" v-model="AllCheckInfo.diagnosisResultsEmpDTO.hospitalName" style="height: 40px;background-color: #FAFAFA;padding-left: 9px;width: 70vh;"/>
-		  				  </view>
-		  			</view>
-		  </view>
-<!-- 		  <view class="section">
-		  			<view class="sections1">
-		  		<view class="section-title3">
-		  			<text class="label">就诊/入院日期</text>
-		  		</view>
-		  			<view class="row3">
-		  				<picker mode="date" value="2024-01-01" start="2024-01-01" end="2099-12-31" @change="onDateChange" class="time-picker">
-		  				  <view style="float: right; margin-top: 6px; margin-left: 16px;">
-		  				    {{ AllCheckInfo.diagnosisResultsEmpDTO.admissionDate || '请选择日期' }}
-		  				  </view>
-		  				</picker>
-		  			</view>
-		  	</view>
-		  </view> -->
-		  <view class="section">
-		  			  <view class="sections1">
-		  				  <view class="section-title3">
-		  				  	<text class="label">就诊/入院时症状和体征</text>
-		  				  </view>
-		  				  <view class="row3">
-		  					<input :disabled="isViewMode" type="text" placeholder="请输入就诊/入院时症状和体征" v-model="AllCheckInfo.diagnosisResultsEmpDTO.admissionSymptomsAndSigns" style="height: 40px;background-color: #FAFAFA;padding-left: 9px;width: 70vh;"/>
-		  				  </view>
-		  			</view>
-		  </view>
-		  <view class="section">
-		  			<view class="sections1">
-		  				<view class="section-title3">
-		  				  	<text class="label">登记分类</text>
-		  				</view>
-		  				  <view class="row3">
-		  				  	<radio-group>
-		  				    <view style="margin: 10px 0">
-		  				        <radio :disabled="isViewMode" color="#285AC8" @tap="handleRegistrationClassificationChange('新患者')" :checked="AllCheckInfo.diagnosisresults.registrationClassification == '新患者'" >新患者</radio>
-		  				  		<radio :disabled="isViewMode" color="#285AC8" @tap="handleRegistrationClassificationChange('复发')" :checked="AllCheckInfo.diagnosisresults.registrationClassification == '复发'" style="float: right; margin-left: 8vh;">复发</radio>
-		  				    </view>
-		  				    <view style="margin: 10px 0">
-		  				      <radio :disabled="isViewMode" color="#285AC8" @tap="handleRegistrationClassificationChange('返回')" :checked="AllCheckInfo.diagnosisresults.registrationClassification == '返回'" >返回</radio>
-		  				  	  <radio :disabled="isViewMode" color="#285AC8" @tap="handleRegistrationClassificationChange('治疗失败')"  :checked="AllCheckInfo.diagnosisresults.registrationClassification == '治疗失败'"  style="float: right; margin-left: 8vh;">治疗失败</radio>
-		  				    </view>
-							<view style="margin: 10px 0">
-							  <radio :disabled="isViewMode" color="#285AC8" @tap="handleRegistrationClassificationChange('其他')" :checked="AllCheckInfo.diagnosisresults.registrationClassification == '其他'" >其他（请详述）</radio>
-							</view>
-							<input :disabled="isViewMode" type="text" placeholder="请详述" v-model="AllCheckInfo.diagnosisResultsEmpDTO.otherRegistrationDetails" style="height: 40px;background-color: #FAFAFA;padding-left: 9px;width: 40vh;"/>
-		  				    </radio-group>
-		  				  </view>
-		  				</view>
-		  			</view>
-		  			<view class="button-container">
-		  			<button class="return-button" @tap="handlereturn">上一步</button>
-		  			<button class="submit-button" @tap="handleSubmit">下一步</button>
-		  			</view>
-		  			</view>
-		</view>
-		<view class="content3"  v-show="pages == 2">
-			<image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-			<view class="header">
-			  <text class="title">基本</text>数据
-			</view>
-				<view class="section">
-				<view class="sections1">
-					<view class="section-title3">
-						<text class="label">身高、体重、血压</text>
-					</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">身高</text>
-								<input :disabled="isViewMode" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.height" placeholder="请输入身高(cm)" class="text-input" style="float: right;width: 120px; text-align: right;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">体重</text>
-								<input type="text" placeholder="请输入体重(kg)" v-model="AllCheckInfo.diagnosispersonalinfo.weight" class="text-input" style="float: right;width: 120px; text-align: right;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">血压</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入血压(mmHg)" v-model="AllCheckInfo.diagnosispersonalinfo.bloodPressure" class="text-input" style="float: right;width: 120px; text-align: right;"/>
-							</view>
-						</view>
-					<view class="section-title3">
-						<text class="label">血糖</text>
-					</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">空腹血糖</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入空腹血糖(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.bloodSugarFasting" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">随机血糖</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入空腹血糖(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.bloodSugarRandom" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-					<view class="section-title3">
-						<text class="label">血脂</text>
-					</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">总胆固醇</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入总胆固醇(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.cholesterolTotal" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">甘油三酯</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入甘油三酯(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.triglycerides" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">胆固醇酯</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入胆固醇酯(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.cholesterolLipid" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">高密度脂蛋白</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入高密度脂蛋白(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.hdl" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">低密度脂蛋白</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入低密度脂蛋白(mmol/L)" v-model="AllCheckInfo.diagnosispersonalinfo.ldl" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-						<view class="section-title3">
-							<text class="label">血氧饱和度</text>
-						</view>
-						<view class="row3">
-							<view class="form-item3">
-								<text style="float: left;">血氧饱和度</text>
-								<input :disabled="isViewMode" type="text" placeholder="请输入血氧饱和度(%)" v-model="AllCheckInfo.diagnosispersonalinfo.bloodOxygen" class="text-input" style="text-align: right; float: right;width: 160px;"/>
-							</view>
-						</view>
-				</view>
-				<view class="button-container">
-				<button class="return-button" @tap="handlereturn">上一步</button>
-				<button class="submit-button" @tap="handleSubmit">下一步</button>
-				</view>
-		</view>
-	  </view>
-	  
-	  
-	  <view class="container" v-show="pages == 3">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">全身</text>症状
-	        </view>
-	  	  <!-- 第一个 -->
-	        <view class="section">
-	  		<view class="sections1">
-	  			<view class="section-title3">
-	  				<text class="label">发热情况</text>
-	  			</view>
-	  			<view class="row3">
-	  				<text class="label">是否发热</text>
-	  				<radio-group class="options">
-	  					<label class="radio">
-	  						<radio :disabled="isViewMode" @tap="hanleGeneralSymprion('hasFever')" color="#285AC8" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasFever" >是</radio>
-	  					</label>
-	  					<label class="radio">
-	  						<radio :disabled="isViewMode" @tap="hanleGeneralSymprion('hasFever')" color="#285AC8" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasFever" >否</radio>
-	  					</label>
-	  				</radio-group>
-	  			</view>
-	  		</view>
-	          <view class="row3">
-	            <text class="label">最高温度</text>
-	  		  <input :disabled="isViewMode" type="text" v-model="AllCheckInfo.diagnosisgeneralsymptoms.highestTemperature" placeholder="请输入温度" style="width: 10vh;"/>
-	            <text class="label">持续时间</text>
-	            <input :disabled="isViewMode" type="text" v-model="AllCheckInfo.diagnosisgeneralsymptoms.feverDuration" placeholder="请输入小时数" style="width: 10vh;"/>
-	          </view>
-	        </view>
-	    
-	  		<!-- 第二个 -->
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">请选择症状</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options">
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" value="chills"  :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasChills"  @tap="handleCheckboxChange('hasChills')">寒战</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" value="sweating" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasSweating"  @tap="handleCheckboxChange('hasSweating')">大汗</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" value="fatigue"  :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasFatigue"  @tap="handleCheckboxChange('hasFatigue')">乏力</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox  :disabled="isViewMode" color="#285AC8" value="thirst" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasHeadache"  @tap="handleCheckboxChange('hasHeadache')">头痛</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 60px;">
-	  			<label>
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasMusclePain')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasMusclePain" >肌肉酸痛</checkbox>
-	  			</label>
-	  			<label style="margin-left: 20px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasJointPain')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasJointPain" >关节酸痛</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	    
-	  		<!-- 第三个 -->
-	  		<view class="section">
-	  					<view class="sections1">
-	  						<view class="section-title3">
-	  							<text class="label">皮肤、疹、疮、淋巴结情况</text>
-	  						</view>
-	  					</view>
-	  					<view class="section" style="margin-bottom: -6px;">
-	  					  <checkbox-group>
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="淋巴结肿大" @tap="handleCheckboxChange('hasLymphNodeSwelling')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwelling" />
-	  					      淋巴结肿大
-	  					    </label>
-	  						<view class="order-options" style="margin-left: 30px;" v-if="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwelling == true">
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="腹股沟" @tap="handleCheckboxChange('hasLymphNodeSwellingGroin')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingGroin" />
-	  					      腹股沟
-	  					    </label>
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="腋下" @tap="handleCheckboxChange('hasLymphNodeSwellingArmpit')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingArmpit" />
-	  					      腋下
-	  					    </label>
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="锁骨下" @tap="handleCheckboxChange('hasLymphNodeSwellingSubclavian')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingSubclavian" />
-	  					      锁骨下
-	  					    </label>
-	  						</view>
-	  						<view class="order-options" style="margin-left: 30px;" v-if="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwelling == true">
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="颈部" @tap="handleCheckboxChange('hasLymphNodeSwellingNeck')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingNeck" />
-	  					      颈部
-	  					    </label>
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="肘部" @tap="handleCheckboxChange('hasLymphNodeSwellingElbow')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingElbow" />
-	  					      肘部
-	  					    </label>
-	  					    <label>
-	  					      <checkbox :disabled="isViewMode" color="#285AC8" value="腘窝" @tap="handleCheckboxChange('hasLymphNodeSwellingPopliteal')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingPopliteal" />
-	  					      腘窝
-	  					    </label>
-	  						</view>
-	  					  </checkbox-group>
-	  					</view>
-	  					<view class="checkboxs3" >
-	  					      <checkbox-group>
-	  							<view style="display: flex; flex-direction: column;margin-left: 12px;">
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasLipCyanosis')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasLipCyanosis" />
-	  					          口唇、颜面、四肢及全身皮肤发绀
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasSubcutaneousAndMucosalBleedingSpots')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasSubcutaneousAndMucosalBleedingSpots" />
-	  					          皮下及粘膜出血或出血点
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasPainfulRedRash')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasPainfulRedRash" />
-	  					          皮肤可见剧痛的红色丘疹
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasBloodBlisters')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasBloodBlisters" />
-	  					          皮肤可见周边呈灰黑色、基底坚硬的血性水泡
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasSkinUlcer')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasSkinUlcer" />
-	  					          皮肤出现呈灰黑色创面的溃疡
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasCongestiveOrPetechialRash')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasCongestiveOrPetechialRash" />
-	  					          皮疹：充血性或点状出血疹
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasPainfulRedRash')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasPainfulRedRash" />
-	  					          皮疹：起初压之褪色，后期压之不退，多见于四肢、躯干、面部一般没有
-	  					        </label>
-	  					        <label class="choice-item">
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('hasItchyRash')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.hasItchyRash" />
-	  					          瘙痒性丘疹/水疱
-	  					        </label>
-	  							</view>
-	  					      </checkbox-group>
-	  					    </view>
-	  					    <view class="inner-checkboxs3" v-if="AllCheckInfo.diagnosisgeneralsymptoms.hasItchyRash == true">
-	  					      <checkbox-group>
-	  							<view class="order-options">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnFingers')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFingers" />
-	  					          手指
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnBackOfHands')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnBackOfHands" />
-	  					          手背
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnUpperLimbs')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnUpperLimbs" />
-	  					          上肢
-	  					        </label>
-	  							</view>
-	  							<view class="order-options">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnLowerLimbs')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnLowerLimbs" />
-	  					          下肢
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnFeet')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFeet" />
-	  					          足背
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnFace')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFace" />
-	  					          面部
-	  					        </label>
-	  							</view>
-	  							<view class="order-options">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleCheckboxChange('itchyRashOnOther')" :checked="AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnOther" />
-	  					          其他
-	  					        </label>
-	  							</view>
-	  					      </checkbox-group>
-	  					    </view>
-	  		</view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">失水情况</text>
-	  			  </view>
-	  			  <view class="row3">
-	  			  	<text class="label">失水</text>
-	  			  	<radio-group class="options">
-	  			  		<label class="radio">
-	  			  			<radio :disabled="isViewMode" color="#285AC8" :checked="AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '轻度'"  @tap="showRadio('轻度')">轻度</radio>
-	  			  		</label>
-	  			  		<label class="radio">
-	  			  			<radio :disabled="isViewMode" color="#285AC8" :checked="AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '中度'"  @tap="showRadio('中度')">中度</radio>
-	  			  		</label>
-	  					<label class="radio">
-	  						<radio :disabled="isViewMode" color="#285AC8" :checked="AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '重度'"  @tap="showRadio('重度')">重度</radio>
-	  					</label>
-	  			  	</radio-group>
-	  			  </view>
-	  		  </view>
-	  	  </view>
-	        <view class="button-container">
-	        <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	        </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 4">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">呼吸</text>系统症状
-	        </view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">请选择症状</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options" style="margin-bottom: -5px;">
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasCough')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasCough"  >咳嗽</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasSputum')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasSputum" >咳痰</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBloodySputum')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasBloodySputum" >血痰</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasHemoptysis')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasHemoptysis" >咳血</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-bottom: -5px;">
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasSoreThroat')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasSoreThroat" >咽痛</checkbox>
-	  			</label>
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasDryThroat')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasDryThroat" >咽干</checkbox>
-	  			</label>
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasNasalCongestion')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasNasalCongestion" >鼻塞</checkbox>
-	  			</label>
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasRunnyNose')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasRunnyNose" >流涕</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-bottom: -5px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasChestTightness')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasChestTightness" >胸闷</checkbox>
-	  			</label>
-	  			<label style="margin-left: 18px;" >
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasShortnessOfBreath')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasShortnessOfBreath" >气促</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-bottom: -5px; ">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBreathingDifficulty')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasBreathingDifficulty" >呼吸困难</checkbox>
-	  			</label>
-	  			<label style="margin-left: 18px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasHoarseness')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasHoarseness" >声音嘶哑</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-bottom: -5px; margin-right: 160px;">
-	  			<label  style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleRespiratorysymptomsBox('hasBronchitis')" :checked="AllCheckInfo.diagnosisrespiratorysymptoms.hasBronchitis" >支气管炎/支气管肺炎</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	  	  <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 5">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	      <view class="header">
-	        <text class="title">消化</text>系统症状
-	      </view>
-	  	
-	  	<!-- 第一个 -->
-	  	<view class="section">
-	  				<view class="sections1">
-	  					<view class="section-title3">
-	  						<text class="label">腹泻情况</text>
-	  					</view>
-	  					<view class="row3">
-	  						<text class="label">腹泻次数</text>
-	  						<radio-group class="options">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('diarrheaFrequencyGEThreeTimesPerDay')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay">少于3次/天</radio>
-	  							</label>
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('diarrheaFrequencyGEThreeTimesPerDay')" :checked="!AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay" >大于等于3次/天</radio>
-	  							</label>
-	  						</radio-group>
-	  					</view>
-	  					<input type="number" placeholder="请输入具体次数" v-model="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaTimesPerDay" v-show="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay"/>
-	  					<view class="row3">
-	  						<text class="label">腹泻方式</text>
-	  						<radio-group class="options">
-	  							<view class="option-button">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('里急后重')"  :checked="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '里急后重'" >里急后重</radio>
-	  							</label>
-	  							<label class="radio"  style="margin-top: 10px;">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('失禁')"  :checked="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '失禁'" >失禁</radio>
-	  							</label>
-	  							</view>
-	  							<view class="option-button">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('畅通')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '通畅'" >畅通</radio>
-	  							</label>
-	  							<label class="radio" style="margin-top: 10px;">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadio('绞痛')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '绞痛'" >绞痛</radio>
-	  							</label>
-	  							</view>
-	  						</radio-group>
-	  					</view>
-	  				</view>
-	  	</view>
-	  	<!-- 第二个 -->
-	  	<view class="section">
-	  				<view class="sections1">
-	  					<view class="section-title3">
-	  						<text class="label">粪便情况</text>
-	  					</view>
-	  					<view class="row3">
-	  						<text class="label">粪便量</text>
-	  						<radio-group class="options">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolAmount('多')"  :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolAmount == '多'" >多</radio>
-	  							</label>
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolAmount('少')"  :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolAmount == '少'" >少</radio>
-	  							</label>
-	  						</radio-group>
-	  					</view>
-	  					<view class="row3">
-	  						<text class="label">粪便气味</text>
-	  						<radio-group class="options">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showStoolOdor('恶臭')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolOdor == '恶臭'" >恶臭</radio>
-	  							</label>
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" @tap="showStoolOdor('无恶臭')" color="#285AC8" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolOdor == '无恶臭'" >无恶臭</radio>
-	  							</label>
-	  						</radio-group>
-	  					</view>
-	  					<view class="checkboxs3" >
-	  					      <checkbox-group>
-	  							<view style="display: flex; flex-direction: column;">
-	  					        <label>
-	  					          <checkbox :checked="temporaryChoice1 == true" value="粪便性状1" color="#285AC8" @tap="temporaryChoice1 = !temporaryChoice1" :disabled="temporaryChoice2 == true"/>
-	  					          粪便性状1
-	  					        </label>
-	  							<radio-group class="options" v-show="temporaryChoice1" style="margin-top: 6px;" >
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('水样')"  :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '水样'" >水样</radio>
-	  								</label>
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('米泔样')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '米泔样'" >米泔样</radio>
-	  								</label>
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool1('洗肉水样')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '洗肉水样'" >洗肉水样</radio>
-	  								</label>
-	  							</radio-group>
-	  					        <label style="margin-top: 10px;">
-	  					          <checkbox :checked="temporaryChoice2 == true" value="粪便性状2" color="#285AC8" @tap="temporaryChoice2 = !temporaryChoice2" :disabled="temporaryChoice1 == true" />
-	  					          粪便性状2
-	  					        </label>
-	  							<radio-group class="options" v-show="temporaryChoice2" style="margin-top: 6px;">
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('黑便')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '黑便'" >黑便</radio>
-	  								</label>
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('脓血')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '脓血'" >脓血</radio>
-	  								</label>
-	  								<label class="radio">
-	  									<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestRadioBystool2('大块粘膜')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '大块粘膜'" >大块粘膜</radio>
-	  								</label>
-	  							</radio-group>
-	  							</view>
-	  					      </checkbox-group>
-	  					    </view>
-	  				</view>
-	  	</view>
-	  	
-	  	
-	  	<!-- 第二个 -->
-	  	<view class="section">
-	  				<view class="sections1">
-	  					<view class="section-title3">
-	  						<text class="label">呕吐情况</text>
-	  					</view>
-	  					<view class="row3">
-	  						<text class="label">是否呕吐</text>
-	  						<radio-group class="options">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="handleDigestFrequency('hasVomiting')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasVomiting" >是</radio>
-	  							</label>
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode"  color="#285AC8" @tap="handleDigestFrequency('hasVomiting')" :checked="!AllCheckInfo.diagnosisdigestivesymptoms.hasVomiting">否</radio>
-	  							</label>
-	  						</radio-group>
-	  					</view>
-	  					<view class="row3">
-	  						<text class="label">呕吐方式</text>
-	  						<radio-group class="options">
-	  							<view class="option-button" style="margin-top: 20px;">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode"  color="#285AC8" @tap="showDigestVomitingMode('喷射状')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '喷射状'" >喷射状</radio>
-	  							</label>
-	  							<label class="radio" style="margin-top: 10px;">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先泻后吐')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '先泻后吐'" >先泻后吐</radio>
-	  							</label>
-	  							</view>
-	  							<view class="option-button" style="margin-top: 20px;">
-	  							<label class="radio">
-	  								<radio :disabled="isViewMode" color="#285AC8" @tap="showDigestVomitingMode('先吐后泻')" :checked="AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '先吐后泻'" >先吐后泻</radio>
-	  							</label>
-	  							</view>
-	  						</radio-group>
-	  					</view>
-	  				</view>
-	  	</view>
-	  		<!-- 第三个 -->
-	  		<view class="section">
-	  					<view class="sections1">
-	  						<view class="section-title3">
-	  							<text class="label">请选择其他消化系统症状</text>
-	  						</view>
-	  					</view>
-	  					<view class="checkboxs3" style="margin-top: 10px;" >
-	  					      <checkbox-group>
-	  							<view class="order-options" style="margin-left: 60px;">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasNausea"  value="恶心" color="#285AC8" @tap="handleDigestFrequency('hasNausea')" />
-	  					          恶心
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasAbdominalDistension"  value="腹胀" color="#285AC8" @tap="handleDigestFrequency('hasAbdominalDistension')"/>
-	  					          腹胀
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasUpperAbdominalDiscomfort"  value="上腹部不适" color="#285AC8" @tap="handleDigestFrequency('hasUpperAbdominalDiscomfort')" />
-	  					          上腹部不适
-	  					        </label>
-	  							</view>
-	  							<view class="order-options" style="margin-left: 60px;">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasAbdominalPain"  value="腹痛" color="#285AC8" @tap="handleDigestFrequency('hasAbdominalPain')" />
-	  					          腹痛
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasBorborygmus" value="腹鸣" color="#285AC8" @tap="handleDigestFrequency('hasBorborygmus')"/>
-	  					          腹鸣
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasConstipation"  value="便秘" color="#285AC8"  @tap="handleDigestFrequency('hasConstipation')"/>
-	  					          便秘
-	  					        </label>
-	  							</view>
-	  							<view class="order-options" style="margin-left: 60px;">
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasOliguriaOrAnuria" value="少尿或无尿" color="#285AC8" @tap="handleDigestFrequency('hasOliguriaOrAnuria')"/>
-	  					          少尿或无尿
-	  					        </label>
-	  					        <label>
-	  					          <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisdigestivesymptoms.hasAppetiteLoss" value="食欲减退" color="#285AC8" @tap="handleDigestFrequency('hasAppetiteLoss')"/>
-	  					          食欲减退
-	  					        </label>
-	  							</view>
-	  					      </checkbox-group>
-	  					    </view>
-	  		</view>
-	        <view class="button-container">
-	        <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	        </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 6">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">循环</text>系统症状
-	        </view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">请选择症状</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options" >
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosiscirculatorysymptoms.hasArrhythmia" color="#285AC8" @tap="handleCirculatorysymptoms('hasArrhythmia')">心律不齐</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosiscirculatorysymptoms.hasChestPain" color="#285AC8" @tap="handleCirculatorysymptoms('hasChestPain')">胸痛</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosiscirculatorysymptoms.hasRapidPulse" color="#285AC8" @tap="handleCirculatorysymptoms('hasRapidPulse')">脉搏细速</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 130px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosiscirculatorysymptoms.hasPalpitation" color="#285AC8" @tap="handleCirculatorysymptoms('hasPalpitation')">心悸</checkbox>
-	              </label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosiscirculatorysymptoms.hasLowBloodPressure" color="#285AC8" @tap="handleCirculatorysymptoms('hasLowBloodPressure')">低血压</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 7">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">神经</text>系统症状
-	        </view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">请选择症状</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options">
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasDelirium" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDelirium')">儋妄</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasConvulsion" color="#285AC8" @tap="handleNeurologicalSymptoms('hasConvulsion')">抽搐</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasDrowsiness" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDrowsiness')">昏睡</checkbox>
-	              </label>
-	              <label class="checkbox">
-	                <checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasComa" color="#285AC8" @tap="handleNeurologicalSymptoms('hasComa')">昏迷</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 115px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasStiffNeck" color="#285AC8" @tap="handleNeurologicalSymptoms('hasStiffNeck')">颈部强直</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasRestlessness" color="#285AC8" @tap="handleNeurologicalSymptoms('hasRestlessness')">烦躁不安</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 146px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasMuscleParalysisNeckShoulder" color="#285AC8" @tap="handleNeurologicalSymptoms('hasMuscleParalysisNeckShoulder')">颈肩部肌肉迟缓性瘫痪</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 156px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasMuscleParalysisLimbs" color="#285AC8" @tap="handleNeurologicalSymptoms('hasMuscleParalysisLimbs')">肢体肌肉迟缓性瘫痪</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options"  style="margin-right: 115px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasSwallowingDifficulty" color="#285AC8" @tap="handleNeurologicalSymptoms('hasSwallowingDifficulty')">吞咽困难</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasSpeechDisorder" color="#285AC8" @tap="handleNeurologicalSymptoms('hasSpeechDisorder')">语言障碍</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 15px;">
-	  			<label style="margin-left: 5px;" >
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasConsciousnessDisorder" color="#285AC8" @tap="handleNeurologicalSymptoms('hasConsciousnessDisorder')">意识障碍或惊厥</checkbox>
-	  			</label>
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasDizziness" color="#285AC8" @tap="handleNeurologicalSymptoms('hasDizziness')">头晕</checkbox>
-	  			</label>
-	  			<label class="checkbox">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasTinnitus" color="#285AC8" @tap="handleNeurologicalSymptoms('hasTinnitus')">耳鸣</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options"  style="margin-right: 225px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" :checked="AllCheckInfo.diagnosisneurologicalsymptoms.hasHearingLoss" color="#285AC8" @tap="handleNeurologicalSymptoms('hasHearingLoss')">听力减退</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 8">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">局部</text>症状
-	        </view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">请选择症状</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options" >
-	  			<view class="order-options" style="margin-right: 50px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasConjunctivitis')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasConjunctivitis">结膜炎</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasConjunctivalCongestion')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasConjunctivalCongestion" >眼结膜充血、肿胀疼痛</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 25px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasEyelidEdema')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasEyelidEdema">上下眼睑水肿</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSmellTasteLoss')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasSmellTasteLoss">嗅觉味觉减退或丧失</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 10px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasFacialRednessOrPallor')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasFacialRednessOrPallor" >颜面潮红或苍白</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasRednessNeckChest')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasRednessNeckChest" >潮红（颈部、胸部）</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 65px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasLipCyanosis')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasLipCyanosis" >口唇发绀</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSkinPallorOrBruising')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasSkinPallorOrBruising" >皮肤苍白或带青紫</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 120px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasGumBleeding')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasGumBleeding" >牙龈出血</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasKidneyPain')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasKidneyPain" >肾区疼痛</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 160px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasLowBackPain')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasLowBackPain" >腰痛</checkbox>
-	  			</label>
-	  			<label style="margin-left: 15px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasOrbitalPain')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasOrbitalPain" >眼眶痛</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 105px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasMucosalBleedingInOralOrNasal')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasMucosalBleedingInOralOrNasal">口腔、鼻腔等处黏膜有出血点</checkbox>
-	  			</label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 35px;" >
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleLocalSymptoms('hasSkinBleedingPoints')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasSkinBleedingPoints" >腋下/上臂/胸部或其他部位有皮肤出血点</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 9">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">其他</text>
-	        </view>
-	        <view class="section">
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">发病情况</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options" style="margin-right: 70px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasSuddenOnset')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >突然发病</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasRapidProgress')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasRapidProgress" >病情进展迅速</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 80px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasPeriodicAttack')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasPeriodicAttack" >周期性发作</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasForcedPosture')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasForcedPosture" >强迫体位</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" style="margin-right: 200px;">
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleOtherSymptoms('hasCalfMusclePain')" :checked="AllCheckInfo.diagnosislocalsymptoms.hasCalfMusclePain" >腓肠肌疼痛</checkbox>
-	  			</label>
-	  			</view>
-	            </checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  
-	  <view class="container" v-show="pages == 10">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	  	<view class="content3">
-	        <view class="header">
-	          <text class="title">并发</text>症
-	        </view>
-	        <view class="section">
-			  <view class="sections1">
-			  	<view class="section-title3">
-			  		<text class="label">并发症情况</text>
-			  	</view>
-			  	<view class="row3">
-			  		<text class="label">有无并发症</text>
-			  		<radio-group class="options">
-			  			<label class="radio">
-			  				<radio :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasComplications')" :checked="AllCheckInfo.diagnosisotherSymptoms.sleepQuality == '有'" >有</radio>
-			  			</label>
-			  			<label class="radio">
-			  				<radio :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasComplications')" :checked="AllCheckInfo.diagnosisotherSymptoms.sleepQuality == '无'" >无</radio>
-			  			</label>
-			  		</radio-group>
-			  	</view>
-			  </view>
-	  		  <view class="sections1">
-	  			  <view class="section-title3">
-	  			  	<text class="label">选择并发症</text>
-	  			  </view>
-	          <view class="row3">
-	            <checkbox-group class="options">
-	  			<view class="order-options" style="margin-right: 70px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasViralPneumonia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >病毒性肺炎</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasBacterialPneumonia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >细菌性肺炎</checkbox>
-	              </label>
-	  			</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasFungalPneumonia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >真菌性肺炎</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasRespiratoryFailure')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >呼吸衰竭</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasArds')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >急性呼吸窘迫综合征(ARDS)</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasDic')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >弥散性血管内凝血（DIC）</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasToxicShock')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >感染中毒性休克</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMeningitis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >脑膜炎</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasEncephalitis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset">脑炎</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasBacteremia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >菌血症</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMyocarditis')":checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >心肌炎</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasAcuteLungInjury')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset">急性肺损伤/ARDS</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasAcuteKidneyInjury')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >急性肾损伤</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasEpilepsy')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset">癫痫</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasToxicHepatitis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >中毒性肝炎</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasFluidOverload')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >输液过量</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasSuperinfection')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >二重感染</checkbox>
-				  </label>
-				</view>
-				<view class="order-options" style="margin-right: 70px;">
-				  <label style="margin-left: 5px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHypoxemia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset" >低血氧症</checkbox>
-				  </label>
-				  <label style="margin-left: 15px;">
-				    <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasSepticShock')" :checked="AllCheckInfo.diagnosisothersymptoms.hasRapidProgress" >脓毒症休克</checkbox>
-				  </label>
-				</view>
-	  			<view class="order-options" style="margin-right: 80px;">
-	              <label style="margin-left: 5px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMetabolicAcidosis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasPeriodicAttack" >代谢性酸中毒</checkbox>
-	              </label>
-	              <label style="margin-left: 15px;">
-	                <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasElectrolyteImbalance')" :checked="AllCheckInfo.diagnosisothersymptoms.hasForcedPosture" >电解质及酸碱失衡</checkbox>
-	              </label>
-	  			</view>
-	  			<view class="order-options" >
-	  			<label style="margin-left: 5px;">
-	  				<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHemolysis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >急性血管内溶血</checkbox>
-	  			</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasGastrointestinalBleeding')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >消化道出血</checkbox>
-				</label>
-	  			</view>
-				<view class="order-options">
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasCoagulationDisorder')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >出凝血功能障碍</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMultipleOrganFailure')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >多器官功能衰竭</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasBronchitis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >支气管炎</checkbox>
-				</label>
-				</view>
-				<view class="order-options">
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasBronchopneumonia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >支气管肺炎</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasAnemia')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >贫血</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHepatosplenomegaly')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >肝脾肿大</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasBrainEdema')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >脑水肿</checkbox>
-				</label>
-				</view>
-				
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHus')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >溶血性尿毒综合征</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHematemesis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >呕血</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMelena')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >便血</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHemoptysis')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >咯血</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasAbdominalHemorrhage')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >腹腔出血</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasNasalBleeding')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >鼻出血</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasVaginalBleeding')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >阴道出血</checkbox>
-				</label>
-				</view>
-				
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasHypertensiveEncephalopathy')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >高血压脑病</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasIntracranialHemorrhage')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >颅内出血</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasPulmonaryEdema')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >肺水肿</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasSecondaryInfection')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >继发性感染</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasSpontaneousRenalRupture')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >自发性肾破裂</checkbox>
-				</label>
-				<label style="margin-left: 15px;">
-					<checkbox :disabled="isViewMode" color="#285AC8" @tap="handleComplications('hasMyocardialDamage')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >心肌损害</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<label style="margin-left: 5px;">
-					<checkbox v-show="!isViewMode" color="#285AC8" @tap="handleComplications('hasLiverDamage')" :checked="AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain" >肝损害</checkbox>
-				</label>
-				</view>
-				<view class="order-options" >
-				<checkbox color="#285AC8" style="margin-bottom: 10px;" @tap="handleComplications('otherComplications')">其他</checkbox>
-					<input :disabled="isViewMode" type="number" placeholder="请填写其他症状" style="margin-left: 30px;" v-model="AllCheckInfo.diagnosiscomplications.otherComplicationsName"/>
-				</view>
-				</checkbox-group>
-	          </view>
-	  		</view>
-	        </view>
-	  	  <view class="button-container">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">下一步</button>
-	  	  </view>
-	  	  </view>
-	  	<uni-custom-tabbar></uni-custom-tabbar>
-	  </view>
-	  <view class="container" v-show="pages == 11">
-	    <image src="../../static/other-background.png" mode="widthFix" class="background-image"></image>
-	    <view class="content3">
-			<view class="header">
-			  <text class="title">检测</text>报告
-			</view>
-	      <!-- 病原学及血清学检查 -->
-	      <view class="section">
-	        <view class="sections1">
-	          <view class="section-title3">
-	            <text class="label">病原学及血清学检查（可多选）</text>
-	          </view>
-	          <view class="checkboxs3">
-	            <checkbox-group>
-	              <view class="order-options">
-	                <label class="checkbox-item">
-	                  <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleDiagnosisexaminations('hasBloodTest')" :checked="AllCheckInfo.diagnosisexaminations.hasBloodTest"  />
-	                  血常规
-	                </label>
-	                <label class="checkbox-item">
-	                  <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleDiagnosisexaminations('hasImaging')"  :checked="AllCheckInfo.diagnosisexaminations.hasImaging"  />
-	                  影像学检查
-	                </label>
-	              </view>
-	              <view class="order-options">
-	                <label class="checkbox-item">
-	                  <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleDiagnosisexaminations('hasUrineTest')"  :checked="AllCheckInfo.diagnosisexaminations.hasUrineTest" />
-	                  尿常规
-	                </label>
-	                <label class="checkbox-item">
-	                  <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleDiagnosisexaminations('hasStoolTest')" :checked="AllCheckInfo.diagnosisexaminations.hasStoolTest"  />
-	                  粪便常规
-	                </label>
-	              </view>
-				  <view class="order-options">
-				    <label class="checkbox-item">
-				      <checkbox :disabled="isViewMode" color="#285AC8" @tap="handleDiagnosisexaminations('hasUltrasound')" :checked="AllCheckInfo.diagnosisexaminations.hasUltrasound" />
-				      B超
-				    </label>
-				  </view>
-	            </checkbox-group>
-	          </view>
-	  
-	          <view class="row3" style="margin-top: 45px; margin-bottom: 70px;">
-	            <view class="form-item3">
-	              <view class="section-title3"  style="margin-left: -25px;">
-	                <text class="label">胸部X线或 CT或核磁共振等影像学检查报告</text>
-	              </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-					      :show-type="'grid'"
-					      :disabled="isViewMode"
-					      :value="formData.imageReport"
-					      :files-list="formData.imageReport"
-				          :limit="3" 
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'imageReport')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 	              <button @tap="chooseFile('imageReport')" class="center-button" style="float: right;">文件上传</button>
-	              <view v-if="formData.imageReport.length > 0" class="file-preview">
-	                <view v-for="(file, index) in formData.imageReport" :key="index" class="file-item">
-	                  <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-	                  <view v-else>{{ file.name }}</view>
-	                </view>
-	              </view> -->
-	            </view>
-	          </view>
-	  
-	          <view class="row3" style="margin-top: 85px; margin-bottom: 80px;">
-	            <view class="form-item3">
-	              <view class="section-title3"  style="margin-left: -25px;">
-	                <text class="label">B超报告</text>
-	              </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-					      :show-type="'grid'"
-					      :disabled="isViewMode"
-						  :value="formData.ultrasoundReport"
-						  :files-list="formData.ultrasoundReport"
-				          :limit="3" 
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'ultrasoundReport')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 	              <button @tap="chooseFile('ultrasoundReport')" class="center-button" style="float: right;">文件上传</button>
-	              <view v-if="formData.ultrasoundReport.length > 0" class="file-preview">
-	                <view v-for="(file, index) in formData.ultrasoundReport" :key="index" class="file-item">
-	                  <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-	                  <view v-else>{{ file.name }}</view>
-	                </view>
-	              </view> -->
-	            </view>
-	          </view>
-	          <view class="row3" style="margin-top: 85px; margin-bottom: 80px;">
-	            <view class="form-item3">
-	              <view class="section-title3"  style="margin-left: -25px;">
-	                <text class="label">血液检查报告（血常规、C反应蛋白、血沉等）</text>
-	              </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-						  :show-type="'grid'"
-					      :disabled="isViewMode"
-				          :limit="3" 
-						  :value="formData.bloodReport"
-						  :files-list="formData.bloodReport"
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'bloodReport')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 	              <button @tap="chooseFile('bloodReport')" class="center-button" style="float: right;">文件上传</button>
-	              <view v-if="formData.bloodReport.length > 0" class="file-preview">
-	                <view v-for="(file, index) in formData.bloodReport" :key="index" class="file-item">
-	                  <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-	                  <view v-else>{{ file.name }}</view>
-	                </view>
-	              </view> -->
-	            </view>
-	          </view>
-			  <view class="row3" style="margin-top: 95px; margin-bottom: 80px;">
-			    <view class="form-item3">
-			      <view class="section-title3"  style="margin-left: -25px;">
-			        <text class="label">粪便常规检查报告</text>
-			      </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-					      :show-type="'grid'"
-					      :disabled="isViewMode"
-					      :value="formData.stoolReport"
-					      :files-list="formData.stoolReport"
-				          :limit="3" 
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'stoolReport')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 			      <button @tap="chooseFile('stoolReport')" class="center-button" style="float: right;">文件上传</button>
-			      <view v-if="formData.stoolReport.length > 0" class="file-preview">
-			        <view v-for="(file, index) in formData.stoolReport" :key="index" class="file-item">
-			          <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-			          <view v-else>{{ file.name }}</view>
-			        </view>
-			      </view> -->
-			    </view>
-			  </view>
-			  
-			  <view class="row3" style="margin-top: 85px; margin-bottom: 85px;">
-			    <view class="form-item3">
-			      <view class="section-title3"  style="margin-left: -25px;">
-			        <text class="label">尿常规检查报告</text>
-			      </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-					      :show-type="'grid'"
-					      :disabled="isViewMode"
-					      :value="formData.urineReport"
-					      :files-list="formData.urineReport"
-				          :limit="3" 
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'urineReport')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 			      <button @tap="chooseFile('urineReport')" class="center-button" style="float: right;">文件上传</button>
-			      <view v-if="formData.urineReport.length > 0" class="file-preview">
-			        <view v-for="(file, index) in formData.urineReport" :key="index" class="file-item">
-			          <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-			          <view v-else>{{ file.name }}</view>
-			        </view>
-			      </view> -->
-			    </view>
-			  </view>
-			  
-			  <view class="row3" style="margin-top: 85px; margin-bottom: 80px;">
-			    <view class="form-item3">
-			      <view class="section-title3"  style="margin-left: -25px;">
-			        <text class="label">病案首页</text>
-			      </view>
-				  <view class="example-body">
-				      <uni-file-picker 
-					      fileMediatype="image"
-					      :show-type="'grid'"
-					      :disabled="isViewMode"
-					      :value="formData.medicalRecord"
-					      :files-list="formData.medicalRecord"
-				          :limit="3" 
-				          :file-type="['image', 'pdf']" 
-				          @select="handleFileChange($event, 'medicalRecord')"
-				          title="最多选择3个文件 (PDF, JPG, PNG)">
-				      </uni-file-picker>
-				  </view>
-<!-- 			      <button @tap="chooseFile('medicalRecord')" class="center-button" style="float: right;">文件上传</button>
-			      <view v-if="formData.medicalRecord.length > 0" class="file-preview">
-			        <view v-for="(file, index) in formData.medicalRecord" :key="index" class="file-item">
-			          <image v-if="isImage(file.path)" :src="file.path" mode="aspectFit" style="width: 100px; height: 100px;" />
-			          <view v-else>{{ file.name }}</view>
-			        </view>
-			      </view> -->
-			    </view>
-			  </view>
-	  
-	  
-	        </view>
-	  	  <view class="button-container" style="margin-top: 14vh;">
-	  	  <button class="return-button" @tap="handlereturn">上一步</button>
-	        <button class="submit-button" @tap="handleSubmit">提交</button>
-	  	  </view>
-	      </view>
-	    </view>
-	  </view>
-		<uni-custom-tabbar class="tabbar"></uni-custom-tabbar>
-	</view>
+  <view class="page">
+  <view class="page-step" v-show="pages == 1 && sonpages == 1">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">确诊</text>疾病（必填）</view>
+      <view class="card">
+        <view class="card-title">确诊疾病</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '新型冠状病毒感染' }" @tap="!isViewMode && handleDiseaseTypeChange('新型冠状病毒感染')">新型冠状病毒感染</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '流感' }" @tap="!isViewMode && handleDiseaseTypeChange('流感')">流感</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '鼠疫' }" @tap="!isViewMode && handleDiseaseTypeChange('鼠疫')">鼠疫</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '感染性腹泻' }" @tap="!isViewMode && handleDiseaseTypeChange('感染性腹泻')">感染性腹泻</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '炭疽' }" @tap="!isViewMode && handleDiseaseTypeChange('炭疽')">炭疽</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '登革热（蚊媒传染病）' }" @tap="!isViewMode && handleDiseaseTypeChange('登革热（蚊媒传染病）')">登革热（蚊媒传染病）</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '疟疾（蚊媒传染病）' }" @tap="!isViewMode && handleDiseaseTypeChange('疟疾（蚊媒传染病）')">疟疾（蚊媒传染病）</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '森林脑炎（蜱媒传染病）' }" @tap="!isViewMode && handleDiseaseTypeChange('森林脑炎（蜱媒传染病）')">森林脑炎（蜱媒传染病）</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '发热伴血小板减少综合征（蜱媒传染病）' }" @tap="!isViewMode && handleDiseaseTypeChange('发热伴血小板减少综合征（蜱媒传染病）')">发热伴血小板减少综合征（蜱媒传染病）</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '斑疹伤寒' }" @tap="!isViewMode && handleDiseaseTypeChange('斑疹伤寒')">斑疹伤寒</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '流行性出血热' }" @tap="!isViewMode && handleDiseaseTypeChange('流行性出血热')">流行性出血热</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '其他' }" @tap="!isViewMode && handleDiseaseTypeChange('其他')">其他</view>
+        </view>
+        <view class="chip-grid nested" v-show="AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '炭疽'">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.anthraxSubtype == '皮肤炭疽' }" @tap="!isViewMode && showAnthraxSubtype('皮肤炭疽')">皮肤炭疽</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.anthraxSubtype == '肠炭疽' }" @tap="!isViewMode && showAnthraxSubtype('肠炭疽')">肠炭疽</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.anthraxSubtype == '肺炭疽' }" @tap="!isViewMode && showAnthraxSubtype('肺炭疽')">肺炭疽</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.anthraxSubtype == '脑膜炎型炭疽' }" @tap="!isViewMode && showAnthraxSubtype('脑膜炎型炭疽')">脑膜炎型炭疽</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.anthraxSubtype == '败血症型炭疽' }" @tap="!isViewMode && showAnthraxSubtype('败血症型炭疽')">败血症型炭疽</view>
+        </view>
+        <input v-show="AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == '其他'" :disabled="isViewMode" type="text" placeholder="请输入其他疾病名称" v-model="AllCheckInfo.diagnosisResultsEmpDTO.otherDiseaseName" class="field-input" />
+      </view>
+      <view class="card">
+        <view class="card-title">病例发现途径</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.discoveryMethod == 'APP填报' }" @tap="!isViewMode && handleDiscoveryMethodChange('APP填报')">APP填报</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.discoveryMethod == '主动就诊' }" @tap="!isViewMode && handleDiscoveryMethodChange('主动就诊')">主动就诊</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.discoveryMethod == '常规监测发现' }" @tap="!isViewMode && handleDiscoveryMethodChange('常规监测发现')">常规监测发现</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.discoveryMethod == '其他' }" @tap="!isViewMode && handleDiscoveryMethodChange('其他')">其他</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">提交时间</view>
+        <picker mode="date" value="2024-01-01" start="2024-01-01" end="2099-12-31" @change="onDateChange1" v-show="!isViewMode">
+          <view class="picker">{{ AllCheckInfo.diagnosisResultsEmpDTO.diagnosisDate || '请选择日期' }}</view>
+        </picker>
+      </view>
+      <view class="card">
+        <view class="card-title">疾病转归</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseOutcome == '治愈' }" @tap="!isViewMode && handleDiseaseOutcomeChange('治愈')">治愈</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseOutcome == '好转' }" @tap="!isViewMode && handleDiseaseOutcomeChange('好转')">好转</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.diseaseOutcome == '未愈' }" @tap="!isViewMode && handleDiseaseOutcomeChange('未愈')">未愈</view>
+        </view>
+      </view>
+        <view class="button-container button-container--single">
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 1 && sonpages == 2">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">确诊</text>信息</view>
+      <view class="card">
+        <view class="card-title">确诊医院名称</view>
+        <view class="field">
+          <input :disabled="isViewMode" type="text" placeholder="请输入确诊医院名称" v-model="AllCheckInfo.diagnosisResultsEmpDTO.hospitalName" class="field-input" />
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">就诊/入院时症状和体征</view>
+        <view class="field">
+          <input :disabled="isViewMode" type="text" placeholder="请输入就诊/入院时症状和体征" v-model="AllCheckInfo.diagnosisResultsEmpDTO.admissionSymptomsAndSigns" class="field-input" />
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">登记分类</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.registrationClassification == '新患者' }" @tap="!isViewMode && handleRegistrationClassificationChange('新患者')">新患者</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.registrationClassification == '复发' }" @tap="!isViewMode && handleRegistrationClassificationChange('复发')">复发</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.registrationClassification == '返回' }" @tap="!isViewMode && handleRegistrationClassificationChange('返回')">返回</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.registrationClassification == '治疗失败' }" @tap="!isViewMode && handleRegistrationClassificationChange('治疗失败')">治疗失败</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisResultsEmpDTO.registrationClassification == '其他' }" @tap="!isViewMode && handleRegistrationClassificationChange('其他')">其他</view>
+        </view>
+        <input :disabled="isViewMode" type="text" placeholder="请详述" v-model="AllCheckInfo.diagnosisResultsEmpDTO.otherRegistrationDetails" class="field-input mt" />
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 2">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">基本</text>数据</view>
+      <view class="card">
+        <view class="card-title">身高、体重、血压</view>
+        <view class="field">
+          <text class="field-label">身高 (cm)</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.height" placeholder="请输入身高" />
+        </view>
+        <view class="field">
+          <text class="field-label">体重 (kg)</text>
+          <input class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.weight" placeholder="请输入体重" />
+        </view>
+        <view class="field">
+          <text class="field-label">血压 (mmHg)</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.bloodPressure" placeholder="请输入血压" />
+        </view>
+
+      </view>
+      <view class="card">
+        <view class="card-title">血糖</view>
+        <view class="field">
+          <text class="field-label">空腹血糖 (mmol/L)</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.bloodSugarFasting" placeholder="请输入空腹血糖" />
+        </view>
+        <view class="field">
+          <text class="field-label">随机血糖 (mmol/L)</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.bloodSugarRandom" placeholder="请输入随机血糖" />
+        </view>
+
+      </view>
+      <view class="card">
+        <view class="card-title">血脂</view>
+        <view class="field">
+          <text class="field-label">总胆固醇</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.cholesterolTotal" placeholder="请输入总胆固醇" />
+        </view>
+        <view class="field">
+          <text class="field-label">甘油三酯</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.triglycerides" placeholder="请输入甘油三酯" />
+        </view>
+        <view class="field">
+          <text class="field-label">胆固醇酯</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.cholesterolLipid" placeholder="请输入胆固醇酯" />
+        </view>
+        <view class="field">
+          <text class="field-label">高密度脂蛋白</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.hdl" placeholder="请输入高密度脂蛋白" />
+        </view>
+        <view class="field">
+          <text class="field-label">低密度脂蛋白</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.ldl" placeholder="请输入低密度脂蛋白" />
+        </view>
+
+      </view>
+      <view class="card">
+        <view class="card-title">血氧饱和度</view>
+        <view class="field">
+          <text class="field-label">血氧饱和度 (%)</text>
+          <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosispersonalinfo.bloodOxygen" placeholder="请输入血氧饱和度" />
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 3">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">全身</text>症状</view>
+      <view class="card">
+        <view class="card-title">发热情况</view>
+        <text class="field-label">是否发热</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasFever }" @tap="!isViewMode && hanleGeneralSymprion('hasFever')">是</view>
+          <view class="chip" :class="{ on: !AllCheckInfo.diagnosisgeneralsymptoms.hasFever }" @tap="!isViewMode && hanleGeneralSymprion('hasFever')">否</view>
+        </view>
+        <view class="field-row-inline">
+          <view class="field flex1">
+            <text class="field-label">最高温度</text>
+            <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosisgeneralsymptoms.highestTemperature" placeholder="请输入温度" />
+          </view>
+          <view class="field flex1">
+            <text class="field-label">持续时间（小时）</text>
+            <input :disabled="isViewMode" class="field-input" type="text" v-model="AllCheckInfo.diagnosisgeneralsymptoms.feverDuration" placeholder="请输入小时数" />
+          </view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">常见症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasChills }" @tap="!isViewMode && handleCheckboxChange('hasChills')">寒战</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasSweating }" @tap="!isViewMode && handleCheckboxChange('hasSweating')">大汗</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasFatigue }" @tap="!isViewMode && handleCheckboxChange('hasFatigue')">乏力</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasHeadache }" @tap="!isViewMode && handleCheckboxChange('hasHeadache')">头痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasMusclePain }" @tap="!isViewMode && handleCheckboxChange('hasMusclePain')">肌肉酸痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasJointPain }" @tap="!isViewMode && handleCheckboxChange('hasJointPain')">关节酸痛</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">皮肤、疹、疮、淋巴结</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwelling }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwelling')">淋巴结肿大</view>
+        <view class="chip-grid nested" v-if="AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwelling == true">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingGroin }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingGroin')">腹股沟</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingArmpit }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingArmpit')">腋下</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingSubclavian }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingSubclavian')">锁骨下</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingNeck }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingNeck')">颈部</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingElbow }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingElbow')">肘部</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLymphNodeSwellingPopliteal }" @tap="!isViewMode && handleCheckboxChange('hasLymphNodeSwellingPopliteal')">腘窝</view>
+        </view>
+        <view class="chip-grid">
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasLipCyanosis }" @tap="!isViewMode && handleCheckboxChange('hasLipCyanosis')">口唇、颜面、四肢及全身皮肤发绀</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasSubcutaneousAndMucosalBleedingSpots }" @tap="!isViewMode && handleCheckboxChange('hasSubcutaneousAndMucosalBleedingSpots')">皮下及粘膜出血或出血点</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasPainfulRedRash }" @tap="!isViewMode && handleCheckboxChange('hasPainfulRedRash')">皮肤可见剧痛的红色丘疹</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasPainfulRedRash }" @tap="!isViewMode && handleCheckboxChange('hasPainfulRedRash')">皮疹：起初压之褪色，后期压之不退，多见于四肢、躯干、面部一般没有</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasBloodBlisters }" @tap="!isViewMode && handleCheckboxChange('hasBloodBlisters')">皮肤可见周边呈灰黑色、基底坚硬的血性水泡</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasSkinUlcer }" @tap="!isViewMode && handleCheckboxChange('hasSkinUlcer')">皮肤出现呈灰黑色创面的溃疡</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasCongestiveOrPetechialRash }" @tap="!isViewMode && handleCheckboxChange('hasCongestiveOrPetechialRash')">皮疹：充血性或点状出血疹</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.hasItchyRash }" @tap="!isViewMode && handleCheckboxChange('hasItchyRash')">瘙痒性丘疹/水疱</view>
+        </view>        <view class="chip-grid nested" v-if="AllCheckInfo.diagnosisgeneralsymptoms.hasItchyRash == true">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFingers }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnFingers')">手指</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnBackOfHands }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnBackOfHands')">手背</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnUpperLimbs }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnUpperLimbs')">上肢</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnLowerLimbs }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnLowerLimbs')">下肢</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFeet }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnFeet')">足背</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnFace }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnFace')">面部</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.itchyRashOnOther }" @tap="!isViewMode && handleCheckboxChange('itchyRashOnOther')">其他</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">失水情况</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '轻度' }" @tap="!isViewMode && showRadio('轻度')">轻度</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '中度' }" @tap="!isViewMode && showRadio('中度')">中度</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisgeneralsymptoms.dehydrationSeverity === '重度' }" @tap="!isViewMode && showRadio('重度')">重度</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 4">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">呼吸</text>系统症状</view>
+      <view class="card">
+        <view class="card-title">请选择症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasCough }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasCough')">咳嗽</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasSputum }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasSputum')">咳痰</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasBloodySputum }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasBloodySputum')">血痰</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasHemoptysis }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasHemoptysis')">咳血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasSoreThroat }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasSoreThroat')">咽痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasDryThroat }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasDryThroat')">咽干</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasNasalCongestion }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasNasalCongestion')">鼻塞</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasRunnyNose }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasRunnyNose')">流涕</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasChestTightness }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasChestTightness')">胸闷</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasShortnessOfBreath }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasShortnessOfBreath')">气促</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasBreathingDifficulty }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasBreathingDifficulty')">呼吸困难</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasHoarseness }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasHoarseness')">声音嘶哑</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisrespiratorysymptoms.hasBronchitis }" @tap="!isViewMode && handleRespiratorysymptomsBox('hasBronchitis')">支气管炎/支气管肺炎</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 5">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">消化</text>系统症状</view>
+      <view class="card">
+        <view class="card-title">腹泻情况</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay }" @tap="!isViewMode && handleDigestFrequency('diarrheaFrequencyGEThreeTimesPerDay')">少于3次/天</view>
+          <view class="chip" :class="{ on: !AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay }" @tap="!isViewMode && handleDigestFrequency('diarrheaFrequencyGEThreeTimesPerDay')">大于等于3次/天</view>
+        </view>
+        <input class="field-input mt" type="number" placeholder="请输入具体次数" v-model="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaTimesPerDay" v-show="AllCheckInfo.diagnosisdigestivesymptoms.diarrheaFrequencyGEThreeTimesPerDay"/>
+        <text class="field-label mt">腹泻方式</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '里急后重' }" @tap="!isViewMode && showDigestRadio('里急后重')">里急后重</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '失禁' }" @tap="!isViewMode && showDigestRadio('失禁')">失禁</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '通畅' }" @tap="!isViewMode && showDigestRadio('通畅')">通畅</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.diarrheaMode == '绞痛' }" @tap="!isViewMode && showDigestRadio('绞痛')">绞痛</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">粪便情况</view>
+        <text class="field-label">粪便量</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolAmount == '多' }" @tap="!isViewMode && showStoolAmount('多')">多</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolAmount == '少' }" @tap="!isViewMode && showStoolAmount('少')">少</view>
+        </view>
+        <text class="field-label mt">粪便气味</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolOdor == '恶臭' }" @tap="!isViewMode && showStoolOdor('恶臭')">恶臭</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolOdor == '无恶臭' }" @tap="!isViewMode && showStoolOdor('无恶臭')">无恶臭</view>
+        </view>
+        <view class="chip-grid">
+          <view class="chip chip-wide" :class="{ on: temporaryChoice1 }" @tap="!isViewMode && !temporaryChoice2 && (temporaryChoice1 = !temporaryChoice1)">粪便性状1</view>
+          <view class="chip chip-wide" :class="{ on: temporaryChoice2 }" @tap="!isViewMode && !temporaryChoice1 && (temporaryChoice2 = !temporaryChoice2)">粪便性状2</view>
+        </view>
+        <view class="chip-grid nested" v-show="temporaryChoice1">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '水样' }" @tap="!isViewMode && showDigestRadioBystool1('水样')">水样</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '米泔样' }" @tap="!isViewMode && showDigestRadioBystool1('米泔样')">米泔样</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType1Detail == '洗肉水样' }" @tap="!isViewMode && showDigestRadioBystool1('洗肉水样')">洗肉水样</view>
+        </view>
+        <view class="chip-grid nested" v-show="temporaryChoice2">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '黑便' }" @tap="!isViewMode && showDigestRadioBystool2('黑便')">黑便</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '脓血' }" @tap="!isViewMode && showDigestRadioBystool2('脓血')">脓血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.stoolType2Detail == '大块粘膜' }" @tap="!isViewMode && showDigestRadioBystool2('大块粘膜')">大块粘膜</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">呕吐情况</view>
+        <text class="field-label">是否呕吐</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasVomiting }" @tap="!isViewMode && handleDigestFrequency('hasVomiting')">是</view>
+          <view class="chip" :class="{ on: !AllCheckInfo.diagnosisdigestivesymptoms.hasVomiting }" @tap="!isViewMode && handleDigestFrequency('hasVomiting')">否</view>
+        </view>
+        <text class="field-label mt">呕吐方式</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '喷射状' }" @tap="!isViewMode && showDigestVomitingMode('喷射状')">喷射状</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '先泻后吐' }" @tap="!isViewMode && showDigestVomitingMode('先泻后吐')">先泻后吐</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.vomitingMode == '先吐后泻' }" @tap="!isViewMode && showDigestVomitingMode('先吐后泻')">先吐后泻</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">其他消化系统症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasNausea }" @tap="!isViewMode && handleDigestFrequency('hasNausea')">恶心</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasAbdominalDistension }" @tap="!isViewMode && handleDigestFrequency('hasAbdominalDistension')">腹胀</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasUpperAbdominalDiscomfort }" @tap="!isViewMode && handleDigestFrequency('hasUpperAbdominalDiscomfort')">上腹部不适</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasAbdominalPain }" @tap="!isViewMode && handleDigestFrequency('hasAbdominalPain')">腹痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasBorborygmus }" @tap="!isViewMode && handleDigestFrequency('hasBorborygmus')">腹鸣</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasConstipation }" @tap="!isViewMode && handleDigestFrequency('hasConstipation')">便秘</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasOliguriaOrAnuria }" @tap="!isViewMode && handleDigestFrequency('hasOliguriaOrAnuria')">少尿或无尿</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisdigestivesymptoms.hasAppetiteLoss }" @tap="!isViewMode && handleDigestFrequency('hasAppetiteLoss')">食欲减退</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 6">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">循环</text>系统症状</view>
+      <view class="card">
+        <view class="card-title">请选择症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscirculatorysymptoms.hasArrhythmia }" @tap="!isViewMode && handleCirculatorysymptoms('hasArrhythmia')">心律不齐</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscirculatorysymptoms.hasChestPain }" @tap="!isViewMode && handleCirculatorysymptoms('hasChestPain')">胸痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscirculatorysymptoms.hasRapidPulse }" @tap="!isViewMode && handleCirculatorysymptoms('hasRapidPulse')">脉搏细速</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscirculatorysymptoms.hasPalpitation }" @tap="!isViewMode && handleCirculatorysymptoms('hasPalpitation')">心悸</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscirculatorysymptoms.hasLowBloodPressure }" @tap="!isViewMode && handleCirculatorysymptoms('hasLowBloodPressure')">低血压</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 7">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">神经</text>系统症状</view>
+      <view class="card">
+        <view class="card-title">请选择症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasDelirium }" @tap="!isViewMode && handleNeurologicalSymptoms('hasDelirium')">儋妄</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasConvulsion }" @tap="!isViewMode && handleNeurologicalSymptoms('hasConvulsion')">抽搐</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasDrowsiness }" @tap="!isViewMode && handleNeurologicalSymptoms('hasDrowsiness')">昏睡</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasComa }" @tap="!isViewMode && handleNeurologicalSymptoms('hasComa')">昏迷</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasStiffNeck }" @tap="!isViewMode && handleNeurologicalSymptoms('hasStiffNeck')">颈部强直</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasRestlessness }" @tap="!isViewMode && handleNeurologicalSymptoms('hasRestlessness')">烦躁不安</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasMuscleParalysisNeckShoulder }" @tap="!isViewMode && handleNeurologicalSymptoms('hasMuscleParalysisNeckShoulder')">颈肩部肌肉迟缓性瘫痪</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasMuscleParalysisLimbs }" @tap="!isViewMode && handleNeurologicalSymptoms('hasMuscleParalysisLimbs')">肢体肌肉迟缓性瘫痪</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasSwallowingDifficulty }" @tap="!isViewMode && handleNeurologicalSymptoms('hasSwallowingDifficulty')">吞咽困难</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasSpeechDisorder }" @tap="!isViewMode && handleNeurologicalSymptoms('hasSpeechDisorder')">语言障碍</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasConsciousnessDisorder }" @tap="!isViewMode && handleNeurologicalSymptoms('hasConsciousnessDisorder')">意识障碍或惊厥</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasDizziness }" @tap="!isViewMode && handleNeurologicalSymptoms('hasDizziness')">头晕</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasTinnitus }" @tap="!isViewMode && handleNeurologicalSymptoms('hasTinnitus')">耳鸣</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisneurologicalsymptoms.hasHearingLoss }" @tap="!isViewMode && handleNeurologicalSymptoms('hasHearingLoss')">听力减退</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 8">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">局部</text>症状</view>
+      <view class="card">
+        <view class="card-title">请选择症状</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasConjunctivitis }" @tap="!isViewMode && handleLocalSymptoms('hasConjunctivitis')">结膜炎</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasConjunctivalCongestion }" @tap="!isViewMode && handleLocalSymptoms('hasConjunctivalCongestion')">眼结膜充血、肿胀疼痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasEyelidEdema }" @tap="!isViewMode && handleLocalSymptoms('hasEyelidEdema')">上下眼睑水肿</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasSmellTasteLoss }" @tap="!isViewMode && handleLocalSymptoms('hasSmellTasteLoss')">嗅觉味觉减退或丧失</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasFacialRednessOrPallor }" @tap="!isViewMode && handleLocalSymptoms('hasFacialRednessOrPallor')">颜面潮红或苍白</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasRednessNeckChest }" @tap="!isViewMode && handleLocalSymptoms('hasRednessNeckChest')">潮红（颈部、胸部）</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasLipCyanosis }" @tap="!isViewMode && handleLocalSymptoms('hasLipCyanosis')">口唇发绀</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasSkinPallorOrBruising }" @tap="!isViewMode && handleLocalSymptoms('hasSkinPallorOrBruising')">皮肤苍白或带青紫</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasGumBleeding }" @tap="!isViewMode && handleLocalSymptoms('hasGumBleeding')">牙龈出血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasKidneyPain }" @tap="!isViewMode && handleLocalSymptoms('hasKidneyPain')">肾区疼痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasLowBackPain }" @tap="!isViewMode && handleLocalSymptoms('hasLowBackPain')">腰痛</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasOrbitalPain }" @tap="!isViewMode && handleLocalSymptoms('hasOrbitalPain')">眼眶痛</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasMucosalBleedingInOralOrNasal }" @tap="!isViewMode && handleLocalSymptoms('hasMucosalBleedingInOralOrNasal')">口腔、鼻腔等处黏膜有出血点</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosislocalsymptoms.hasSkinBleedingPoints }" @tap="!isViewMode && handleLocalSymptoms('hasSkinBleedingPoints')">腋下/上臂/胸部或其他部位有皮肤出血点</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 9">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">其他</text>症状</view>
+      <view class="card">
+        <view class="card-title">发病情况</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisothersymptoms.hasSuddenOnset }" @tap="!isViewMode && handleOtherSymptoms('hasSuddenOnset')">突然发病</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisothersymptoms.hasRapidProgress }" @tap="!isViewMode && handleOtherSymptoms('hasRapidProgress')">病情进展迅速</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisothersymptoms.hasPeriodicAttack }" @tap="!isViewMode && handleOtherSymptoms('hasPeriodicAttack')">周期性发作</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisothersymptoms.hasForcedPosture }" @tap="!isViewMode && handleOtherSymptoms('hasForcedPosture')">强迫体位</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisothersymptoms.hasCalfMusclePain }" @tap="!isViewMode && handleOtherSymptoms('hasCalfMusclePain')">腓肠肌疼痛</view>
+        </view>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 10">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">并发</text>症</view>
+      <view class="card">
+        <view class="card-title">并发症情况</view>
+        <text class="field-label">有无并发症</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasComplications }" @tap="!isViewMode && handleComplications('hasComplications')">有</view>
+          <view class="chip" :class="{ on: !AllCheckInfo.diagnosiscomplications.hasComplications }" @tap="!isViewMode && handleComplications('hasComplications')">无</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">选择并发症</view>
+        <text class="card-sub">可多选</text>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasViralPneumonia }" @tap="!isViewMode && handleComplications('hasViralPneumonia')">病毒性肺炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasBacterialPneumonia }" @tap="!isViewMode && handleComplications('hasBacterialPneumonia')">细菌性肺炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasFungalPneumonia }" @tap="!isViewMode && handleComplications('hasFungalPneumonia')">真菌性肺炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasRespiratoryFailure }" @tap="!isViewMode && handleComplications('hasRespiratoryFailure')">呼吸衰竭</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasArds }" @tap="!isViewMode && handleComplications('hasArds')">急性呼吸窘迫综合征(ARDS)</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasDic }" @tap="!isViewMode && handleComplications('hasDic')">弥散性血管内凝血（DIC）</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasToxicShock }" @tap="!isViewMode && handleComplications('hasToxicShock')">感染中毒性休克</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMeningitis }" @tap="!isViewMode && handleComplications('hasMeningitis')">脑膜炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasEncephalitis }" @tap="!isViewMode && handleComplications('hasEncephalitis')">脑炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasBacteremia }" @tap="!isViewMode && handleComplications('hasBacteremia')">菌血症</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMyocarditis }" @tap="!isViewMode && handleComplications('hasMyocarditis')">心肌炎</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasAcuteLungInjury }" @tap="!isViewMode && handleComplications('hasAcuteLungInjury')">急性肺损伤/ARDS</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasAcuteKidneyInjury }" @tap="!isViewMode && handleComplications('hasAcuteKidneyInjury')">急性肾损伤</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasEpilepsy }" @tap="!isViewMode && handleComplications('hasEpilepsy')">癫痫</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasToxicHepatitis }" @tap="!isViewMode && handleComplications('hasToxicHepatitis')">中毒性肝炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasFluidOverload }" @tap="!isViewMode && handleComplications('hasFluidOverload')">输液过量</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasSuperinfection }" @tap="!isViewMode && handleComplications('hasSuperinfection')">二重感染</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHypoxemia }" @tap="!isViewMode && handleComplications('hasHypoxemia')">低血氧症</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasSepticShock }" @tap="!isViewMode && handleComplications('hasSepticShock')">脓毒症休克</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMetabolicAcidosis }" @tap="!isViewMode && handleComplications('hasMetabolicAcidosis')">代谢性酸中毒</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasElectrolyteImbalance }" @tap="!isViewMode && handleComplications('hasElectrolyteImbalance')">电解质及酸碱失衡</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHemolysis }" @tap="!isViewMode && handleComplications('hasHemolysis')">急性血管内溶血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasGastrointestinalBleeding }" @tap="!isViewMode && handleComplications('hasGastrointestinalBleeding')">消化道出血</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasCoagulationDisorder }" @tap="!isViewMode && handleComplications('hasCoagulationDisorder')">出凝血功能障碍</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMultipleOrganFailure }" @tap="!isViewMode && handleComplications('hasMultipleOrganFailure')">多器官功能衰竭</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasBronchitis }" @tap="!isViewMode && handleComplications('hasBronchitis')">支气管炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasBronchopneumonia }" @tap="!isViewMode && handleComplications('hasBronchopneumonia')">支气管肺炎</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasAnemia }" @tap="!isViewMode && handleComplications('hasAnemia')">贫血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHepatosplenomegaly }" @tap="!isViewMode && handleComplications('hasHepatosplenomegaly')">肝脾肿大</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasBrainEdema }" @tap="!isViewMode && handleComplications('hasBrainEdema')">脑水肿</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHus }" @tap="!isViewMode && handleComplications('hasHus')">溶血性尿毒综合征</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHematemesis }" @tap="!isViewMode && handleComplications('hasHematemesis')">呕血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMelena }" @tap="!isViewMode && handleComplications('hasMelena')">便血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHemoptysis }" @tap="!isViewMode && handleComplications('hasHemoptysis')">咯血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasAbdominalHemorrhage }" @tap="!isViewMode && handleComplications('hasAbdominalHemorrhage')">腹腔出血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasNasalBleeding }" @tap="!isViewMode && handleComplications('hasNasalBleeding')">鼻出血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasVaginalBleeding }" @tap="!isViewMode && handleComplications('hasVaginalBleeding')">阴道出血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasHypertensiveEncephalopathy }" @tap="!isViewMode && handleComplications('hasHypertensiveEncephalopathy')">高血压脑病</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasIntracranialHemorrhage }" @tap="!isViewMode && handleComplications('hasIntracranialHemorrhage')">颅内出血</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasPulmonaryEdema }" @tap="!isViewMode && handleComplications('hasPulmonaryEdema')">肺水肿</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasSecondaryInfection }" @tap="!isViewMode && handleComplications('hasSecondaryInfection')">继发性感染</view>
+          <view class="chip chip-wide" :class="{ on: AllCheckInfo.diagnosiscomplications.hasSpontaneousRenalRupture }" @tap="!isViewMode && handleComplications('hasSpontaneousRenalRupture')">自发性肾破裂</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasMyocardialDamage }" @tap="!isViewMode && handleComplications('hasMyocardialDamage')">心肌损害</view>
+          <view v-show="!isViewMode" class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.hasLiverDamage }" @tap="!isViewMode && handleComplications('hasLiverDamage')">肝损害</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">其他并发症</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosiscomplications.otherComplications }" @tap="!isViewMode && handleComplications('otherComplications')">其他</view>
+        </view>
+        <input :disabled="isViewMode" type="text" placeholder="请填写其他症状" class="field-input mt" v-model="AllCheckInfo.diagnosiscomplications.otherComplicationsName"/>
+      </view>
+        <view class="button-container">
+          <button class="return-button" @tap="handlereturn">上一步</button>
+          <button class="submit-button" @tap="handleSubmit">下一步</button>
+        </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+  <view class="page-step" v-show="pages == 11">
+    <image class="bg" src="/static/other-background.png" mode="aspectFill" />
+    <scroll-view scroll-y class="scroll" :show-scrollbar="false">
+      <view class="page-header"><text class="title-accent">检测</text>报告</view>
+      <view class="card">
+        <view class="card-title">已做检查（可多选）</view>
+        <view class="chip-grid">
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisexaminations.hasBloodTest }" @tap="handleDiagnosisexaminations('hasBloodTest')">血常规</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisexaminations.hasImaging }" @tap="handleDiagnosisexaminations('hasImaging')">影像学检查</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisexaminations.hasUrineTest }" @tap="handleDiagnosisexaminations('hasUrineTest')">尿常规</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisexaminations.hasStoolTest }" @tap="handleDiagnosisexaminations('hasStoolTest')">粪便常规</view>
+          <view class="chip" :class="{ on: AllCheckInfo.diagnosisexaminations.hasUltrasound }" @tap="handleDiagnosisexaminations('hasUltrasound')">B超</view>
+        </view>
+      </view>
+      <view class="card">
+        <view class="card-title">影像学检查报告</view>
+        <text class="card-sub">胸部 X 线 / CT / 核磁共振等</text>
+        <report-upload :files="formData.imageReport" :disabled="isViewMode" @update:files="setReportFiles('imageReport', $event)" />
+      </view>
+      <view class="card">
+        <view class="card-title">B超报告</view>
+        <report-upload :files="formData.ultrasoundReport" :disabled="isViewMode" @update:files="setReportFiles('ultrasoundReport', $event)" />
+      </view>
+      <view class="card">
+        <view class="card-title">血液检查报告</view>
+        <text class="card-sub">血常规、C反应蛋白、血沉等</text>
+        <report-upload :files="formData.bloodReport" :disabled="isViewMode" @update:files="setReportFiles('bloodReport', $event)" />
+      </view>
+      <view class="card">
+        <view class="card-title">粪便常规检查报告</view>
+        <report-upload :files="formData.stoolReport" :disabled="isViewMode" @update:files="setReportFiles('stoolReport', $event)" />
+      </view>
+      <view class="card">
+        <view class="card-title">尿常规检查报告</view>
+        <report-upload :files="formData.urineReport" :disabled="isViewMode" @update:files="setReportFiles('urineReport', $event)" />
+      </view>
+      <view class="card">
+        <view class="card-title">病案首页</view>
+        <report-upload :files="formData.medicalRecord" :disabled="isViewMode" @update:files="setReportFiles('medicalRecord', $event)" />
+      </view>
+      <view class="button-container">
+        <button class="return-button" @tap="handlereturn">上一步</button>
+        <button class="submit-button" @tap="handleSubmit">提交</button>
+      </view>
+      <view class="bottom-space" />
+    </scroll-view>
+  </view>
+    <uni-custom-tabbar class="tabbar" />
+  </view>
 </template>
 <style>
-.container {
-	width: 100%;
-	height: 100vh;
-	position: relative; /* 设置为相对定位，使内部元素能够相对于容器定位 */
-}
-	
-.background-image {
-	position: absolute; /* 设置为绝对定位，使其占据整个容器 */
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: -1; /* 将图片置于内容下方 */
-}
-.form-item3{
-	width: 100%;
-	margin: 10px 8px;
-	width: 343px;
-	height: 50px;
-	opacity: 1;
-	border-radius: 5px;
-	background: rgba(255, 255, 255, 1);
-	padding: 16px;
-	margin-bottom: 8px;
-	display: block;
-}
-.content3{
-	position: relative;
-	padding-top: 11vh;
-	border-top-left-radius: 40px;
-	border-top-right-radius: 40px;
-	padding-bottom: 13vh;
-}
-.header {
+.page {
   position: relative;
-  text-align: left;
-  margin-bottom: 20px;
-  font-size: 26px;
-  font-weight: bold;
-  padding: 0 10px;
+  width: 100%;
+  min-height: 100vh;
+  background: #eef3fb;
 }
-
-.title {
+.page-step {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+.bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 36vh;
+  z-index: 0;
+}
+.scroll {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 11vh 16px 0;
+}
+.page-header {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2a44;
+  margin-bottom: 14px;
+  padding-left: 4px;
+}
+.title-accent {
   position: relative;
 }
-  .title::after {
-    content: "";
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    background-color: #285AC8;
-  }
-.section {
-  margin-top: 15px;
+.title-accent::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: #285ac8;
+}
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(40, 90, 200, 0.06);
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2a44;
+  padding-left: 8px;
+  border-left: 3px solid #285ac8;
+  line-height: 1.2;
   margin-bottom: 10px;
-  background-color: #ffffff;
-  padding: 12px;
-  border-radius: 8px;
 }
-.section-title3{
-	margin-left: -3px;
-	padding-left: 4px;
-	border-left: 8px solid #285AC8;
+.card-sub {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  padding-left: 11px;
 }
-.row3 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 6px;
-  margin-bottom: 18px;
-}
-.checkboxs3{
-	display: block;
-}
-.inner-checkboxs3{
-	margin-left: 4vh;
-}
-.label {
-  font-size: 16px;
-  color: #333333;
-}
-
-.options {
+.chip-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* 确保选项在一行内均匀分布 */
+  gap: 8px;
 }
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  margin: 2px; /* 添加四周的边距 */
+.chip-grid.nested {
+  margin-top: 8px;
+  padding-left: 4px;
 }
-@media (min-width: 200px) {
-  .options .checkbox {
-    flex-basis: calc(25% - 10px); /* 每个选项占25%，减去左右各5px的边距 */
-  }
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f3f6fb;
+  color: #4a5568;
+  font-size: 13px;
+  border: 1px solid transparent;
+  line-height: 1.35;
 }
-.radio, .checkbox {
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
+.chip-wide {
+  width: 100%;
+  border-radius: 10px;
+  text-align: left;
 }
-
+.chip.on {
+  background: rgba(40, 90, 200, 0.1);
+  color: #285ac8;
+  border-color: rgba(40, 90, 200, 0.35);
+  font-weight: 600;
+}
+.field {
+  margin-bottom: 10px;
+}
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: #4a5568;
+  margin-bottom: 6px;
+}
+.field-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: #f5f7fb;
+  font-size: 15px;
+  color: #1a202c;
+}
 .picker {
-  padding: 5px 10px;
-  border-radius: 4px;
-  background-color: #ffffff;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: #f5f7fb;
+  font-size: 15px;
+  color: #1a202c;
+}
+.field-row-inline {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.flex1 {
+  flex: 1;
+  min-width: 0;
+}
+.mt {
+  margin-top: 10px;
 }
 .button-container {
   display: flex;
-  justify-content: space-between; /* 均匀分配剩余空间 */
-  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 0 2px;
 }
-
+.button-container--single .submit-button {
+  flex: 1;
+  margin: 0;
+}
+.return-button,
 .submit-button {
-  width: 50%;
+  flex: 1;
   height: 44px;
-  background-color: #285AC8;
-  color: #ffffff;
-  text-align: center;
-  border-radius: 8px;
+  line-height: 44px;
+  border-radius: 12px;
   font-size: 16px;
-  margin: 0 24px;
+  margin: 0;
 }
-.return-button{
-	width: 30%;
-	height: 44px;
-	background-color: #FAFAFA;
-	border: 1px solid #285AC8;
+.return-button {
+  background: #fafafa;
+  color: #285ac8;
+  border: 1px solid #285ac8;
 }
-.single-submit-button{
-	height: 44px;
-	background-color: #285AC8;
-	color: #ffffff;
-	text-align: center;
-	border-radius: 8px;
-	font-size: 16px;
-	margin: 0 24px;
-}
-.tabbar{
-	z-index: 999;
-}
-.order-options{
-	display: block;
-	margin: 15px 30px;
-	display: flex; 
-	justify-content: space-between;
-}
-.choice-item{
-	margin: 5px 0;
-}
-.center-button {
-  width: 90px;
-  height: 90px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
+.return-button::after {
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
-.time-picker{
-	border: none;
-	margin-top: -18px;
-	margin-left: 180px;
+.submit-button {
+  background: #285ac8;
+  color: #fff;
+  border: none;
 }
-.form-item4{
-	width: 100%;
-	margin: 3px 2px;
-	opacity: 1;
-	border-radius: 5px;
-	background: rgba(255, 255, 255, 1);
-	padding: 8px;
-	margin-bottom: 8px;
+.submit-button::after {
+  border: none;
 }
-.example-body {
-	padding: 10px;
-	padding-top: 0;
+.bottom-space {
+  height: 14vh;
 }
-
-.custom-image-box {
-	/* #ifndef APP-NVUE */
-	display: flex;
-	/* #endif */
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.text {
-	font-size: 14px;
-	color: #333;
-}
-input{
-	opacity: 0.7;
+.tabbar {
+  z-index: 999;
 }
 </style>

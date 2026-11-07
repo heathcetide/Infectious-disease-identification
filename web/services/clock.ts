@@ -1,4 +1,9 @@
 import { http } from '@/utils/http'
+import {
+	coercePayload,
+	diagnosisPersonalInfoSchema,
+	workEnvironmentSchema,
+} from '@/utils/form'
 
 type learningMaterials = {
 	diseaseTypeName: string,
@@ -29,6 +34,25 @@ export const clockSubmitService = (data: clockFormParams) =>{
 		method: 'POST',
 		url: '/api/v1/checkin',
 		data,
+	})
+}
+
+type ReverseGeocodeResult = {
+	latitude: number
+	longitude: number
+	province: string
+	city: string
+	county: string
+	locationName: string
+	provider?: string
+}
+
+/** Reverse geocode via backend — no Tencent/AMap key required. */
+export const reverseGeocodeService = (latitude: number, longitude: number) => {
+	return http<ReverseGeocodeResult>({
+		method: 'GET',
+		url: `/api/v1/checkin/reverse-geocode?latitude=${latitude}&longitude=${longitude}`,
+		timeout: 25000,
 	})
 }
 
@@ -65,10 +89,14 @@ type clockEnvironment ={
 }
 
 export const clockEnvironmentService = (data: clockEnvironment) => {
+	const payload = coercePayload(
+		data as unknown as Record<string, unknown>,
+		workEnvironmentSchema
+	)
 	return http({
 		method: 'POST',
 		url: '/api/v1/checkin/environment',
-		data,
+		data: payload,
 	})
 }
 
@@ -536,10 +564,17 @@ type DiagnosisSubmit = {
 }
 
 export const diagnosisSubmitService = (data: DiagnosisSubmit) =>{
+	const payload = {
+		...data,
+		diagnosispersonalinfo: coercePayload(
+			(data.diagnosispersonalinfo || {}) as unknown as Record<string, unknown>,
+			diagnosisPersonalInfoSchema
+		),
+	}
 	return http({
 		method: 'POST',
 		url: '/api/v1/diagnosis/result',
-		data,
+		data: payload,
 	})
 }
 
