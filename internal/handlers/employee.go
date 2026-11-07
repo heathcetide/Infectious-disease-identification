@@ -3,9 +3,6 @@
 package handlers
 
 import (
-	"errors"
-
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
@@ -19,16 +16,12 @@ func (h *Handlers) EmployeeGetProfile(c *gin.Context) {
 	if !ok {
 		return
 	}
-	profile, err := h.svc.Employee.GetProfile(userID)
+	profile, err := h.svc.Employee.GetProfileVO(userID)
 	if err != nil {
-		if errors.Is(err, services.ErrProfileNotFound) {
-			respgin.Success(c, models.EmployeeProfile{UserID: userID})
-			return
-		}
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	respgin.Success(c, profile)
+	respgin.Success(c, services.FormatEmployeeProfileVO(profile))
 }
 
 // EmployeeUpdateProfile PUT /api/v1/employee/profile
@@ -37,12 +30,12 @@ func (h *Handlers) EmployeeUpdateProfile(c *gin.Context) {
 	if !ok {
 		return
 	}
-	var profile models.EmployeeProfile
-	if err := c.ShouldBindJSON(&profile); err != nil {
+	var req services.UpdateEmployeeProfileDTO
+	if err := c.ShouldBindJSON(&req); err != nil {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
 		return
 	}
-	out, err := h.svc.Employee.UpdateProfile(userID, profile)
+	out, err := h.svc.Employee.UpdateProfileFields(userID, req.EmployeeProfile, req.Name, req.PhoneNumber)
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return

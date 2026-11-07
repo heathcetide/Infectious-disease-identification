@@ -109,6 +109,7 @@ type GeocodeQuery struct {
 type Client struct {
 	provider  Provider
 	userAgent string
+	language  string
 	timeout   time.Duration
 	http      *http.Client
 }
@@ -126,6 +127,11 @@ func WithUserAgent(ua string) Option {
 	return func(c *Client) { c.userAgent = ua }
 }
 
+// WithLanguage sets preferred address language (e.g. "zh", "en").
+func WithLanguage(lang string) Option {
+	return func(c *Client) { c.language = lang }
+}
+
 // WithTimeout sets the HTTP timeout.
 func WithTimeout(d time.Duration) Option {
 	return func(c *Client) { c.timeout = d }
@@ -141,6 +147,7 @@ func NewClient(opts ...Option) *Client {
 	c := &Client{
 		provider:  ProviderNominatim,
 		userAgent: defaultUserAgent,
+		language:  "zh",
 		timeout:   defaultTimeout,
 		http:      &http.Client{Timeout: defaultTimeout},
 	}
@@ -312,6 +319,9 @@ func (c *Client) reverseNominatim(lat, lon float64) (*ReverseResult, error) {
 	}
 	req.Header.Set("User-Agent", c.userAgent)
 	req.Header.Set("Accept", "application/json")
+	if c.language != "" {
+		req.Header.Set("Accept-Language", c.language)
+	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -359,7 +369,11 @@ func (c *Client) reverseBigDataCloud(lat, lon float64) (*ReverseResult, error) {
 	params := url.Values{}
 	params.Set("latitude", strconv.FormatFloat(lat, 'f', -1, 64))
 	params.Set("longitude", strconv.FormatFloat(lon, 'f', -1, 64))
-	params.Set("localityLanguage", "en")
+	lang := c.language
+	if lang == "" {
+		lang = "zh"
+	}
+	params.Set("localityLanguage", lang)
 
 	requestURL := fmt.Sprintf("%s?%s", bigDataCloudBaseURL, params.Encode())
 
@@ -390,10 +404,26 @@ func (c *Client) reverseBigDataCloud(lat, lon float64) (*ReverseResult, error) {
 		return nil, fmt.Errorf("geocode: parse response: %w", err)
 	}
 
+	parts := make([]string, 0, 3)
+	for _, p := range []string{bdc.PrincipalSubdivision, bdc.City, bdc.Locality} {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		if len(parts) > 0 && parts[len(parts)-1] == p {
+			continue
+		}
+		parts = append(parts, p)
+	}
+	display := strings.Join(parts, "")
+	if display == "" {
+		display = bdc.Locality
+	}
+
 	return &ReverseResult{
 		Lat:          lat,
 		Lon:          lon,
-		DisplayName:  bdc.Locality,
+		DisplayName:  display,
 		Country:      bdc.CountryName,
 		CountryCode:  bdc.CountryCode,
 		PrincipalSub: bdc.PrincipalSubdivision,

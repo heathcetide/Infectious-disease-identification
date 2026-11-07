@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
+	"github.com/heathcetide/infectious-disease/pkg/utils"
 )
 
 // CheckInDTO matches frontend clockFormParams (health → isHealth on persist).
@@ -20,53 +21,70 @@ type CheckInDTO struct {
 }
 
 // WorkEnvironmentDTO matches frontend clockEnvironment camelCase JSON.
+// Numeric fields use utils.FlexInt/FlexFloat because uni-app text inputs send strings.
 type WorkEnvironmentDTO struct {
-	AvgActivityFaceToFace       int     `json:"avgActivityFaceToFace"`
-	AvgActivityPhysicalContact  int     `json:"avgActivityPhysicalContact"`
-	AvgActivityRoomPeople       int     `json:"avgActivityRoomPeople"`
-	AvgBreakfastFaceToFace      int     `json:"avgBreakfastFaceToFace"`
-	AvgBreakfastPhysicalContact int     `json:"avgBreakfastPhysicalContact"`
-	AvgBreakfastRoomPeople      int     `json:"avgBreakfastRoomPeople"`
-	AvgDinnerFaceToFace         int     `json:"avgDinnerFaceToFace"`
-	AvgDinnerPhysicalContact    int     `json:"avgDinnerPhysicalContact"`
-	AvgDinnerRoomPeople         int     `json:"avgDinnerRoomPeople"`
-	AvgLunchFaceToFace          int     `json:"avgLunchFaceToFace"`
-	AvgLunchPhysicalContact     int     `json:"avgLunchPhysicalContact"`
-	AvgLunchRoomPeople          int     `json:"avgLunchRoomPeople"`
-	AvgMonthlyPressure          float64 `json:"avgMonthlyPressure"`
-	AvgWorkFaceToFace           int     `json:"avgWorkFaceToFace"`
-	AvgWorkPhysicalContact      int     `json:"avgWorkPhysicalContact"`
-	AvgWorkRoomPeople           int     `json:"avgWorkRoomPeople"`
-	CollectiveActivitiesCount   int     `json:"collectiveActivitiesCount"`
-	DormitoryArea               float64 `json:"dormitoryArea"`
-	DormitoryBuildingNumber     int     `json:"dormitoryBuildingNumber"`
-	DormitoryOccupants          int     `json:"dormitoryOccupants"`
-	DormitoryRoomNumber         int     `json:"dormitoryRoomNumber"`
-	MaxTemperature              float64 `json:"maxTemperature"`
-	MinTemperature              float64 `json:"minTemperature"`
-	SubmissionTime              string  `json:"submissionTime"`
-	VentilationCondition        string  `json:"ventilationCondition"`
-	WindowOpenArea              float64 `json:"windowOpenArea"`
-	WorkStationAltitude         int     `json:"workStationAltitude"`
-	WorkStationName             string  `json:"workStationName"`
+	AvgActivityFaceToFace       utils.FlexInt   `json:"avgActivityFaceToFace"`
+	AvgActivityPhysicalContact  utils.FlexInt   `json:"avgActivityPhysicalContact"`
+	AvgActivityRoomPeople       utils.FlexInt   `json:"avgActivityRoomPeople"`
+	AvgBreakfastFaceToFace      utils.FlexInt   `json:"avgBreakfastFaceToFace"`
+	AvgBreakfastPhysicalContact utils.FlexInt   `json:"avgBreakfastPhysicalContact"`
+	AvgBreakfastRoomPeople      utils.FlexInt   `json:"avgBreakfastRoomPeople"`
+	AvgDinnerFaceToFace         utils.FlexInt   `json:"avgDinnerFaceToFace"`
+	AvgDinnerPhysicalContact    utils.FlexInt   `json:"avgDinnerPhysicalContact"`
+	AvgDinnerRoomPeople         utils.FlexInt   `json:"avgDinnerRoomPeople"`
+	AvgLunchFaceToFace          utils.FlexInt   `json:"avgLunchFaceToFace"`
+	AvgLunchPhysicalContact     utils.FlexInt   `json:"avgLunchPhysicalContact"`
+	AvgLunchRoomPeople          utils.FlexInt   `json:"avgLunchRoomPeople"`
+	AvgMonthlyPressure          utils.FlexFloat `json:"avgMonthlyPressure"`
+	AvgWorkFaceToFace           utils.FlexInt   `json:"avgWorkFaceToFace"`
+	AvgWorkPhysicalContact      utils.FlexInt   `json:"avgWorkPhysicalContact"`
+	AvgWorkRoomPeople           utils.FlexInt   `json:"avgWorkRoomPeople"`
+	CollectiveActivitiesCount   utils.FlexInt   `json:"collectiveActivitiesCount"`
+	DormitoryArea               utils.FlexFloat `json:"dormitoryArea"`
+	DormitoryBuildingNumber     utils.FlexInt   `json:"dormitoryBuildingNumber"`
+	DormitoryOccupants          utils.FlexInt   `json:"dormitoryOccupants"`
+	DormitoryRoomNumber         utils.FlexInt   `json:"dormitoryRoomNumber"`
+	MaxTemperature              utils.FlexFloat `json:"maxTemperature"`
+	MinTemperature              utils.FlexFloat `json:"minTemperature"`
+	SubmissionTime              string          `json:"submissionTime"`
+	VentilationCondition        string          `json:"ventilationCondition"`
+	WindowOpenArea              utils.FlexFloat `json:"windowOpenArea"`
+	WorkStationAltitude         utils.FlexInt   `json:"workStationAltitude"`
+	WorkStationName             string          `json:"workStationName"`
 }
 
 // AllSymptoms matches frontend AllCheckInfo payload keys.
 type AllSymptoms struct {
-	Generalsymptoms       models.GeneralSymptoms       `json:"generalsymptoms"`
-	Respiratorysymptoms   models.RespiratorySymptoms   `json:"respiratorysymptoms"`
-	Digestivesymptoms     DigestiveSymptomsDTO         `json:"digestivesymptoms"`
-	Circulatorysymptoms   models.CirculatorySymptoms   `json:"circulatorysymptoms"`
-	NeurologicalSymptoms  models.NeurologicalSymptoms  `json:"neurologicalSymptoms"`
-	LocalSymptoms         models.LocalSymptoms         `json:"localSymptoms"`
-	OtherSymptoms         models.OtherSymptoms         `json:"otherSymptoms"`
-	RiskFactorsAndExposure RiskFactorsDTO              `json:"riskFactorsAndExposure"`
+	Generalsymptoms        GeneralSymptomsDTO         `json:"generalsymptoms"`
+	Respiratorysymptoms    models.RespiratorySymptoms `json:"respiratorysymptoms"`
+	Digestivesymptoms      DigestiveSymptomsDTO       `json:"digestivesymptoms"`
+	Circulatorysymptoms    models.CirculatorySymptoms `json:"circulatorysymptoms"`
+	NeurologicalSymptoms   models.NeurologicalSymptoms `json:"neurologicalSymptoms"`
+	LocalSymptoms          models.LocalSymptoms       `json:"localSymptoms"`
+	OtherSymptoms          models.OtherSymptoms       `json:"otherSymptoms"`
+	RiskFactorsAndExposure RiskFactorsDTO             `json:"riskFactorsAndExposure"`
+}
+
+// GeneralSymptomsDTO accepts stringy numeric inputs from uni-app text fields.
+type GeneralSymptomsDTO struct {
+	models.GeneralSymptoms
+	HighestTemperature utils.FlexFloat `json:"highestTemperature"`
+	FeverDuration      utils.FlexInt   `json:"feverDuration"`
+}
+
+// ToModel copies DTO fields into models.GeneralSymptoms.
+func (d GeneralSymptomsDTO) ToModel() models.GeneralSymptoms {
+	m := d.GeneralSymptoms
+	m.HighestTemperature = d.HighestTemperature.Float64()
+	m.FeverDuration = d.FeverDuration.Int()
+	return m
 }
 
 // DigestiveSymptomsDTO maps frontend arrheaFrequencyGEThreeTimesPerDay to the model field.
 type DigestiveSymptomsDTO struct {
 	models.DigestiveSymptoms
-	ArrheaFrequencyGEThreeTimesPerDay bool `json:"arrheaFrequencyGEThreeTimesPerDay"`
+	ArrheaFrequencyGEThreeTimesPerDay bool          `json:"arrheaFrequencyGEThreeTimesPerDay"`
+	DiarrheaTimesPerDay               utils.FlexInt `json:"diarrheaTimesPerDay"`
 }
 
 // ToModel copies DTO fields into models.DigestiveSymptoms.
@@ -75,23 +93,26 @@ func (d DigestiveSymptomsDTO) ToModel() models.DigestiveSymptoms {
 	if d.ArrheaFrequencyGEThreeTimesPerDay {
 		m.ArrheaFrequencyGEThreeTimesPerDay = true
 	}
+	m.DiarrheaTimesPerDay = d.DiarrheaTimesPerDay.Int()
 	return m
 }
 
 // RiskFactorsDTO maps a few frontend keys that omit the "is" / "has" prefix.
 type RiskFactorsDTO struct {
 	models.RiskFactorsAndExposure
-	GroupDining        bool `json:"groupDining"`
-	DiningOut          bool `json:"diningOut"`
-	DiningUnclear      bool `json:"diningUnclear"`
-	HillyOrMountainous bool `json:"hillyOrMountainous"`
-	Plain              bool `json:"plain"`
-	OtherResidenceType bool `json:"otherResidenceType"`
+	ContactDate        utils.FlexDate `json:"contactDate"`
+	GroupDining        bool           `json:"groupDining"`
+	DiningOut          bool           `json:"diningOut"`
+	DiningUnclear      bool           `json:"diningUnclear"`
+	HillyOrMountainous bool           `json:"hillyOrMountainous"`
+	Plain              bool           `json:"plain"`
+	OtherResidenceType bool           `json:"otherResidenceType"`
 }
 
 // ToModel merges aliased booleans into models.RiskFactorsAndExposure.
 func (r RiskFactorsDTO) ToModel() models.RiskFactorsAndExposure {
 	m := r.RiskFactorsAndExposure
+	m.ContactDate = r.ContactDate.Ptr()
 	if r.GroupDining {
 		m.IsGroupDining = true
 	}
@@ -115,9 +136,10 @@ func (r RiskFactorsDTO) ToModel() models.RiskFactorsAndExposure {
 
 // DailyCheckInVO is returned for daily check-in queries.
 type DailyCheckInVO struct {
-	HasSignedToday      bool                     `json:"hasSignedToday"`
-	Dailyhealthstatus   *models.DailyHealthStatus `json:"dailyhealthstatus,omitempty"`
-	DiseasescoringList  []models.DiseaseScoring  `json:"diseasescoringList,omitempty"`
+	HasSignedToday     bool                      `json:"hasSignedToday"`
+	HasMonthSigned     bool                      `json:"hasMonthSigned"` // monthly work-environment filled
+	Dailyhealthstatus  *models.DailyHealthStatus `json:"dailyhealthstatus,omitempty"`
+	DiseasescoringList []models.DiseaseScoring   `json:"diseasescoringList,omitempty"`
 }
 
 // MonthlyHealthDay is one calendar day in the month summary.
@@ -149,7 +171,8 @@ type DiagnosisResultsEmpDTO struct {
 // DiagnosisDigestiveDTO maps frontend diarrheaFrequencyGEThreeTimesPerDay.
 type DiagnosisDigestiveDTO struct {
 	models.DiagnosisDigestiveSymptoms
-	DiarrheaFrequencyGEThreeTimesPerDay bool `json:"diarrheaFrequencyGEThreeTimesPerDay"`
+	DiarrheaFrequencyGEThreeTimesPerDay bool          `json:"diarrheaFrequencyGEThreeTimesPerDay"`
+	DiarrheaTimesPerDay                 utils.FlexInt `json:"diarrheaTimesPerDay"`
 }
 
 func (d DiagnosisDigestiveDTO) ToModel() models.DiagnosisDigestiveSymptoms {
@@ -157,23 +180,106 @@ func (d DiagnosisDigestiveDTO) ToModel() models.DiagnosisDigestiveSymptoms {
 	if d.DiarrheaFrequencyGEThreeTimesPerDay {
 		m.IsDiarrheaFrequencyGEThreeTimesPerDay = true
 	}
+	m.DiarrheaTimesPerDay = d.DiarrheaTimesPerDay.Int()
 	return m
+}
+
+func DiagnosisDigestiveFromModel(m models.DiagnosisDigestiveSymptoms) DiagnosisDigestiveDTO {
+	return DiagnosisDigestiveDTO{
+		DiagnosisDigestiveSymptoms:          m,
+		DiarrheaFrequencyGEThreeTimesPerDay: m.IsDiarrheaFrequencyGEThreeTimesPerDay,
+		DiarrheaTimesPerDay:                 utils.FlexInt(m.DiarrheaTimesPerDay),
+	}
+}
+
+// DiagnosisGeneralDTO accepts stringy numeric inputs from uni-app.
+type DiagnosisGeneralDTO struct {
+	models.DiagnosisGeneralSymptoms
+	HighestTemperature  utils.FlexFloat `json:"highestTemperature"`
+	FeverDuration       utils.FlexInt   `json:"feverDuration"`
+	LowestBloodPressure utils.FlexInt   `json:"lowestBloodPressure"`
+	BleedingVolume      utils.FlexInt   `json:"bleedingVolume"`
+}
+
+func (d DiagnosisGeneralDTO) ToModel() models.DiagnosisGeneralSymptoms {
+	m := d.DiagnosisGeneralSymptoms
+	m.HighestTemperature = d.HighestTemperature.Float64()
+	m.FeverDuration = d.FeverDuration.Int()
+	m.LowestBloodPressure = d.LowestBloodPressure.Int()
+	m.BleedingVolume = d.BleedingVolume.Int()
+	return m
+}
+
+func DiagnosisGeneralFromModel(m models.DiagnosisGeneralSymptoms) DiagnosisGeneralDTO {
+	return DiagnosisGeneralDTO{
+		DiagnosisGeneralSymptoms: m,
+		HighestTemperature:       utils.FlexFloat(m.HighestTemperature),
+		FeverDuration:            utils.FlexInt(m.FeverDuration),
+		LowestBloodPressure:      utils.FlexInt(m.LowestBloodPressure),
+		BleedingVolume:           utils.FlexInt(m.BleedingVolume),
+	}
+}
+
+// DiagnosisPersonalDTO accepts stringy vitals from uni-app text inputs.
+type DiagnosisPersonalDTO struct {
+	models.DiagnosisPersonalInfo
+	Height            utils.FlexFloat `json:"height"`
+	Weight            utils.FlexFloat `json:"weight"`
+	BloodSugarFasting utils.FlexFloat `json:"bloodSugarFasting"`
+	BloodSugarRandom  utils.FlexFloat `json:"bloodSugarRandom"`
+	CholesterolTotal  utils.FlexFloat `json:"cholesterolTotal"`
+	Triglycerides     utils.FlexFloat `json:"triglycerides"`
+	CholesterolLipid  utils.FlexFloat `json:"cholesterolLipid"`
+	HDL               utils.FlexFloat `json:"hdl"`
+	LDL               utils.FlexFloat `json:"ldl"`
+	BloodOxygen       utils.FlexFloat `json:"bloodOxygen"`
+}
+
+func (d DiagnosisPersonalDTO) ToModel() models.DiagnosisPersonalInfo {
+	m := d.DiagnosisPersonalInfo
+	m.Height = d.Height.Float64()
+	m.Weight = d.Weight.Float64()
+	m.BloodSugarFasting = d.BloodSugarFasting.Float64()
+	m.BloodSugarRandom = d.BloodSugarRandom.Float64()
+	m.CholesterolTotal = d.CholesterolTotal.Float64()
+	m.Triglycerides = d.Triglycerides.Float64()
+	m.CholesterolLipid = d.CholesterolLipid.Float64()
+	m.HDL = d.HDL.Float64()
+	m.LDL = d.LDL.Float64()
+	m.BloodOxygen = d.BloodOxygen.Float64()
+	return m
+}
+
+func DiagnosisPersonalFromModel(m models.DiagnosisPersonalInfo) DiagnosisPersonalDTO {
+	return DiagnosisPersonalDTO{
+		DiagnosisPersonalInfo: m,
+		Height:                utils.FlexFloat(m.Height),
+		Weight:                utils.FlexFloat(m.Weight),
+		BloodSugarFasting:     utils.FlexFloat(m.BloodSugarFasting),
+		BloodSugarRandom:      utils.FlexFloat(m.BloodSugarRandom),
+		CholesterolTotal:      utils.FlexFloat(m.CholesterolTotal),
+		Triglycerides:         utils.FlexFloat(m.Triglycerides),
+		CholesterolLipid:      utils.FlexFloat(m.CholesterolLipid),
+		HDL:                   utils.FlexFloat(m.HDL),
+		LDL:                   utils.FlexFloat(m.LDL),
+		BloodOxygen:           utils.FlexFloat(m.BloodOxygen),
+	}
 }
 
 // AllDiagnosisDTO is the full diagnosis submission payload from the frontend.
 type AllDiagnosisDTO struct {
-	DiagnosisResultsEmpDTO       DiagnosisResultsEmpDTO                `json:"diagnosisResultsEmpDTO"`
-	Diagnosiscirculatorysymptoms models.DiagnosisCirculatorySymptoms   `json:"diagnosiscirculatorysymptoms"`
-	Diagnosiscomplications       models.DiagnosisComplications         `json:"diagnosiscomplications"`
-	Diagnosisdigestivesymptoms   DiagnosisDigestiveDTO                 `json:"diagnosisdigestivesymptoms"`
-	Diagnosisexaminations        models.DiagnosisExaminations          `json:"diagnosisexaminations"`
-	Diagnosisgeneralsymptoms     models.DiagnosisGeneralSymptoms       `json:"diagnosisgeneralsymptoms"`
-	Diagnosislocalsymptoms       models.DiagnosisLocalSymptoms         `json:"diagnosislocalsymptoms"`
-	Diagnosisneurologicalsymptoms models.DiagnosisNeurologicalSymptoms `json:"diagnosisneurologicalsymptoms"`
-	Diagnosisothersymptoms       models.DiagnosisOtherSymptoms         `json:"diagnosisothersymptoms"`
-	Diagnosispersonalinfo        models.DiagnosisPersonalInfo          `json:"diagnosispersonalinfo"`
-	Diagnosisrespiratorysymptoms models.DiagnosisRespiratorySymptoms   `json:"diagnosisrespiratorysymptoms"`
-	FileIDList                   []uint                                `json:"fileIdList"`
+	DiagnosisResultsEmpDTO        DiagnosisResultsEmpDTO                 `json:"diagnosisResultsEmpDTO"`
+	Diagnosiscirculatorysymptoms  models.DiagnosisCirculatorySymptoms    `json:"diagnosiscirculatorysymptoms"`
+	Diagnosiscomplications        models.DiagnosisComplications          `json:"diagnosiscomplications"`
+	Diagnosisdigestivesymptoms    DiagnosisDigestiveDTO                  `json:"diagnosisdigestivesymptoms"`
+	Diagnosisexaminations         models.DiagnosisExaminations           `json:"diagnosisexaminations"`
+	Diagnosisgeneralsymptoms      DiagnosisGeneralDTO                    `json:"diagnosisgeneralsymptoms"`
+	Diagnosislocalsymptoms        models.DiagnosisLocalSymptoms          `json:"diagnosislocalsymptoms"`
+	Diagnosisneurologicalsymptoms models.DiagnosisNeurologicalSymptoms   `json:"diagnosisneurologicalsymptoms"`
+	Diagnosisothersymptoms        models.DiagnosisOtherSymptoms          `json:"diagnosisothersymptoms"`
+	Diagnosispersonalinfo         DiagnosisPersonalDTO                   `json:"diagnosispersonalinfo"`
+	Diagnosisrespiratorysymptoms  models.DiagnosisRespiratorySymptoms    `json:"diagnosisrespiratorysymptoms"`
+	FileIDList                    []uint                                 `json:"fileIdList"`
 }
 
 // LabTestReportDTO matches frontend lab report submission.
@@ -220,9 +326,94 @@ type ChangePasswordDTO struct {
 
 // PageQuery is a generic admin list query.
 type PageQuery struct {
-	PageNo   int    `json:"pageNo"`
-	PageSize int    `json:"pageSize"`
-	Keyword  string `json:"keyword"`
+	PageNo             int    `json:"pageNo"`
+	PageSize           int    `json:"pageSize"`
+	Keyword            string `json:"keyword"`
+	UserType           string `json:"userType"`
+	Name               string `json:"name"`
+	PhoneNumber        string `json:"phoneNumber"`
+	Department         string `json:"department"`
+	SpecificOccupation string `json:"specificOccupation"`
+	Text               string `json:"text"` // disease keyword alias used by admin UI
+	IsHealth           string `json:"isHealth"`
+	CheckInDateBegin   string `json:"checkInDateBegin"`
+	CheckInDateEnd     string `json:"checkInDateEnd"`
+	WorkStationName    string `json:"workStationName"`
+	BeginYearMonth     string `json:"beginYearMonth"`
+	EndYearMonth       string `json:"endYearMonth"`
+	BeginDate          string `json:"beginDate"`
+	EndDate            string `json:"endDate"`
+	FeedbackTitle      string `json:"feedbackTitle"`
+}
+
+// CheckInListItem is the CDC check-in table row with joined user profile.
+type CheckInListItem struct {
+	StatusID           uint    `json:"statusId"`
+	UserID             uint    `json:"userId"`
+	UserType           string  `json:"userType"`
+	Name               string  `json:"name"`
+	PhoneNumber        string  `json:"phoneNumber"`
+	Gender             string  `json:"gender"`
+	Age                int     `json:"age"`
+	Department         string  `json:"department"`
+	SpecificOccupation string  `json:"specificOccupation"`
+	IsHealth           *bool   `json:"isHealth"`
+	LocationName       string  `json:"locationName"`
+	Province           string  `json:"province"`
+	City               string  `json:"city"`
+	County             string  `json:"county"`
+	CheckInDate        []int   `json:"checkInDate"`
+	DiseaseTypeName    string  `json:"diseaseTypeName"`
+	Longitude          float64 `json:"longitude"`
+	Latitude           float64 `json:"latitude"`
+}
+
+// CheckInLocationFlatVO is the location drawer payload expected by admin UI.
+type CheckInLocationFlatVO struct {
+	UserType     string  `json:"userType"`
+	Name         string  `json:"name"`
+	Age          int     `json:"age"`
+	Gender       string  `json:"gender"`
+	Ethnicity    string  `json:"ethnicity"`
+	Department   string  `json:"department"`
+	CheckInDate  []int   `json:"checkInDate"`
+	Longitude    float64 `json:"longitude"`
+	Latitude     float64 `json:"latitude"`
+	Province     string  `json:"province"`
+	City         string  `json:"city"`
+	County       string  `json:"county"`
+	LocationName string  `json:"locationName"`
+	Address      string  `json:"address"`
+}
+
+// AdminUserListItem is the admin user table row (Java-compatible field names).
+type AdminUserListItem struct {
+	UserID                 uint    `json:"userId"`
+	UserType               string  `json:"userType"`
+	Name                   string  `json:"name"`
+	PhoneNumber            string  `json:"phoneNumber"`
+	Gender                 string  `json:"gender"`
+	Age                    int     `json:"age"`
+	Ethnicity              string  `json:"ethnicity"`
+	EducationLevel         string  `json:"educationLevel"`
+	WorkOnPlateauStartDate []int   `json:"workOnPlateauStartDate"`
+	Department             string  `json:"department"`
+	SpecificOccupation     string  `json:"specificOccupation"`
+	IsActived              bool    `json:"isActived"`
+}
+
+// DiseaseSubtypeItem is nested under disease type page rows.
+type DiseaseSubtypeItem struct {
+	SubtypeID   uint   `json:"subtypeId"`
+	SubtypeName string `json:"subtypeName"`
+}
+
+// DiseaseTypePageItem is admin disease basic-data table row.
+type DiseaseTypePageItem struct {
+	DiseaseTypeID   uint                 `json:"diseaseTypeId"`
+	DiseaseTypeName string               `json:"diseaseTypeName"`
+	HasSubtype      bool                 `json:"hasSubtype"`
+	SubDiseaseList  []DiseaseSubtypeItem `json:"subDiseaseList"`
 }
 
 // Normalize applies defaults for pagination.
@@ -256,9 +447,22 @@ type DashboardCounts struct {
 	FeedbackCount       int64 `json:"feedbackCount"`
 }
 
+// SatisfactionSurveyBrief is a lightweight open survey for the mini-app picker.
+type SatisfactionSurveyBrief struct {
+	SurveyID      uint   `json:"surveyID"`
+	SurveyTitle   string `json:"surveyTitle"`
+	SurveyContent string `json:"surveyContent"`
+	IsOpen        bool   `json:"isOpen"`
+}
+
 // NeedRatingVO tells the client whether to show the satisfaction survey.
 type NeedRatingVO struct {
-	NeedRating bool `json:"needRating"`
+	NeedRating bool                      `json:"needRating"`
+	Surveys    []SatisfactionSurveyBrief `json:"surveys"`
+	// legacy single-survey fields (first open survey) for old clients
+	SurveyID      uint   `json:"surveyID,omitempty"`
+	SurveyTitle   string `json:"surveyTitle,omitempty"`
+	SurveyContent string `json:"surveyContent,omitempty"`
 }
 
 // ParseDate parses yyyy-MM-dd in local timezone.

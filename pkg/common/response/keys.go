@@ -64,8 +64,10 @@ func I18nKeyFor(code Code) string {
 	switch code {
 	case CodeBadRequest, CodeValidation:
 		return KeyInvalidParams
-	case CodeUnauthorized, CodeAuthFailed, CodeCredentialInvalid:
+	case CodeUnauthorized, CodeAuthFailed:
 		return KeyUnauthorized
+	case CodeCredentialInvalid:
+		return KeyAuthInvalidCredentials
 	case CodeForbidden:
 		return KeyForbidden
 	case CodeTenantMismatch:

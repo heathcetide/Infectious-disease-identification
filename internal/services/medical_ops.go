@@ -49,12 +49,18 @@ func loadDiagnosisChildren(db *gorm.DB, rid uint, out *AllDiagnosisDTO, result m
 	loadChild := func(dest any) error {
 		return db.Where("diagnosis_results_id = ?", rid).First(dest).Error
 	}
-	_ = loadChild(&out.Diagnosispersonalinfo)
-	_ = loadChild(&out.Diagnosisgeneralsymptoms)
+	var pers models.DiagnosisPersonalInfo
+	if loadChild(&pers) == nil {
+		out.Diagnosispersonalinfo = DiagnosisPersonalFromModel(pers)
+	}
+	var gen models.DiagnosisGeneralSymptoms
+	if loadChild(&gen) == nil {
+		out.Diagnosisgeneralsymptoms = DiagnosisGeneralFromModel(gen)
+	}
 	_ = loadChild(&out.Diagnosisrespiratorysymptoms)
 	var dig models.DiagnosisDigestiveSymptoms
 	if loadChild(&dig) == nil {
-		out.Diagnosisdigestivesymptoms = DiagnosisDigestiveDTO{DiagnosisDigestiveSymptoms: dig}
+		out.Diagnosisdigestivesymptoms = DiagnosisDigestiveFromModel(dig)
 	}
 	_ = loadChild(&out.Diagnosiscirculatorysymptoms)
 	_ = loadChild(&out.Diagnosisneurologicalsymptoms)
@@ -113,12 +119,12 @@ func UpdateDiagnosisByID(db *gorm.DB, id uint, dto AllDiagnosisDTO) error {
 			}
 			return create()
 		}
-		p := dto.Diagnosispersonalinfo
+		p := dto.Diagnosispersonalinfo.ToModel()
 		p.DiagnosisResultsID = rid
 		if err := replaceChild(&models.DiagnosisPersonalInfo{}, func() error { return tx.Create(&p).Error }); err != nil {
 			return err
 		}
-		g := dto.Diagnosisgeneralsymptoms
+		g := dto.Diagnosisgeneralsymptoms.ToModel()
 		g.DiagnosisResultsID = rid
 		if err := replaceChild(&models.DiagnosisGeneralSymptoms{}, func() error { return tx.Create(&g).Error }); err != nil {
 			return err

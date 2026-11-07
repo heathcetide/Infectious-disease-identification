@@ -35,7 +35,7 @@ var itchyRashLocationFields = []string{
 // activeSymptomFields collects PascalCase SymptomFieldName values for all true boolean fields in symptoms.
 func activeSymptomFields(symptoms AllSymptoms) map[string]struct{} {
 	active := make(map[string]struct{})
-	general := symptoms.Generalsymptoms
+	general := symptoms.Generalsymptoms.ToModel()
 	collectBoolFields(reflect.ValueOf(general), active, map[string]struct{}{
 		"GeneralSymptomsID": {},
 		"StatusID":          {},

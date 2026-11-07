@@ -244,6 +244,8 @@ func (c *httpServerComponent) Start(ctx context.Context) error {
 			"/api/v1/register",
 			"/user/login", // legacy admin login alias
 			"/docs", "/openapi",
+			// Public learning media (mini-app image/video/pdf preview without JWT)
+			"/api/v1/infect-files/learning",
 		)))
 	}
 	// Mount apidocs first to get huma.API (for registering routes with OpenAPI docs)

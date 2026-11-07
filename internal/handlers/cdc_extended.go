@@ -62,7 +62,7 @@ func (h *Handlers) CDCCheckInStatsExport(c *gin.Context) {
 
 // CDCDashboardStatistics GET /api/v1/cdc/dashboard/statistics
 func (h *Handlers) CDCDashboardStatistics(c *gin.Context) {
-	data, err := h.svc.CDC.StatisticsData()
+	data, err := h.svc.CDC.StatisticsData(c.Query("date"))
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
@@ -72,7 +72,7 @@ func (h *Handlers) CDCDashboardStatistics(c *gin.Context) {
 
 // CDCDashboardDiseaseToday GET /api/v1/cdc/dashboard/disease-today
 func (h *Handlers) CDCDashboardDiseaseToday(c *gin.Context) {
-	data, err := h.svc.CDC.DiseaseToday()
+	data, err := h.svc.CDC.DiseaseToday(c.Query("date"))
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
@@ -82,7 +82,8 @@ func (h *Handlers) CDCDashboardDiseaseToday(c *gin.Context) {
 
 // CDCDashboardUserStations GET /api/v1/cdc/dashboard/user-stations
 func (h *Handlers) CDCDashboardUserStations(c *gin.Context) {
-	data, err := h.svc.CDC.UserStations()
+	date := c.Query("date")
+	data, err := h.svc.CDC.UserStations(date)
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
@@ -139,10 +140,30 @@ func (h *Handlers) CDCDashboardImportantUsers(c *gin.Context) {
 
 // CDCDiseaseStatistics GET /api/v1/cdc/disease/statistics
 func (h *Handlers) CDCDiseaseStatistics(c *gin.Context) {
+	start := c.Query("startDate")
+	if start == "" {
+		start = c.Query("dateBegin")
+	}
+	end := c.Query("endDate")
+	if end == "" {
+		end = c.Query("dateEnd")
+	}
+	var diseaseList []string
+	if raw := strings.TrimSpace(c.Query("diseaseList")); raw != "" {
+		for _, p := range strings.Split(raw, ",") {
+			p = strings.TrimSpace(p)
+			if p != "" {
+				diseaseList = append(diseaseList, p)
+			}
+		}
+	}
 	q := services.DiseaseStatisticsQuery{
 		DiseaseTypeName: c.Query("diseaseTypeName"),
-		StartDate:       c.Query("startDate"),
-		EndDate:         c.Query("endDate"),
+		DiseaseList:     diseaseList,
+		StartDate:       start,
+		EndDate:         end,
+		SourceType:      c.Query("sourceType"),
+		Granularity:     c.Query("granularity"),
 	}
 	data, err := h.svc.CDC.DiseaseStatistics(q)
 	if err != nil {

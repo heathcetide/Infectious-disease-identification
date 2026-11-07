@@ -50,10 +50,20 @@ func (h *Handlers) AdminListDiseases(c *gin.Context) {
 }
 
 // AdminListWeights GET /api/v1/admin/weights
+// When diseaseTypeName is set, returns the flat weight array the drawer expects.
 func (h *Handlers) AdminListWeights(c *gin.Context) {
-	q := bindPageQuery(c)
 	disease := c.Query("diseaseTypeName")
-	data, err := h.svc.Admin.PageSymptomWeights(q, disease)
+	if disease != "" {
+		list, err := h.svc.Admin.ListSymptomWeightsByDisease(disease)
+		if err != nil {
+			respgin.WriteError(c, response.Err(response.CodeInternal))
+			return
+		}
+		respgin.Success(c, list)
+		return
+	}
+	q := bindPageQuery(c)
+	data, err := h.svc.Admin.PageSymptomWeights(q, "")
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return

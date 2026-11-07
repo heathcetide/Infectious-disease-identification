@@ -51,7 +51,7 @@ func (h *Handlers) UserLogin(c *gin.Context) {
 	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			respgin.WriteError(c, response.New(response.CodeUnauthorized, "invalid credentials"))
+			respgin.WriteError(c, response.NewI18n(response.CodeCredentialInvalid, response.KeyAuthInvalidCredentials))
 			return
 		}
 		respgin.WriteError(c, response.Err(response.CodeInternal))
@@ -62,7 +62,7 @@ func (h *Handlers) UserLogin(c *gin.Context) {
 		return
 	}
 	if !password.Verify(req.Password, user.Password) {
-		respgin.WriteError(c, response.New(response.CodeUnauthorized, "invalid credentials"))
+		respgin.WriteError(c, response.NewI18n(response.CodeCredentialInvalid, response.KeyAuthInvalidCredentials))
 		return
 	}
 	pair, err := h.jwtAuth.Login(strconv.FormatUint(uint64(user.ID), 10), jwtutil.WithRoles(user.Role))
@@ -77,5 +77,6 @@ func (h *Handlers) UserLogin(c *gin.Context) {
 	if h.svc != nil && h.svc.Profile != nil {
 		infoComplete = h.svc.Profile.InformationComplete(user.ID)
 	}
-	legacyAdminSuccess(c, buildLoginResponse(user, pair, infoComplete))
+	mustChange := isInitialPassword(ctxDB, user, req.Password)
+	legacyAdminSuccess(c, buildLoginResponse(user, pair, infoComplete, mustChange))
 }

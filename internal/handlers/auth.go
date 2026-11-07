@@ -63,7 +63,7 @@ func (h *Handlers) Login(c *gin.Context) {
 	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			respgin.WriteError(c, response.New(response.CodeUnauthorized, "invalid credentials"))
+			respgin.WriteError(c, response.NewI18n(response.CodeCredentialInvalid, response.KeyAuthInvalidCredentials))
 			return
 		}
 		respgin.WriteError(c, response.Err(response.CodeInternal))
@@ -78,7 +78,7 @@ func (h *Handlers) Login(c *gin.Context) {
 
 	// Verify password using ling-base/common/password
 	if !password.Verify(req.Password, user.Password) {
-		respgin.WriteError(c, response.New(response.CodeUnauthorized, "invalid credentials"))
+		respgin.WriteError(c, response.NewI18n(response.CodeCredentialInvalid, response.KeyAuthInvalidCredentials))
 		return
 	}
 
@@ -99,11 +99,12 @@ func (h *Handlers) Login(c *gin.Context) {
 	if h.svc != nil && h.svc.Profile != nil {
 		infoComplete = h.svc.Profile.InformationComplete(user.ID)
 	}
+	mustChange := isInitialPassword(ctxDB, user, req.Password)
 
-	respgin.Success(c, buildLoginResponse(user, pair, infoComplete))
+	respgin.Success(c, buildLoginResponse(user, pair, infoComplete, mustChange))
 }
 
-func buildLoginResponse(user *models.User, pair *jwtutil.TokenPair, infoComplete bool) types.LoginResponse {
+func buildLoginResponse(user *models.User, pair *jwtutil.TokenPair, infoComplete, mustChangePassword bool) types.LoginResponse {
 	return types.LoginResponse{
 		AccessToken:  pair.AccessToken,
 		RefreshToken: pair.RefreshToken,
@@ -116,10 +117,35 @@ func buildLoginResponse(user *models.User, pair *jwtutil.TokenPair, infoComplete
 			Role:  user.Role,
 		},
 		InformationComplete: infoComplete,
+		MustChangePassword:  mustChangePassword,
 		Token:               pair.AccessToken,
 		UserType:            types.RoleDisplayName(user.Role),
 		UserName:            user.Name,
 	}
+}
+
+// isInitialPassword reports whether plain matches a known default/initial password:
+// admin reset "Passw0rd!", phone last 6 digits, or ID-card last 6 digits.
+func isInitialPassword(db *gorm.DB, user *models.User, plain string) bool {
+	if plain == "" || user == nil {
+		return false
+	}
+	if plain == "Passw0rd!" {
+		return true
+	}
+	phone := userPhone(user)
+	if len(phone) >= 6 && plain == phone[len(phone)-6:] {
+		return true
+	}
+	if db == nil {
+		return false
+	}
+	var profile models.EmployeeProfile
+	if err := db.Where("user_id = ?", user.ID).First(&profile).Error; err != nil {
+		return false
+	}
+	id := profile.IDNumber
+	return len(id) >= 6 && plain == id[len(id)-6:]
 }
 
 // Refresh exchanges a refresh token for a new access/refresh token pair.

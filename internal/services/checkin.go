@@ -43,13 +43,27 @@ func CheckIn(db *gorm.DB, userID uint, dto CheckInDTO) (*models.DailyHealthStatu
 	return &status, nil
 }
 
+// hasMonthWorkEnvironment reports whether the user filled work-environment for date's month.
+func hasMonthWorkEnvironment(db *gorm.DB, userID uint, date time.Time) bool {
+	var n int64
+	_ = db.Model(&models.WorkEnvironmentInfo{}).
+		Where("user_id = ? AND year_month = ?", userID, date.Format("2006-01")).
+		Count(&n).Error
+	return n > 0
+}
+
 // GetDaily returns check-in and today's disease scores for a user on a date.
 func GetDaily(db *gorm.DB, userID uint, date time.Time) (*DailyCheckInVO, error) {
 	day := dateOnly(date)
+	monthSigned := hasMonthWorkEnvironment(db, userID, day)
+
 	var status models.DailyHealthStatus
 	err := db.Where("user_id = ? AND check_in_date = ?", userID, day).First(&status).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return &DailyCheckInVO{HasSignedToday: false}, nil
+		return &DailyCheckInVO{
+			HasSignedToday: false,
+			HasMonthSigned: monthSigned,
+		}, nil
 	}
 	if err != nil {
 		return nil, err
@@ -63,6 +77,7 @@ func GetDaily(db *gorm.DB, userID uint, date time.Time) (*DailyCheckInVO, error)
 
 	return &DailyCheckInVO{
 		HasSignedToday:     true,
+		HasMonthSigned:     monthSigned,
 		Dailyhealthstatus:  &status,
 		DiseasescoringList: scores,
 	}, nil
@@ -138,8 +153,9 @@ func SaveSymptomsAndScore(db *gorm.DB, userID uint, symptoms AllSymptoms) ([]mod
 
 	err = db.Transaction(func(tx *gorm.DB) error {
 		sid := status.StatusID
-		symptoms.Generalsymptoms.StatusID = sid
-		if err := upsertSymptomRow(tx, &symptoms.Generalsymptoms, sid); err != nil {
+		general := symptoms.Generalsymptoms.ToModel()
+		general.StatusID = sid
+		if err := upsertSymptomRow(tx, &general, sid); err != nil {
 			return err
 		}
 		symptoms.Respiratorysymptoms.StatusID = sid
@@ -212,12 +228,8 @@ func dateOnly(t time.Time) time.Time {
 // SaveWorkEnvironment upserts monthly work environment for the user.
 func SaveWorkEnvironment(db *gorm.DB, userID uint, dto WorkEnvironmentDTO) (*models.WorkEnvironmentInfo, error) {
 	yearMonth := time.Now().Format("2006-01")
-	if dto.SubmissionTime != "" {
-		if t, err := time.Parse(time.RFC3339, dto.SubmissionTime); err == nil {
-			yearMonth = t.Format("2006-01")
-		} else if t, err := ParseDate(strings.TrimSpace(dto.SubmissionTime)); err == nil {
-			yearMonth = t.Format("2006-01")
-		}
+	if t, ok := parseSubmissionTime(dto.SubmissionTime); ok {
+		yearMonth = t.Format("2006-01")
 	}
 
 	info := workEnvironmentFromDTO(userID, yearMonth, dto)
@@ -249,43 +261,60 @@ func GetWorkEnvironment(db *gorm.DB, userID uint, yearMonth string) (*models.Wor
 	return &info, err
 }
 
+func parseSubmissionTime(s string) (time.Time, bool) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return time.Time{}, false
+	}
+	layouts := []string{
+		time.RFC3339,
+		"2006-01-02T15:04:05",
+		"2006-01-02 15:04:05",
+		"2006-01-02",
+	}
+	for _, layout := range layouts {
+		if t, err := time.ParseInLocation(layout, s, time.Local); err == nil {
+			return t, true
+		}
+	}
+	return time.Time{}, false
+}
+
 func workEnvironmentFromDTO(userID uint, yearMonth string, dto WorkEnvironmentDTO) models.WorkEnvironmentInfo {
 	submitted := time.Now()
-	if dto.SubmissionTime != "" {
-		if t, err := time.Parse(time.RFC3339, dto.SubmissionTime); err == nil {
-			submitted = t
-		}
+	if t, ok := parseSubmissionTime(dto.SubmissionTime); ok {
+		submitted = t
 	}
 	return models.WorkEnvironmentInfo{
 		UserID:                      userID,
 		YearMonth:                   yearMonth,
 		SubmissionTime:              submitted,
-		WorkStationAltitude:         dto.WorkStationAltitude,
+		WorkStationAltitude:         dto.WorkStationAltitude.Int(),
 		WorkStationName:             dto.WorkStationName,
-		DormitoryBuildingNumber:     dto.DormitoryBuildingNumber,
-		DormitoryRoomNumber:         dto.DormitoryRoomNumber,
-		DormitoryOccupants:          dto.DormitoryOccupants,
-		DormitoryArea:               dto.DormitoryArea,
-		WindowOpenArea:              dto.WindowOpenArea,
+		DormitoryBuildingNumber:     dto.DormitoryBuildingNumber.Int(),
+		DormitoryRoomNumber:         dto.DormitoryRoomNumber.Int(),
+		DormitoryOccupants:          dto.DormitoryOccupants.Int(),
+		DormitoryArea:               dto.DormitoryArea.Float64(),
+		WindowOpenArea:              dto.WindowOpenArea.Float64(),
 		VentilationCondition:        dto.VentilationCondition,
-		AvgWorkRoomPeople:           dto.AvgWorkRoomPeople,
-		AvgWorkFaceToFace:           dto.AvgWorkFaceToFace,
-		AvgWorkPhysicalContact:      dto.AvgWorkPhysicalContact,
-		AvgBreakfastRoomPeople:      dto.AvgBreakfastRoomPeople,
-		AvgBreakfastFaceToFace:      dto.AvgBreakfastFaceToFace,
-		AvgBreakfastPhysicalContact: dto.AvgBreakfastPhysicalContact,
-		AvgLunchRoomPeople:          dto.AvgLunchRoomPeople,
-		AvgLunchFaceToFace:          dto.AvgLunchFaceToFace,
-		AvgLunchPhysicalContact:     dto.AvgLunchPhysicalContact,
-		AvgDinnerRoomPeople:         dto.AvgDinnerRoomPeople,
-		AvgDinnerFaceToFace:         dto.AvgDinnerFaceToFace,
-		AvgDinnerPhysicalContact:    dto.AvgDinnerPhysicalContact,
-		CollectiveActivitiesCount:   dto.CollectiveActivitiesCount,
-		AvgActivityRoomPeople:       dto.AvgActivityRoomPeople,
-		AvgActivityFaceToFace:       dto.AvgActivityFaceToFace,
-		AvgActivityPhysicalContact:  dto.AvgActivityPhysicalContact,
-		AvgMonthlyPressure:          dto.AvgMonthlyPressure,
-		MaxTemperature:              dto.MaxTemperature,
-		MinTemperature:              dto.MinTemperature,
+		AvgWorkRoomPeople:           dto.AvgWorkRoomPeople.Int(),
+		AvgWorkFaceToFace:           dto.AvgWorkFaceToFace.Int(),
+		AvgWorkPhysicalContact:      dto.AvgWorkPhysicalContact.Int(),
+		AvgBreakfastRoomPeople:      dto.AvgBreakfastRoomPeople.Int(),
+		AvgBreakfastFaceToFace:      dto.AvgBreakfastFaceToFace.Int(),
+		AvgBreakfastPhysicalContact: dto.AvgBreakfastPhysicalContact.Int(),
+		AvgLunchRoomPeople:          dto.AvgLunchRoomPeople.Int(),
+		AvgLunchFaceToFace:          dto.AvgLunchFaceToFace.Int(),
+		AvgLunchPhysicalContact:     dto.AvgLunchPhysicalContact.Int(),
+		AvgDinnerRoomPeople:         dto.AvgDinnerRoomPeople.Int(),
+		AvgDinnerFaceToFace:         dto.AvgDinnerFaceToFace.Int(),
+		AvgDinnerPhysicalContact:    dto.AvgDinnerPhysicalContact.Int(),
+		CollectiveActivitiesCount:   dto.CollectiveActivitiesCount.Int(),
+		AvgActivityRoomPeople:       dto.AvgActivityRoomPeople.Int(),
+		AvgActivityFaceToFace:       dto.AvgActivityFaceToFace.Int(),
+		AvgActivityPhysicalContact:  dto.AvgActivityPhysicalContact.Int(),
+		AvgMonthlyPressure:          dto.AvgMonthlyPressure.Float64(),
+		MaxTemperature:              dto.MaxTemperature.Float64(),
+		MinTemperature:              dto.MinTemperature.Float64(),
 	}
 }

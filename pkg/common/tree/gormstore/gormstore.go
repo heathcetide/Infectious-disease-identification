@@ -12,7 +12,7 @@
 // # Quick start
 //
 //	import (
-//	    "gorm.io/driver/sqlite"
+//	    "github.com/glebarez/sqlite"
 //	    "gorm.io/gorm"
 //	    gormstore "github.com/LingByte/ling-base/common/tree/gormstore"
 //	    "github.com/heathcetide/infectious-disease/pkg/common/tree"

@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/glebarez/sqlite"
 	"gopkg.in/yaml.v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

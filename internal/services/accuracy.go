@@ -36,7 +36,7 @@ var defaultAccuracyDiseaseNames = []string{
 	"森林脑炎（蜱媒传染病）",
 	"发热伴血小板减少综合征（蜱媒传染病）",
 	"斑疹伤寒",
-	"流行性热出血",
+	"流行性出血热",
 }
 
 // DiagnosticAccuracyStrike computes strike stats between startDate and endDate (yyyy-MM-dd).

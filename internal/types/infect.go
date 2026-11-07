@@ -12,6 +12,8 @@ type LoginResponse struct {
 	TokenType           string          `json:"tokenType"`
 	User                InfectUserBrief `json:"user"`
 	InformationComplete bool            `json:"informationComplete"`
+	// MustChangePassword is true when the password is still a known initial/default value.
+	MustChangePassword bool `json:"mustChangePassword"`
 	// Admin frontend aliases
 	Token    string `json:"token"`
 	UserType string `json:"userType"`

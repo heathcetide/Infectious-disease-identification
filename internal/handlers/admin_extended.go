@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
@@ -30,6 +31,36 @@ func pathUintParam(c *gin.Context, key string) (uint, bool) {
 // AdminHello GET /api/v1/admin/hello
 func (h *Handlers) AdminHello(c *gin.Context) {
 	respgin.Success(c, gin.H{"message": "hello"})
+}
+
+// AdminCreateStaffUser POST /api/v1/admin/users
+// Accepts the admin drawer payload (phone/name/userType + profile fields).
+func (h *Handlers) AdminCreateStaffUser(c *gin.Context) {
+	var dto services.AdminCreateUserDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		respgin.WriteError(c, response.New(response.CodeBadRequest, "请求参数无效: "+err.Error()))
+		return
+	}
+	user, err := h.svc.Admin.CreateStaffUser(dto)
+	if err != nil {
+		msg := err.Error()
+		if strings.Contains(msg, "不能为空") || strings.Contains(msg, "无效") || strings.Contains(msg, "已存在") {
+			respgin.WriteError(c, response.New(response.CodeBadRequest, msg))
+			return
+		}
+		respgin.WriteError(c, response.New(response.CodeInternal, msg))
+		return
+	}
+	idNumber := strings.TrimSpace(dto.IDNumber)
+	plainPwd := services.InitialPasswordForDisplay(idNumber, strings.TrimSpace(dto.PhoneNumber))
+	respgin.Success(c, gin.H{
+		"userId":           user.ID,
+		"name":             user.Name,
+		"phoneNumber":      user.PhoneNumber,
+		"role":             user.Role,
+		"initialPassword":  plainPwd,
+		"message":          "创建成功，初始密码为身份证号后六位：" + plainPwd,
+	})
 }
 
 // AdminDiseasesPage POST /api/v1/admin/diseases/page

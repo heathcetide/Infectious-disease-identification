@@ -22,8 +22,8 @@ package sqlite
 import (
 	"fmt"
 
+	"github.com/glebarez/sqlite"
 	gormstore "github.com/heathcetide/infectious-disease/pkg/common/tree/gormstore"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )

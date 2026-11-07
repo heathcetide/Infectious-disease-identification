@@ -22,8 +22,17 @@ func (s *EmployeeService) PhoneLogin(phone string) (*models.User, error) {
 func (s *EmployeeService) GetProfile(userID uint) (*models.EmployeeProfile, error) {
 	return GetEmployeeProfile(s.db, userID)
 }
+func (s *EmployeeService) GetProfileVO(userID uint) (*EmployeeProfileVO, error) {
+	return GetEmployeeProfileVO(s.db, userID)
+}
 func (s *EmployeeService) UpdateProfile(userID uint, p models.EmployeeProfile) (*models.EmployeeProfile, error) {
 	return UpdateEmployeeProfile(s.db, userID, p)
+}
+func (s *EmployeeService) UpdateProfileWithName(userID uint, p models.EmployeeProfile, name string) (*models.EmployeeProfile, error) {
+	return UpdateEmployeeProfileWithName(s.db, userID, p, name)
+}
+func (s *EmployeeService) UpdateProfileFields(userID uint, p models.EmployeeProfile, name, phoneNumber string) (*models.EmployeeProfile, error) {
+	return UpdateEmployeeProfileFields(s.db, userID, p, name, phoneNumber)
 }
 func (s *EmployeeService) ChangePassword(userID uint, dto ChangePasswordDTO) error {
 	return ChangePassword(s.db, userID, dto)
@@ -139,6 +148,9 @@ func (s *AdminService) ListDiseaseTypes() ([]models.DiseaseType, error) {
 func (s *AdminService) PageSymptomWeights(q PageQuery, disease string) (*response.Page, error) {
 	return PageSymptomWeights(s.db, q, disease)
 }
+func (s *AdminService) ListSymptomWeightsByDisease(disease string) ([]models.SymptomWeighting, error) {
+	return ListSymptomWeightsByDisease(s.db, disease)
+}
 func (s *AdminService) UpdateSymptomWeight(dto SymptomWeightUpdateDTO) error {
 	return UpdateSymptomWeight(s.db, dto)
 }
@@ -209,6 +221,9 @@ func (s *AdminService) SetAutoAIWeightUpdater(enabled bool) error {
 func (s *AdminService) GetFeedback(id uint) (*models.UserFeedback, error) {
 	return GetFeedbackByID(s.db, id)
 }
+func (s *AdminService) CreateStaffUser(dto AdminCreateUserDTO) (*models.User, error) {
+	return AdminCreateStaffUser(s.db, dto)
+}
 func (s *AdminService) ExportUsersCSV() ([]byte, error) { return ExportUsersCSV(s.db) }
 func (s *AdminService) ImportUsersCSV(r io.Reader) (int, error) {
 	return ImportUsersCSV(s.db, r)
@@ -245,36 +260,10 @@ func (s *CDCService) ListDiseaseTypes() ([]models.DiseaseType, error) {
 	return CDCListDiseaseTypes(s.db)
 }
 func (s *CDCService) PageCheckIns(q PageQuery) (*response.Page, error) {
-	if s.db == nil {
-		return response.NewPage([]models.DailyHealthStatus{}, 0, 1, 10), nil
-	}
-	page, size := q.Normalize()
-	query := s.db.Model(&models.DailyHealthStatus{})
-	var total int64
-	if err := query.Count(&total).Error; err != nil {
-		return nil, err
-	}
-	var list []models.DailyHealthStatus
-	if err := query.Order("status_id DESC").Offset((page - 1) * size).Limit(size).Find(&list).Error; err != nil {
-		return nil, err
-	}
-	return response.NewPage(list, total, page, size), nil
+	return PageCheckInsJoined(s.db, q)
 }
 func (s *CDCService) PageWorkEnvironments(q PageQuery) (*response.Page, error) {
-	if s.db == nil {
-		return response.NewPage([]models.WorkEnvironmentInfo{}, 0, 1, 10), nil
-	}
-	page, size := q.Normalize()
-	query := s.db.Model(&models.WorkEnvironmentInfo{})
-	var total int64
-	if err := query.Count(&total).Error; err != nil {
-		return nil, err
-	}
-	var list []models.WorkEnvironmentInfo
-	if err := query.Order("environment_id DESC").Offset((page - 1) * size).Limit(size).Find(&list).Error; err != nil {
-		return nil, err
-	}
-	return response.NewPage(list, total, page, size), nil
+	return PageWorkEnvironmentsJoined(s.db, q)
 }
 func (s *CDCService) GetCheckInDetail(statusID uint) (*CheckInDetailVO, error) {
 	return GetCheckInDetail(s.db, statusID)
@@ -283,11 +272,15 @@ func (s *CDCService) GetCheckInLocation(statusID uint) (*CheckInLocationVO, erro
 	return GetCheckInLocation(s.db, statusID)
 }
 func (s *CDCService) ExportCheckInsCSV() ([]byte, error) { return ExportCheckInsCSV(s.db) }
-func (s *CDCService) StatisticsData() (*CDCStatisticsData, error) {
-	return QueryCDCStatisticsData(s.db)
+func (s *CDCService) StatisticsData(date string) (*CDCStatisticsData, error) {
+	return QueryCDCStatisticsData(s.db, date)
 }
-func (s *CDCService) DiseaseToday() ([]DiseaseNameCount, error) { return CDCDiseaseToday(s.db) }
-func (s *CDCService) UserStations() ([]UserStation, error)       { return CDCUserStations(s.db) }
+func (s *CDCService) DiseaseToday(date string) ([]DiseaseNameCount, error) {
+	return CDCDiseaseToday(s.db, date)
+}
+func (s *CDCService) UserStations(date string) ([]UserStation, error) {
+	return CDCUserStations(s.db, date)
+}
 func (s *CDCService) CheckInSearch(q string, limit int) ([]CheckInSearchItem, error) {
 	return CDCCheckInSearch(s.db, q, limit)
 }
@@ -297,7 +290,7 @@ func (s *CDCService) CheckInDailySeries(req CheckInDailySeriesRequest) ([]CheckI
 func (s *CDCService) ImportantUsers() ([]ImportantUserInfo, error) {
 	return CDCImportantUsers(s.db)
 }
-func (s *CDCService) DiseaseStatistics(q DiseaseStatisticsQuery) ([]DiseaseNameCount, error) {
+func (s *CDCService) DiseaseStatistics(q DiseaseStatisticsQuery) (map[string][]DiseaseTimeSeriesPoint, error) {
 	return CDCDiseaseStatistics(s.db, q)
 }
 func (s *CDCService) GetWorkEnvironment(id uint) (*models.WorkEnvironmentInfo, error) {

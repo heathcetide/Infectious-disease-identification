@@ -3,14 +3,78 @@
 package handlers
 
 import (
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/types"
+	"github.com/heathcetide/infectious-disease/pkg/common/geocode"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
 	"github.com/gin-gonic/gin"
 )
+
+// CheckInReverseGeocode GET /api/v1/checkin/reverse-geocode
+// Free reverse geocoding (no map vendor key): BigDataCloud, then Nominatim fallback.
+func (h *Handlers) CheckInReverseGeocode(c *gin.Context) {
+	lat, err1 := strconv.ParseFloat(strings.TrimSpace(c.Query("latitude")), 64)
+	lon, err2 := strconv.ParseFloat(strings.TrimSpace(c.Query("longitude")), 64)
+	if err1 != nil || err2 != nil {
+		respgin.WriteError(c, response.New(response.CodeBadRequest, "latitude/longitude required"))
+		return
+	}
+
+	const perTry = 5 * time.Second
+	client := geocode.NewClient(
+		geocode.WithProvider(geocode.ProviderBigDataCloud),
+		geocode.WithLanguage("zh"),
+		geocode.WithUserAgent("infectious-disease/1.0"),
+		geocode.WithTimeout(perTry),
+	)
+	result, err := client.Reverse(lat, lon)
+	if err != nil {
+		fallback := geocode.NewClient(
+			geocode.WithProvider(geocode.ProviderNominatim),
+			geocode.WithLanguage("zh"),
+			geocode.WithUserAgent("infectious-disease/1.0"),
+			geocode.WithTimeout(perTry),
+		)
+		result, err = fallback.Reverse(lat, lon)
+		if err != nil {
+			respgin.WriteError(c, response.New(response.CodeInternal, "reverse geocode failed"))
+			return
+		}
+	}
+
+	province := strings.TrimSpace(result.PrincipalSub)
+	city := strings.TrimSpace(result.Locality)
+	county := strings.TrimSpace(result.SubLocality)
+	locationName := strings.TrimSpace(result.DisplayName)
+	if locationName == "" {
+		parts := make([]string, 0, 3)
+		for _, p := range []string{province, city, county} {
+			if p == "" {
+				continue
+			}
+			if len(parts) > 0 && parts[len(parts)-1] == p {
+				continue
+			}
+			parts = append(parts, p)
+		}
+		locationName = strings.Join(parts, "")
+	}
+
+	respgin.Success(c, gin.H{
+		"latitude":     lat,
+		"longitude":    lon,
+		"province":     province,
+		"city":         city,
+		"county":       county,
+		"locationName": locationName,
+		"provider":     string(result.Provider),
+	})
+}
 
 // CheckInGeo POST /api/v1/checkin/
 func (h *Handlers) CheckInGeo(c *gin.Context) {
@@ -108,7 +172,9 @@ func (h *Handlers) CheckInEnvironment(c *gin.Context) {
 	}
 	var dto services.WorkEnvironmentDTO
 	if err := c.ShouldBindJSON(&dto); err != nil {
-		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
+		ae := response.New(response.CodeBadRequest, err.Error())
+		ae.Details = map[string]any{"bindError": err.Error()}
+		respgin.WriteError(c, ae)
 		return
 	}
 	env, err := h.svc.CheckIn.SaveWorkEnvironment(userID, dto)

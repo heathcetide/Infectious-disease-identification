@@ -5,6 +5,9 @@ package handlers
 import (
 	"fmt"
 	"io"
+	"mime"
+	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/heathcetide/infectious-disease/internal/services"
@@ -47,6 +50,34 @@ func (h *Handlers) InfectLearningFile(c *gin.Context) {
 		return
 	}
 	name := sanitizePath(filepath.Base(req.Filename))
+	contentType := mime.TypeByExtension(filepath.Ext(name))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	// Local demo fallbacks (seed materials) before remote object storage.
+	localPaths := []string{
+		filepath.Join("data", "seed_materials", name),
+		filepath.Join("data", "local_store", "infect", "materials", name),
+		filepath.Join("web", "static", "materials", name),
+	}
+	for _, p := range localPaths {
+		f, err := os.Open(p)
+		if err != nil {
+			continue
+		}
+		st, err := f.Stat()
+		if err != nil {
+			_ = f.Close()
+			continue
+		}
+		c.Header("Content-Disposition", fmt.Sprintf(`inline; filename="%s"`, name))
+		c.Header("Content-Type", contentType)
+		http.ServeContent(c.Writer, c.Request, name, st.ModTime(), f)
+		_ = f.Close()
+		return
+	}
+
 	candidates := []string{
 		sanitizePath(filepath.Join("infect/materials", name)),
 		sanitizePath(filepath.Join("learning", name)),
@@ -62,7 +93,8 @@ func (h *Handlers) InfectLearningFile(c *gin.Context) {
 		if err == nil {
 			defer reader.Close()
 			c.Header("Content-Disposition", fmt.Sprintf(`inline; filename="%s"`, name))
-			c.DataFromReader(200, size, "application/octet-stream", reader, nil)
+			c.Header("Content-Type", contentType)
+			c.DataFromReader(200, size, contentType, reader, nil)
 			return
 		}
 	}

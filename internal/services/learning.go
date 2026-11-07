@@ -36,9 +36,11 @@ func PageSelectLearningMaterials(db *gorm.DB, dto LearningMaterialsPageDTO) (*re
 		size = 10
 	}
 
-	q := db.Model(&models.DiseaseLearningMaterial{})
+	q := db.Model(&models.DiseaseLearningMaterial{}).
+		Where("is_deleted IS NULL OR is_deleted = ?", false)
 	if name := strings.TrimSpace(dto.DiseaseTypeName); name != "" {
-		q = q.Where("disease_type_name = ?", name)
+		// Exact match first preference; also allow short-name contains for mini-app.
+		q = q.Where("disease_type_name = ? OR disease_type_name LIKE ?", name, "%"+name+"%")
 	}
 
 	var total int64

@@ -14,7 +14,7 @@
   "common.rate_limited": "请求过于频繁，请稍后再试",
   "common.quota_exceeded": "配额已用尽",
   "common.service_unavailable": "服务暂不可用",
-  "auth.invalid_credentials": "邮箱或密码错误",
+  "auth.invalid_credentials": "手机号或密码错误",
   "auth.account_locked": "登录失败次数过多，账号已临时锁定",
   "auth.missing_token": "缺少授权令牌",
   "auth.invalid_token": "令牌无效或已过期",

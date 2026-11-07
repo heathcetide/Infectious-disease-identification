@@ -18,6 +18,8 @@ func NewProfileService(db *gorm.DB) *ProfileService {
 }
 
 // InformationComplete returns whether the user has filled essential profile fields.
+// Gender + ID number are the minimum needed to stop the login "完善信息" prompt;
+// department / ethnicity / education remain on the survey form but are not blockers.
 func (s *ProfileService) InformationComplete(userID uint) bool {
 	if s.db == nil || userID == 0 {
 		return false
@@ -26,5 +28,5 @@ func (s *ProfileService) InformationComplete(userID uint) bool {
 	if err := s.db.Where("user_id = ?", userID).First(&profile).Error; err != nil {
 		return false
 	}
-	return profile.Gender != "" && profile.Department != ""
+	return profile.Gender != "" && profile.IDNumber != ""
 }

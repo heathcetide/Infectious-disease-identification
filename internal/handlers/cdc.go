@@ -27,12 +27,13 @@ func (h *Handlers) CDCDashboard(c *gin.Context) {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	stats, err := h.svc.CDC.StatisticsData()
+	date := c.Query("date")
+	stats, err := h.svc.CDC.StatisticsData(date)
 	if err != nil {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	diseaseToday, _ := h.svc.CDC.DiseaseToday()
+	diseaseToday, _ := h.svc.CDC.DiseaseToday(date)
 	respgin.Success(c, gin.H{
 		"counts":        counts,
 		"statistics":    stats,

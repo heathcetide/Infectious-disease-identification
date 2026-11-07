@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
+	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	"gorm.io/gorm"
 )
 
@@ -43,18 +44,170 @@ func GetCheckInDetail(db *gorm.DB, statusID uint) (*CheckInDetailVO, error) {
 	return vo, nil
 }
 
-// CheckInLocationVO is location-focused check-in info.
-type CheckInLocationVO struct {
-	CheckInDetailVO
-}
+// CheckInLocationVO is location-focused check-in info (flat for admin drawer).
+type CheckInLocationVO = CheckInLocationFlatVO
 
-// GetCheckInLocation is an alias detail for location endpoints.
+// GetCheckInLocation returns flat personal + location fields for the admin drawer.
 func GetCheckInLocation(db *gorm.DB, statusID uint) (*CheckInLocationVO, error) {
-	d, err := GetCheckInDetail(db, statusID)
-	if err != nil {
+	var status models.DailyHealthStatus
+	if err := db.First(&status, statusID).Error; err != nil {
 		return nil, err
 	}
-	return &CheckInLocationVO{CheckInDetailVO: *d}, nil
+	vo := &CheckInLocationVO{
+		Longitude:    status.Longitude,
+		Latitude:     status.Latitude,
+		Province:     status.Province,
+		City:         status.City,
+		County:       status.County,
+		LocationName: status.LocationName,
+		CheckInDate:  dateParts(status.CheckInDate),
+		Address:      joinLocation(status.Province, status.City, status.County, status.LocationName),
+	}
+	if u, err := (models.User{}).FindByID(db, status.UserID); err == nil {
+		vo.Name = u.Name
+		vo.UserType = roleDisplayName(u.Role)
+	}
+	var profile models.EmployeeProfile
+	if err := db.Where("user_id = ?", status.UserID).First(&profile).Error; err == nil {
+		vo.Gender = profile.Gender
+		vo.Age = profile.Age
+		vo.Ethnicity = profile.Ethnicity
+		vo.Department = profile.Department
+	}
+	return vo, nil
+}
+
+func dateParts(t time.Time) []int {
+	if t.IsZero() {
+		return nil
+	}
+	return []int{t.Year(), int(t.Month()), t.Day()}
+}
+
+func joinLocation(parts ...string) string {
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	return strings.Join(out, "")
+}
+
+// PageCheckInsJoined paginates check-ins with user/profile columns for the admin table.
+func PageCheckInsJoined(db *gorm.DB, q PageQuery) (*response.Page, error) {
+	if db == nil {
+		return response.NewPage([]CheckInListItem{}, 0, 1, 10), nil
+	}
+	page, size := q.Normalize()
+	query := db.Table("daily_health_statuses AS d").
+		Joins("LEFT JOIN users u ON u.id = d.user_id").
+		Joins("LEFT JOIN employee_profiles p ON p.user_id = d.user_id")
+
+	if q.IsHealth == "true" || q.IsHealth == "1" {
+		query = query.Where("d.is_health = ?", true)
+	} else if q.IsHealth == "false" || q.IsHealth == "0" {
+		query = query.Where("d.is_health = ?", false)
+	}
+	if q.Name != "" {
+		query = query.Where("u.name LIKE ?", "%"+q.Name+"%")
+	}
+	if q.PhoneNumber != "" {
+		like := "%" + q.PhoneNumber + "%"
+		query = query.Where("u.phone_number LIKE ? OR u.phone LIKE ?", like, like)
+	}
+	if q.Department != "" {
+		query = query.Where("p.department LIKE ?", "%"+q.Department+"%")
+	}
+	if q.SpecificOccupation != "" {
+		query = query.Where("p.specific_occupation LIKE ?", "%"+q.SpecificOccupation+"%")
+	}
+	if q.CheckInDateBegin != "" {
+		if t, err := ParseDate(q.CheckInDateBegin); err == nil {
+			query = query.Where("d.check_in_date >= ?", t)
+		}
+	}
+	if q.CheckInDateEnd != "" {
+		if t, err := ParseDate(q.CheckInDateEnd); err == nil {
+			query = query.Where("d.check_in_date < ?", t.AddDate(0, 0, 1))
+		}
+	}
+
+	var total int64
+	if err := query.Count(&total).Error; err != nil {
+		return nil, err
+	}
+
+	type row struct {
+		StatusID           uint      `gorm:"column:status_id"`
+		UserID             uint      `gorm:"column:user_id"`
+		CheckInDate        time.Time `gorm:"column:check_in_date"`
+		IsHealth           *bool     `gorm:"column:is_health"`
+		DiseaseTypeName    string    `gorm:"column:disease_type_name"`
+		Longitude          float64   `gorm:"column:longitude"`
+		Latitude           float64   `gorm:"column:latitude"`
+		Province           string    `gorm:"column:province"`
+		City               string    `gorm:"column:city"`
+		County             string    `gorm:"column:county"`
+		LocationName       string    `gorm:"column:location_name"`
+		Name               string    `gorm:"column:name"`
+		PhoneNumber        string    `gorm:"column:phone_number"`
+		Phone              string    `gorm:"column:phone"`
+		Role               string    `gorm:"column:role"`
+		Gender             string    `gorm:"column:gender"`
+		Age                int       `gorm:"column:age"`
+		Department         string    `gorm:"column:department"`
+		SpecificOccupation string    `gorm:"column:specific_occupation"`
+	}
+	var rows []row
+	if err := query.
+		Select(`d.status_id, d.user_id, d.check_in_date, d.is_health, d.disease_type_name,
+			d.longitude, d.latitude, d.province, d.city, d.county, d.location_name,
+			u.name, u.phone_number, u.phone, u.role,
+			p.gender, p.age, p.department, p.specific_occupation`).
+		Order("d.status_id DESC").
+		Offset((page - 1) * size).Limit(size).
+		Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	list := make([]CheckInListItem, 0, len(rows))
+	for _, r := range rows {
+		phone := r.PhoneNumber
+		if phone == "" {
+			phone = r.Phone
+		}
+		item := CheckInListItem{
+			StatusID:           r.StatusID,
+			UserID:             r.UserID,
+			UserType:           roleDisplayName(r.Role),
+			Name:               r.Name,
+			PhoneNumber:        phone,
+			Gender:             r.Gender,
+			Age:                r.Age,
+			Department:         r.Department,
+			SpecificOccupation: r.SpecificOccupation,
+			IsHealth:           r.IsHealth,
+			LocationName:       displayLocation(r.Province, r.City, r.County, r.LocationName),
+			Province:           r.Province,
+			City:               r.City,
+			County:             r.County,
+			CheckInDate:        dateParts(r.CheckInDate),
+			DiseaseTypeName:    r.DiseaseTypeName,
+			Longitude:          r.Longitude,
+			Latitude:           r.Latitude,
+		}
+		list = append(list, item)
+	}
+	return response.NewPage(list, total, page, size), nil
+}
+
+func displayLocation(province, city, county, name string) string {
+	if full := joinLocation(province, city, county, name); full != "" {
+		return full
+	}
+	return name
 }
 
 // ExportCheckInsCSV exports all daily health rows.
@@ -93,9 +246,15 @@ type CDCStatisticsData struct {
 	CheckInToday      int64 `json:"checkInToday"`
 }
 
-// QueryCDCStatisticsData loads dashboard statistics.
-func QueryCDCStatisticsData(db *gorm.DB) (*CDCStatisticsData, error) {
-	todayStart, todayEnd := todayDateRange()
+// QueryCDCStatisticsData loads dashboard statistics for a day (empty date = today).
+func QueryCDCStatisticsData(db *gorm.DB, date string) (*CDCStatisticsData, error) {
+	dayStart, dayEnd := todayDateRange()
+	if strings.TrimSpace(date) != "" {
+		if t, err := time.ParseInLocation("2006-01-02", strings.TrimSpace(date), time.Local); err == nil {
+			dayStart = dateOnly(t)
+			dayEnd = dayStart.AddDate(0, 0, 1)
+		}
+	}
 	var out CDCStatisticsData
 	if err := db.Model(&models.User{}).Where("status = ?", models.UserStatusActive).Count(&out.UserNumber).Error; err != nil {
 		return nil, err
@@ -104,17 +263,17 @@ func QueryCDCStatisticsData(db *gorm.DB) (*CDCStatisticsData, error) {
 		return nil, err
 	}
 	if err := db.Model(&models.DailyHealthStatus{}).
-		Where("check_in_date >= ? AND check_in_date < ?", todayStart, todayEnd).
+		Where("check_in_date >= ? AND check_in_date < ?", dayStart, dayEnd).
 		Count(&out.CheckInToday).Error; err != nil {
 		return nil, err
 	}
 	if err := db.Model(&models.DailyHealthStatus{}).
-		Where("check_in_date >= ? AND check_in_date < ? AND is_health = ?", todayStart, todayEnd, true).
+		Where("check_in_date >= ? AND check_in_date < ? AND is_health = ?", dayStart, dayEnd, true).
 		Count(&out.UserHealthNumber).Error; err != nil {
 		return nil, err
 	}
 	if err := db.Model(&models.DailyHealthStatus{}).
-		Where("check_in_date >= ? AND check_in_date < ? AND is_health = ?", todayStart, todayEnd, false).
+		Where("check_in_date >= ? AND check_in_date < ? AND is_health = ?", dayStart, dayEnd, false).
 		Count(&out.UserDiseaseNumber).Error; err != nil {
 		return nil, err
 	}
@@ -123,40 +282,76 @@ func QueryCDCStatisticsData(db *gorm.DB) (*CDCStatisticsData, error) {
 
 // DiseaseNameCount is a disease label with count/score sum.
 type DiseaseNameCount struct {
-	DiseaseTypeName string  `json:"diseaseTypeName"`
-	Count           int64   `json:"count"`
-	TotalScore      float64 `json:"totalScore"`
+	DiseaseTypeName            string  `json:"diseaseTypeName"`
+	DiagnosisDiseaseTypeName   string  `json:"diagnosisDiseaseTypeName"`
+	Count                      int64   `json:"count"`
+	TotalScore                 float64 `json:"totalScore"`
 }
 
-// CDCDiseaseToday aggregates today's disease scoring rows.
-func CDCDiseaseToday(db *gorm.DB) ([]DiseaseNameCount, error) {
+func normalizeScreenDiseaseName(name string) string {
+	name = strings.TrimSpace(name)
+	switch name {
+	case "", "健康":
+		return "健康"
+	case "高原反应相关不适", "上呼吸道感染":
+		return "流感"
+	case "流行性出血热":
+		return "流行性热出血"
+	default:
+		return name
+	}
+}
+
+// CDCDiseaseToday aggregates check-in disease labels for a day (incl. healthy).
+// date is optional yyyy-MM-dd; empty means today.
+func CDCDiseaseToday(db *gorm.DB, date string) ([]DiseaseNameCount, error) {
 	todayStart, todayEnd := todayDateRange()
-	var statusIDs []uint
-	if err := db.Model(&models.DailyHealthStatus{}).
-		Where("check_in_date >= ? AND check_in_date < ?", todayStart, todayEnd).
-		Pluck("status_id", &statusIDs).Error; err != nil {
+	if strings.TrimSpace(date) != "" {
+		if t, err := time.ParseInLocation("2006-01-02", strings.TrimSpace(date), time.Local); err == nil {
+			todayStart = dateOnly(t)
+			todayEnd = todayStart.AddDate(0, 0, 1)
+		}
+	}
+	var statuses []models.DailyHealthStatus
+	if err := db.Where("check_in_date >= ? AND check_in_date < ?", todayStart, todayEnd).
+		Find(&statuses).Error; err != nil {
 		return nil, err
 	}
-	if len(statusIDs) == 0 {
-		return []DiseaseNameCount{}, nil
+	counts := map[string]int64{}
+	for _, s := range statuses {
+		label := "健康"
+		if s.IsHealth != nil && !*s.IsHealth {
+			label = normalizeScreenDiseaseName(s.DiseaseTypeName)
+			if label == "健康" {
+				label = "流感"
+			}
+		}
+		counts[label]++
 	}
-	type row struct {
+	// Enrich with scoring totals when present.
+	scoreBy := map[string]float64{}
+	type scoreRow struct {
 		Name  string
-		Cnt   int64
 		Score float64
 	}
-	var rows []row
-	err := db.Model(&models.DiseaseScoring{}).
-		Select("disease_type_name as name, count(*) as cnt, sum(score) as score").
-		Where("status_id IN ?", statusIDs).
+	var srows []scoreRow
+	_ = db.Model(&models.DiseaseScoring{}).
+		Select("disease_type_name as name, sum(score) as score").
+		Where("symptom_time >= ? AND symptom_time < ?", todayStart, todayEnd).
 		Group("disease_type_name").
-		Scan(&rows).Error
-	if err != nil {
-		return nil, err
+		Scan(&srows).Error
+	for _, r := range srows {
+		scoreBy[normalizeScreenDiseaseName(r.Name)] += r.Score
 	}
-	out := make([]DiseaseNameCount, 0, len(rows))
-	for _, r := range rows {
-		out = append(out, DiseaseNameCount{DiseaseTypeName: r.Name, Count: r.Cnt, TotalScore: r.Score})
+
+	out := make([]DiseaseNameCount, 0, len(counts))
+	for name, cnt := range counts {
+		out = append(out, DiseaseNameCount{
+			DiseaseTypeName:          name,
+			DiagnosisDiseaseTypeName: name,
+			Count:                    cnt,
+			TotalScore:               scoreBy[name],
+		})
 	}
 	return out, nil
 }
@@ -171,11 +366,17 @@ type UserStation struct {
 	LocationName string  `json:"locationName"`
 }
 
-// CDCUserStations returns today's check-in locations with user info.
-func CDCUserStations(db *gorm.DB) ([]UserStation, error) {
-	todayStart, todayEnd := todayDateRange()
+// CDCUserStations returns check-in locations for a day (defaults to today).
+func CDCUserStations(db *gorm.DB, date string) ([]UserStation, error) {
+	start, end := todayDateRange()
+	if date != "" {
+		if t, err := ParseDate(date); err == nil {
+			start = dateOnly(t)
+			end = start.AddDate(0, 0, 1)
+		}
+	}
 	var statuses []models.DailyHealthStatus
-	if err := db.Where("check_in_date >= ? AND check_in_date < ?", todayStart, todayEnd).
+	if err := db.Where("check_in_date >= ? AND check_in_date < ?", start, end).
 		Find(&statuses).Error; err != nil {
 		return nil, err
 	}
@@ -202,12 +403,16 @@ func userPhoneField(u *models.User) string {
 
 // CheckInSearchItem is a search result row.
 type CheckInSearchItem struct {
-	StatusID    uint      `json:"statusId"`
-	UserID      uint      `json:"userId"`
-	Name        string    `json:"name"`
-	PhoneNumber string    `json:"phoneNumber"`
-	CheckInDate time.Time `json:"checkInDate"`
-	IsHealth    *bool     `json:"isHealth"`
+	StatusID                   uint      `json:"statusId"`
+	UserID                     uint      `json:"userId"`
+	Name                       string    `json:"name"`
+	PhoneNumber                string    `json:"phoneNumber"`
+	Gender                     string    `json:"gender"`
+	Department                 string    `json:"department"`
+	CheckInDate                time.Time `json:"checkInDate"`
+	IsHealth                   *bool     `json:"isHealth"`
+	DiagnosisDiseaseTypeName   string    `json:"diagnosisDiseaseTypeName"`
+	DiseaseTypeName            string    `json:"diseaseTypeName"`
 }
 
 // CDCCheckInSearch finds recent check-ins matching q (phone or name).
@@ -235,12 +440,19 @@ func CDCCheckInSearch(db *gorm.DB, q string, limit int) ([]CheckInSearchItem, er
 	}
 	out := make([]CheckInSearchItem, 0, len(statuses))
 	for _, s := range statuses {
+		label := normalizeScreenDiseaseName(s.DiseaseTypeName)
 		item := CheckInSearchItem{
 			StatusID: s.StatusID, UserID: s.UserID, CheckInDate: s.CheckInDate, IsHealth: s.IsHealth,
+			DiseaseTypeName: label, DiagnosisDiseaseTypeName: label,
 		}
 		if u, err := (models.User{}).FindByID(db, s.UserID); err == nil {
 			item.Name = u.Name
 			item.PhoneNumber = userPhoneField(u)
+		}
+		var profile models.EmployeeProfile
+		if err := db.Where("user_id = ?", s.UserID).First(&profile).Error; err == nil {
+			item.Gender = profile.Gender
+			item.Department = profile.Department
 		}
 		out = append(out, item)
 	}
@@ -286,10 +498,14 @@ func CDCCheckInDailySeries(db *gorm.DB, req CheckInDailySeriesRequest) ([]CheckI
 
 // ImportantUserInfo highlights users with unhealthy check-in today.
 type ImportantUserInfo struct {
-	UserID      uint   `json:"userId"`
-	Name        string `json:"name"`
-	PhoneNumber string `json:"phoneNumber"`
-	Reason      string `json:"reason"`
+	UserID                     uint   `json:"userId"`
+	Name                       string `json:"name"`
+	PhoneNumber                string `json:"phoneNumber"`
+	Gender                     string `json:"gender"`
+	Department                 string `json:"department"`
+	IsHealth                   *bool  `json:"isHealth"`
+	DiagnosisDiseaseTypeName   string `json:"diagnosisDiseaseTypeName"`
+	Reason                     string `json:"reason"`
 }
 
 // CDCImportantUsers lists users flagged today.
@@ -302,59 +518,224 @@ func CDCImportantUsers(db *gorm.DB) ([]ImportantUserInfo, error) {
 	}
 	out := make([]ImportantUserInfo, 0, len(statuses))
 	for _, s := range statuses {
-		info := ImportantUserInfo{UserID: s.UserID, Reason: "unhealthy check-in today"}
+		h := false
+		info := ImportantUserInfo{
+			UserID:                   s.UserID,
+			IsHealth:                 &h,
+			DiagnosisDiseaseTypeName: normalizeScreenDiseaseName(s.DiseaseTypeName),
+			Reason:                   "今日症状异常打卡",
+		}
+		if info.DiagnosisDiseaseTypeName == "健康" || info.DiagnosisDiseaseTypeName == "" {
+			info.DiagnosisDiseaseTypeName = "流感"
+		}
 		if u, err := (models.User{}).FindByID(db, s.UserID); err == nil {
 			info.Name = u.Name
 			info.PhoneNumber = userPhoneField(u)
+		}
+		var profile models.EmployeeProfile
+		if err := db.Where("user_id = ?", s.UserID).First(&profile).Error; err == nil {
+			info.Gender = profile.Gender
+			info.Department = profile.Department
 		}
 		out = append(out, info)
 	}
 	return out, nil
 }
 
-// DiseaseStatisticsQuery filters aggregated scores.
+// DiseaseStatisticsQuery filters disease time-series for the disease-report chart.
 type DiseaseStatisticsQuery struct {
 	DiseaseTypeName string
+	DiseaseList     []string
 	StartDate       string
 	EndDate         string
+	SourceType      string // 自动诊断 | 医院诊断
+	Granularity     string // day | hour
 }
 
-// CDCDiseaseStatistics aggregates disease scores in a date range.
-func CDCDiseaseStatistics(db *gorm.DB, q DiseaseStatisticsQuery) ([]DiseaseNameCount, error) {
-	query := db.Model(&models.DiseaseScoring{})
-	if q.DiseaseTypeName != "" {
-		query = query.Where("disease_type_name = ?", q.DiseaseTypeName)
+// DiseaseTimeSeriesPoint matches admin disease-report.vue series points.
+type DiseaseTimeSeriesPoint struct {
+	Key   []string `json:"key"`
+	Value int64    `json:"value"`
+}
+
+// CDCDiseaseStatistics returns map[diseaseName][]points for the report chart.
+func CDCDiseaseStatistics(db *gorm.DB, q DiseaseStatisticsQuery) (map[string][]DiseaseTimeSeriesPoint, error) {
+	out := map[string][]DiseaseTimeSeriesPoint{}
+	if db == nil {
+		return out, nil
 	}
-	if q.StartDate != "" {
-		start, err := ParseDate(q.StartDate)
-		if err != nil {
-			return nil, ErrInvalidDate
+	start, end, err := parseDateRange(q.StartDate, q.EndDate)
+	if err != nil {
+		return nil, ErrInvalidDate
+	}
+	names := q.DiseaseList
+	if len(names) == 0 && q.DiseaseTypeName != "" {
+		names = []string{q.DiseaseTypeName}
+	}
+	for _, n := range names {
+		out[n] = []DiseaseTimeSeriesPoint{}
+	}
+
+	sameDay := start.Format("2006-01-02") == end.Format("2006-01-02")
+	useHour := q.Granularity == "hour" || (q.Granularity == "" && sameDay)
+
+	type aggRow struct {
+		Name string
+		Bucket string
+		Cnt  int64
+	}
+	var rows []aggRow
+	src := strings.TrimSpace(q.SourceType)
+	if src == "医院诊断" {
+		if useHour {
+			err = db.Raw(`
+				SELECT disease_type AS name,
+					printf('%02d', CAST(strftime('%H', submission_time) AS INTEGER) / 6 * 6) AS bucket,
+					COUNT(*) AS cnt
+				FROM diagnosis_results
+				WHERE submission_time >= ? AND submission_time <= ?
+				GROUP BY disease_type, bucket
+			`, start, end).Scan(&rows).Error
+		} else {
+			err = db.Raw(`
+				SELECT disease_type AS name,
+					strftime('%Y-%m-%d', submission_time) AS bucket,
+					COUNT(*) AS cnt
+				FROM diagnosis_results
+				WHERE submission_time >= ? AND submission_time <= ?
+				GROUP BY disease_type, bucket
+			`, start, end).Scan(&rows).Error
 		}
-		query = query.Where("symptom_time >= ?", start)
-	}
-	if q.EndDate != "" {
-		end, err := ParseDate(q.EndDate)
-		if err != nil {
-			return nil, ErrInvalidDate
+	} else {
+		// 自动诊断：优先 disease_scoring；若无则回退到打卡预测病种
+		if useHour {
+			// symptom_time is date-only; join check-in time when available.
+			err = db.Raw(`
+				SELECT ds.disease_type_name AS name,
+					printf('%02d', CAST(strftime('%H', COALESCE(dhs.check_in_time, ds.symptom_time)) AS INTEGER) / 6 * 6) AS bucket,
+					COUNT(*) AS cnt
+				FROM disease_scoring ds
+				LEFT JOIN daily_health_statuses dhs ON dhs.status_id = ds.status_id
+				WHERE ds.symptom_time >= ? AND ds.symptom_time <= ?
+				GROUP BY ds.disease_type_name, bucket
+			`, start, end).Scan(&rows).Error
+		} else {
+			err = db.Raw(`
+				SELECT disease_type_name AS name,
+					strftime('%Y-%m-%d', symptom_time) AS bucket,
+					COUNT(*) AS cnt
+				FROM disease_scoring
+				WHERE symptom_time >= ? AND symptom_time <= ?
+				GROUP BY disease_type_name, bucket
+			`, start, end).Scan(&rows).Error
 		}
-		query = query.Where("symptom_time < ?", end.AddDate(0, 0, 1))
+		if err == nil && len(rows) == 0 {
+			if useHour {
+				err = db.Raw(`
+					SELECT disease_type_name AS name,
+						printf('%02d', CAST(strftime('%H', check_in_time) AS INTEGER) / 6 * 6) AS bucket,
+						COUNT(*) AS cnt
+					FROM daily_health_statuses
+					WHERE check_in_date >= ? AND check_in_date <= ? AND is_health = 0 AND disease_type_name <> ''
+					GROUP BY disease_type_name, bucket
+				`, start, end).Scan(&rows).Error
+			} else {
+				err = db.Raw(`
+					SELECT disease_type_name AS name,
+						strftime('%Y-%m-%d', check_in_date) AS bucket,
+						COUNT(*) AS cnt
+					FROM daily_health_statuses
+					WHERE check_in_date >= ? AND check_in_date <= ? AND is_health = 0 AND disease_type_name <> ''
+					GROUP BY disease_type_name, bucket
+				`, start, end).Scan(&rows).Error
+			}
+		}
 	}
-	type row struct {
-		Name  string
-		Cnt   int64
-		Score float64
-	}
-	var rows []row
-	err := query.Select("disease_type_name as name, count(*) as cnt, sum(score) as score").
-		Group("disease_type_name").Scan(&rows).Error
 	if err != nil {
 		return nil, err
 	}
-	out := make([]DiseaseNameCount, 0, len(rows))
+
+	hourLabel := map[string]string{
+		"00": "00-06时", "06": "06-12时", "12": "12-18时", "18": "18-24时",
+	}
 	for _, r := range rows {
-		out = append(out, DiseaseNameCount{DiseaseTypeName: r.Name, Count: r.Cnt, TotalScore: r.Score})
+		if len(names) > 0 {
+			found := false
+			for _, n := range names {
+				if n == r.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+		var key []string
+		if useHour {
+			lab := hourLabel[r.Bucket]
+			if lab == "" {
+				lab = r.Bucket
+			}
+			key = []string{lab}
+		} else {
+			parts := strings.Split(r.Bucket, "-")
+			key = parts
+		}
+		out[r.Name] = append(out[r.Name], DiseaseTimeSeriesPoint{Key: key, Value: r.Cnt})
 	}
 	return out, nil
+}
+
+// WorkEnvironmentListItem joins employee name for CDC work-env table.
+type WorkEnvironmentListItem struct {
+	models.WorkEnvironmentInfo
+	Name string `json:"name"`
+}
+
+// PageWorkEnvironmentsJoined paginates work environments with user name.
+func PageWorkEnvironmentsJoined(db *gorm.DB, q PageQuery) (*response.Page, error) {
+	if db == nil {
+		return response.NewPage([]WorkEnvironmentListItem{}, 0, 1, 10), nil
+	}
+	page, size := q.Normalize()
+	query := db.Table("work_environment_info AS w").
+		Joins("LEFT JOIN users u ON u.id = w.user_id")
+	if q.WorkStationName != "" {
+		query = query.Where("w.work_station_name LIKE ?", "%"+q.WorkStationName+"%")
+	}
+	if q.Keyword != "" {
+		query = query.Where("w.work_station_name LIKE ? OR u.name LIKE ?", "%"+q.Keyword+"%", "%"+q.Keyword+"%")
+	}
+	if q.BeginYearMonth != "" {
+		query = query.Where("w.year_month >= ?", q.BeginYearMonth)
+	}
+	if q.EndYearMonth != "" {
+		query = query.Where("w.year_month <= ?", q.EndYearMonth)
+	}
+	var total int64
+	if err := query.Count(&total).Error; err != nil {
+		return nil, err
+	}
+	type row struct {
+		models.WorkEnvironmentInfo
+		Name string `gorm:"column:name"`
+	}
+	var rows []row
+	if err := query.Select("w.*, u.name AS name").
+		Order("w.environment_id DESC").
+		Offset((page - 1) * size).Limit(size).
+		Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	list := make([]WorkEnvironmentListItem, 0, len(rows))
+	for _, r := range rows {
+		list = append(list, WorkEnvironmentListItem{
+			WorkEnvironmentInfo: r.WorkEnvironmentInfo,
+			Name:                r.Name,
+		})
+	}
+	return response.NewPage(list, total, page, size), nil
 }
 
 // GetWorkEnvironmentByID loads work environment row.

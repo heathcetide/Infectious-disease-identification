@@ -20,12 +20,16 @@ import (
 
 const defaultResetPassword = "Passw0rd!"
 
-// PageDiseaseTypes paginates disease types.
+// PageDiseaseTypes paginates disease types with subtypes for admin basic-data UI.
 func PageDiseaseTypes(db *gorm.DB, q PageQuery) (*response.Page, error) {
 	page, size := q.Normalize()
 	query := db.Model(&models.DiseaseType{})
-	if q.Keyword != "" {
-		query = query.Where("disease_type_name LIKE ?", "%"+q.Keyword+"%")
+	kw := q.Keyword
+	if kw == "" {
+		kw = q.Text
+	}
+	if kw != "" {
+		query = query.Where("disease_type_name LIKE ?", "%"+kw+"%")
 	}
 	var total int64
 	if err := query.Count(&total).Error; err != nil {
@@ -35,7 +39,31 @@ func PageDiseaseTypes(db *gorm.DB, q PageQuery) (*response.Page, error) {
 	if err := query.Order("disease_type_id ASC").Offset((page - 1) * size).Limit(size).Find(&list).Error; err != nil {
 		return nil, err
 	}
-	return response.NewPage(list, total, page, size), nil
+	out := make([]DiseaseTypePageItem, 0, len(list))
+	for _, d := range list {
+		item := DiseaseTypePageItem{
+			DiseaseTypeID:   d.DiseaseTypeID,
+			DiseaseTypeName: d.DiseaseTypeName,
+			HasSubtype:      d.HasSubtype != nil && *d.HasSubtype,
+			SubDiseaseList:  []DiseaseSubtypeItem{},
+		}
+		var subs []models.DiseaseSubtype
+		if err := db.Where("disease_type_id = ?", d.DiseaseTypeID).
+			Order("subtype_id ASC").Find(&subs).Error; err != nil {
+			return nil, err
+		}
+		for _, s := range subs {
+			item.SubDiseaseList = append(item.SubDiseaseList, DiseaseSubtypeItem{
+				SubtypeID:   s.SubtypeID,
+				SubtypeName: s.SubtypeName,
+			})
+		}
+		if len(item.SubDiseaseList) > 0 {
+			item.HasSubtype = true
+		}
+		out = append(out, item)
+	}
+	return response.NewPage(out, total, page, size), nil
 }
 
 // GetHospitalByID loads one hospital.

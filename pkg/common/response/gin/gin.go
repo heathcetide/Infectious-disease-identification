@@ -193,14 +193,16 @@ func buildEnvelope(ae *response.AppError, data any) any {
 
 // resolveMessage resolves the message for an AppError using the
 // package-level Resolver.
+// Prefer an explicit Message (set via response.New / Newf) so handlers
+// can return concrete validation text instead of a generic i18n label.
 func resolveMessage(ae *response.AppError) string {
+	if ae.Message != "" {
+		return ae.Message
+	}
 	if Resolver != nil && ae.MsgKey != "" {
 		if msg := Resolver.Resolve(ae.MsgKey, ae.MsgArgs...); msg != "" {
 			return msg
 		}
-	}
-	if ae.Message != "" {
-		return ae.Message
 	}
 	if ae.MsgKey != "" {
 		return ae.MsgKey
