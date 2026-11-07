@@ -21,8 +21,15 @@
       </div>
     </div>
 
-    <!-- 预览图片弹窗 -->
-    <el-dialog v-model="dialogVisible" class="custom-dialog" :modal="true">
+    <!-- 预览图片弹窗：限制高度，避免页面出现滚轮 -->
+    <el-dialog
+      v-model="dialogVisible"
+      class="custom-dialog"
+      :modal="true"
+      width="auto"
+      align-center
+      destroy-on-close
+    >
       <img
         v-if="dialogImageUrl"
         :src="dialogImageUrl"
@@ -166,18 +173,28 @@ const handleFileChange = (file, fileList) => {
   font-size: 14px;
 }
 
-.custom-dialog {
+.custom-dialog :deep(.el-dialog) {
+  margin: 0 auto;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.custom-dialog :deep(.el-dialog__body) {
+  padding: 12px;
+  max-height: 80vh;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: auto;
-  height: auto;
+  justify-content: center;
 }
 
 .dialog-image {
-  margin: 10px 0;
-  max-width: 100%;
-  max-height: 100%;
+  display: block;
+  max-width: min(880px, 86vw);
+  max-height: 78vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 </style>

@@ -1,68 +1,84 @@
 <template>
-  <div class="login-wrapper">
-    <div class="container">
-      <div class="login-container">
-        <div class="login-title">登录</div>
-        <form @submit.prevent="handleSubmit">
-          <div class="input-group">
-            <label for="phoneNumber">用户名</label>
+  <div class="login-page">
+    <header class="top-bar">
+      <img class="logo" src="@/assets/banner.svg" alt="" />
+      <span class="system-name">突发传染病症状筛查与预警系统</span>
+    </header>
+
+    <main class="login-main">
+      <div class="login-card">
+        <div class="card-head">
+          <h1>管理端登录</h1>
+          <p>请使用已开通的手机号与密码登录</p>
+        </div>
+
+        <form class="form" @submit.prevent="handleSubmit">
+          <label class="field">
+            <span class="label">手机号</span>
             <input
               v-model="phoneNumber"
               type="text"
-              id="phoneNumber"
-              placeholder="手机号"
+              inputmode="numeric"
               maxlength="11"
-              @input="validateAndFormatphoneNumber"
+              autocomplete="username"
+              placeholder="请输入11位手机号"
+              @blur="validateAndFormatphoneNumber"
             />
-            <span v-if="phoneNumberError" class="error-message">{{
-              phoneNumberError
-            }}</span>
-          </div>
-          <div class="input-group">
-            <label for="password">密码</label>
-            <div class="password-wrapper">
+            <span v-if="phoneNumberError" class="err">{{ phoneNumberError }}</span>
+          </label>
+
+          <label class="field">
+            <span class="label">密码</span>
+            <div class="pwd-wrap">
               <input
                 :type="passwordFieldType"
                 v-model="password"
-                id="password"
-                placeholder="请输入密码"
                 maxlength="16"
-                @input="validateAndFormatPassword"
+                autocomplete="current-password"
+                placeholder="请输入密码"
+                @blur="validateAndFormatPassword"
               />
-              <span class="eye-icon" @click="togglePasswordVisibility">
+              <button class="eye" type="button" @click="togglePasswordVisibility">
                 <img
-                  :src="
-                    passwordFieldType === 'password'
-                      ? passwordClose
-                      : passwordOpen
-                  "
+                  :src="passwordFieldType === 'password' ? passwordClose : passwordOpen"
+                  alt=""
                 />
-              </span>
+              </button>
             </div>
-            <span v-if="passwordError" class="error-message">{{
-              passwordError
-            }}</span>
-          </div>
-          <button @click="handleSubmit" type="button">提交</button>
-          <a href="#" @click.prevent="resetPassword">重置密码</a>
+            <span v-if="passwordError" class="err">{{ passwordError }}</span>
+          </label>
+
+          <button class="submit" type="submit" :disabled="submitting">
+            {{ submitting ? '登录中…' : '登 录' }}
+          </button>
+
+          <button class="linkish" type="button" @click="resetPassword">
+            忘记密码？重置为手机号后六位
+          </button>
         </form>
       </div>
-      <div class="title">
-        <div>--- 川藏铁路突发传染病自主判别和现场调查管理系统 ---</div>
-      </div>
-    </div>
+    </main>
+
+    <footer class="foot">突发传染病症状筛查与预警系统 · 管理端</footer>
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus"; 
+import { ElMessage } from "element-plus";
 import { loginUser } from "@/api/login.js";
 import passwordOpen from "../../assets/password_close.png";
 import passwordClose from "../../assets/password_open.png";
 import { useUserStore } from "@/store/userrole";
 import { useTagsStore } from "@/store/tags.js";
+
+function homePathForRole(role) {
+  // 登录后默认进入数据大屏（医护暂无大屏权限，进检查信息）
+  if (role === "系统管理员" || role === "疾控中心工作人员") return "/report/screen";
+  if (role === "专职医护人员") return "/check";
+  return "/user/profile";
+}
 
 export default {
   setup() {
@@ -74,6 +90,7 @@ export default {
     const passwordFieldType = ref("password");
     const phoneNumberError = ref("");
     const passwordError = ref("");
+    const submitting = ref(false);
 
     const togglePasswordVisibility = () => {
       passwordFieldType.value =
@@ -85,19 +102,19 @@ export default {
         return;
       }
 
-      const loginData = {
-        phoneNumber: phoneNumber.value,
-        password: password.value,
-      };
-
+      submitting.value = true;
       try {
-        const response = await loginUser(loginData);
+        const response = await loginUser({
+          phoneNumber: phoneNumber.value,
+          password: password.value,
+        });
         const { code, data, msg } = response.data;
         const roleFromBackend = {
-          admin: '系统管理员',
-          medical: '专职医护人员',
-          cdc: '疾控中心工作人员',
+          admin: "系统管理员",
+          medical: "专职医护人员",
+          cdc: "疾控中心工作人员",
         };
+
         if (code === 1 || code === 200) {
           const userRole =
             data.userType ||
@@ -105,9 +122,9 @@ export default {
             data.user?.role;
 
           if (
-            userRole === '系统管理员' ||
-            userRole === '专职医护人员' ||
-            userRole === '疾控中心工作人员'
+            userRole === "系统管理员" ||
+            userRole === "专职医护人员" ||
+            userRole === "疾控中心工作人员"
           ) {
             const userData = {
               phoneNumber: phoneNumber.value,
@@ -116,31 +133,55 @@ export default {
               role: userRole,
             };
             userStore.login(userData);
-            localStorage.setItem("user", JSON.stringify(userData)); // 保存用户数据到 localStorage
-            tagStore.removeAllTag(); // 清除上次登录的 tags
-            router.push("/user/password"); // 跳转到其他页面
-            ElMessage.success("登录成功");
+            localStorage.setItem("user", JSON.stringify(userData));
+            tagStore.removeAllTag();
+
+            const mustChange = !!data.mustChangePassword;
+            const target = mustChange
+              ? { path: "/user/profile", query: { tab: "password" } }
+              : homePathForRole(userRole);
+            const targetPath = typeof target === "string" ? target : target.path;
+            const homeTitle =
+              targetPath === "/report/screen"
+                ? "数据大屏"
+                : targetPath === "/check"
+                  ? "检查信息管理"
+                  : "个人中心";
+            tagStore.addTag({ title: homeTitle, path: targetPath });
+            if (mustChange) {
+              ElMessage.warning("当前为初始密码，请先修改密码");
+            } else {
+              ElMessage.success("登录成功");
+            }
+            router.push(target);
           } else {
-            // 如果角色不属于允许的角色，阻止登录
             ElMessage.error("无登录权限");
           }
         } else {
-          // 使用后端返回的 msg 作为错误提示，如果 msg 是 null，使用默认提示
-          ElMessage.error(msg || '登录失败，请稍后再试');
+          ElMessage.error(msg || "手机号或密码错误");
         }
       } catch (error) {
-        // 捕获网络错误或其他异常，并显示默认错误提示
-        ElMessage.error("网络错误或服务器异常，请稍后再试");
+        const msg =
+          error?.response?.data?.msg ||
+          error?.response?.data?.message ||
+          "网络错误或服务器异常，请稍后再试";
+        ElMessage.error(msg);
+      } finally {
+        submitting.value = false;
       }
     };
 
     const resetPassword = () => {
+      if (!phoneNumber.value || phoneNumber.value.length < 6) {
+        ElMessage.warning("请先输入手机号");
+        return;
+      }
       password.value = phoneNumber.value.slice(-6);
-      alert("密码已重置为身份证后六位");
+      ElMessage.success("已填入手机号后六位，请登录后尽快修改");
     };
 
     const validateAndFormatphoneNumber = () => {
-      const phonePattern = /^[1-9]\d{10}$/; // 确保手机号为11位
+      const phonePattern = /^[1-9]\d{10}$/;
       if (!phonePattern.test(phoneNumber.value)) {
         phoneNumberError.value = "请输入正确的11位手机号";
         return false;
@@ -150,8 +191,7 @@ export default {
     };
 
     const validateAndFormatPassword = () => {
-      const passwordPattern = /^.{6,16}$/; // 密码应为6-16位字符，可包含字母、数字、特殊字符
-      if (!passwordPattern.test(password.value)) {
+      if (!/^.{6,16}$/.test(password.value)) {
         passwordError.value = "密码应为6-16位字符";
         return false;
       }
@@ -167,6 +207,7 @@ export default {
       passwordClose,
       phoneNumberError,
       passwordError,
+      submitting,
       togglePasswordVisibility,
       handleSubmit,
       resetPassword,
@@ -178,149 +219,180 @@ export default {
 </script>
 
 <style scoped>
-
-.login-wrapper {
-  position: relative;
-  height: 100vh;
+.login-page {
+  --ink: #1a2332;
+  --muted: #6b7785;
+  --line: #d9e1ec;
+  --accent: #1f4f9c;
+  --bg: #eef2f7;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, rgba(238, 242, 247, 0.92), rgba(238, 242, 247, 0.96)),
+    url("../images/background_login.jpg") center / cover no-repeat;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color: var(--ink);
+}
+
+.top-bar {
+  height: 64px;
+  display: flex;
   align-items: center;
-  overflow: hidden;
+  gap: 14px;
+  padding: 0 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+  backdrop-filter: blur(8px);
 }
 
-.login-wrapper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url("../images/background_login.jpg");
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
+.logo {
+  height: 36px;
+  width: auto;
 }
 
-.login-wrapper::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: -1;
+.system-name {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
 }
 
-.title {
-  margin-top: 40px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-left: -35px;
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
 }
 
-.login-container {
-  background-color: #ffffff;
-  padding: 20px;
+.login-card {
+  width: min(420px, 100%);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px 28px 24px;
+  box-shadow: 0 12px 36px rgba(26, 35, 50, 0.1);
+}
+
+.card-head h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card-head p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.field input {
+  height: 44px;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  width: 300px;
-  height: 400px;
-  text-align: center;
-  position: relative;
-  left: 16%;
-}
-
-.login-title {
-  color: #333333;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.input-group {
-  margin-bottom: 30px;
-  text-align: left;
-}
-
-label {
-  color: #333333;
+  padding: 0 12px;
   font-size: 14px;
-  margin-bottom: 5px;
-  display: block;
-}
-
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  padding: 10px;
-  border: 1px solid #fafafa;
-  border-radius: 4px;
-  background-color: #fafafa;
-  color: #333333;
+  background: #f8fafc;
+  outline: none;
   box-sizing: border-box;
-  outline: none;
-  transition: box-shadow 0.2s ease-in-out;
+  width: 100%;
 }
 
-input::-webkit-input-placeholder {
-  color: #a6a6a6;
-  font-size: 14px;
+.field input:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(31, 79, 156, 0.12);
 }
 
-input:focus {
-  outline: none;
-  border: 1px solid #285ac8;
-  /* box-shadow: 1px 10px 20px rgba(56,56,56,0.05); */
-}
-
-.password-wrapper {
+.pwd-wrap {
   position: relative;
 }
 
-.eye-icon {
-  transform: scale(0.5) translateY(-50%);
+.pwd-wrap input {
+  padding-right: 42px;
+}
+
+.eye {
   position: absolute;
-  right: 10px;
-  top: 35%;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.eye img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.err {
+  color: #c0392b;
+  font-size: 12px;
+}
+
+.submit {
+  margin-top: 8px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   cursor: pointer;
 }
 
-button {
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  background-color: #285ac8;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
+.submit:hover:not(:disabled) {
+  background: #163a74;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.linkish {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
   cursor: pointer;
-  margin-top: 10px;
-  box-shadow: 0.8px 0.8px 24px 0.8px rgba(40, 90, 200, 0.3);
+  padding: 4px 0;
 }
 
-button:hover {
-  background-color: #1d45a5;
-}
-
-a {
-  display: block;
-  margin-top: 15px;
-  color: #285ac8;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-a:hover {
+.linkish:hover {
   text-decoration: underline;
 }
 
-.error-message {
-  color: red;
+.foot {
+  text-align: center;
+  padding: 16px;
+  color: var(--muted);
   font-size: 12px;
-  margin-top: 5px;
 }
-
 </style>

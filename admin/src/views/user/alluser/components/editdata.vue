@@ -525,13 +525,17 @@ export default {
           this.form.Weight = data.weight;
 
           if (
-            data.workOnPlateauStartDate &&
-            data.workOnPlateauStartDate.length === 3
+            data.workOnPlateauStartDate
           ) {
-            const [year, month, day] = data.workOnPlateauStartDate;
-            this.form.WorkOnPlateauStartDate = `${year}-${String(
-              month
-            ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const raw = data.workOnPlateauStartDate;
+            if (Array.isArray(raw) && raw.length >= 3) {
+              const [year, month, day] = raw;
+              this.form.WorkOnPlateauStartDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            } else if (typeof raw === "string") {
+              this.form.WorkOnPlateauStartDate = raw.slice(0, 10);
+            } else {
+              this.form.WorkOnPlateauStartDate = "";
+            }
           } else {
             this.form.WorkOnPlateauStartDate = "";
           }

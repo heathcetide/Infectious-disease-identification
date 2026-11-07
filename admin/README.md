@@ -1,4 +1,4 @@
-# 川藏铁路突发传染病自主判别和现场调查系统
+# 突发传染病症状筛查与预警系统
 ## vue3 + vite
 
 This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.

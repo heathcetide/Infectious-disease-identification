@@ -10,6 +10,104 @@
 
 @use "element-plus/theme-chalk/src/index.scss" as *;
 
+:root {
+  --admin-brand: #285ac8;
+  --admin-page-bg: #ffffff;
+  --admin-card-bg: #fafafa;
+  --admin-header-bg: #ffffff;
+}
+
 .el-input{
-  --el-input-focus-border-color:#715CFE
+  --el-input-focus-border-color: var(--el-color-primary);
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--el-color-primary);
+  --el-button-border-color: var(--el-color-primary);
+  --el-button-hover-bg-color: var(--el-color-primary-light-3);
+  --el-button-hover-border-color: var(--el-color-primary-light-3);
+}
+
+html.dark,
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --admin-menu-hover: #2a2a2a;
+  --admin-menu-active-bg: rgba(64, 128, 255, 0.18);
+}
+
+html.dark body,
+html[data-theme='dark'] body {
+  background: var(--admin-page-bg);
+  color: var(--el-text-color-primary);
+}
+
+html.dark .el-menu,
+html[data-theme='dark'] .el-menu {
+  background-color: transparent !important;
+  --el-menu-bg-color: transparent;
+  --el-menu-text-color: var(--el-text-color-regular);
+  --el-menu-hover-bg-color: var(--admin-menu-hover);
+  border-right-color: transparent !important;
+}
+
+html.dark .el-menu-item.is-active,
+html[data-theme='dark'] .el-menu-item.is-active {
+  background-color: var(--admin-menu-active-bg) !important;
+  color: var(--el-color-primary) !important;
+}
+
+html.dark .el-menu-item:not(.is-active):hover,
+html.dark .el-sub-menu__title:hover,
+html[data-theme='dark'] .el-menu-item:not(.is-active):hover,
+html[data-theme='dark'] .el-sub-menu__title:hover {
+  background-color: var(--admin-menu-hover) !important;
+}
+
+html.dark .el-card,
+html.dark .el-table,
+html.dark .el-dialog,
+html.dark .el-drawer,
+html[data-theme='dark'] .el-card,
+html[data-theme='dark'] .el-table,
+html[data-theme='dark'] .el-dialog,
+html[data-theme='dark'] .el-drawer {
+  --el-bg-color: var(--admin-card-bg);
+  --el-fill-color-blank: var(--admin-card-bg);
+  --el-table-bg-color: var(--admin-card-bg);
+  --el-table-tr-bg-color: var(--admin-card-bg);
+  --el-table-header-bg-color: #1f1f1f;
+  --el-table-row-hover-bg-color: #262727;
+  --el-table-border-color: var(--el-border-color);
+  --el-table-text-color: var(--el-text-color-regular);
+  --el-table-header-text-color: var(--el-text-color-primary);
+}
+
+html.dark .el-table th.el-table__cell,
+html[data-theme='dark'] .el-table th.el-table__cell {
+  background-color: #1f1f1f !important;
+  color: var(--el-text-color-primary) !important;
+}
+
+html.dark .el-table tr,
+html.dark .el-table td.el-table__cell,
+html[data-theme='dark'] .el-table tr,
+html[data-theme='dark'] .el-table td.el-table__cell {
+  background-color: var(--admin-card-bg) !important;
+}
+
+html.dark .el-pagination,
+html[data-theme='dark'] .el-pagination {
+  --el-pagination-bg-color: transparent;
+  --el-pagination-button-bg-color: #1f1f1f;
+  --el-pagination-hover-color: var(--el-color-primary);
+}
+
+html.dark .el-main .container,
+html[data-theme='dark'] .el-main .container {
+  background-color: var(--el-bg-color) !important;
+}
+
+html.dark .el-select__wrapper,
+html[data-theme='dark'] .el-select__wrapper {
+  background-color: var(--el-fill-color-blank);
 }

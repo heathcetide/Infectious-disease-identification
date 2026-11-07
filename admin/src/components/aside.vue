@@ -1,37 +1,25 @@
 <template>
-  <el-menu
-    default-active="2"
-    class="aside-container"
-    @open="handleOpen"
-    @close="handleClose"
-  >
-    <p class="logo-lg">{{ getTitle() }}</p> <!-- 动态显示标题 -->
-    <TreeMenu/>
-  </el-menu>
+  <div class="aside-container">
+    <div class="brand">
+      <img class="brand-logo" src="/logo.svg" alt="logo" />
+      <p class="logo-lg">{{ getTitle() }}</p>
+    </div>
+    <TreeMenu />
+  </div>
 </template>
 
 <script setup>
 import TreeMenu from './treemenu.vue';
-import { useUserStore } from '@/store/userrole'; // 引入用户角色 store
+import { useUserStore } from '@/store/userrole';
 
-const userStore = useUserStore(); // 使用用户 store
+const userStore = useUserStore();
 
-const handleClose = () => {};
-const handleOpen = () => {};
-
-// 根据角色返回不同的标题
 const getTitle = () => {
-  const name = userStore.name || ''; 
-
-  if (userStore.role === '系统管理员') {
-    return `系统管理员-${name}`;
-  } else if (userStore.role === '专职医护人员') {
-    return `专职医护人员-${name}`; 
-  } else if (userStore.role === '疾控中心工作人员') {
-    return `疾控中心工作人员-${name}`;
-  }
-
-  return `用户-${name}`; // 默认标题
+  const name = userStore.name || '';
+  if (userStore.role === '系统管理员') return `系统管理员-${name}`;
+  if (userStore.role === '专职医护人员') return `专职医护人员-${name}`;
+  if (userStore.role === '疾控中心工作人员') return `疾控中心工作人员-${name}`;
+  return `用户-${name}`;
 };
 </script>
 
@@ -39,25 +27,45 @@ const getTitle = () => {
 <style lang="less" scoped>
 .aside-container {
   height: 100%;
-  width: auto;
+  width: 180px;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  margin-right: -15px;
-  padding-right: 15px; 
+  border-right: none !important;
+  background: var(--admin-card-bg, #f4f4f4) !important;
 }
 
-/* 隐藏滚动条，但保留滚动功能 */
 .aside-container::-webkit-scrollbar {
-  display: none; /* 隐藏滚动条 */
+  display: none;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .logo-lg {
+  margin: 0;
   font-style: normal;
-  font-size: 16px;
-  text-align: center;
-  height: 50px;
-  line-height: 50px;
-  color: #333333;
-  font-weight: bold;
+  font-size: 12px;
+  text-align: left;
+  line-height: 1.3;
+  color: var(--el-text-color-primary, #333);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 128px;
 }
 </style>

@@ -103,11 +103,7 @@
     <!-- 表格部分 -->
     <div class="usertable">
       <el-table
-        :header-cell-style="{
-          height: '40px',
-          background: '#f5f7fa',
-          color: '#333333',
-        }"
+        :header-cell-style="tableHeaderStyle"
         v-loading="loading"
         :data="allData"
         style="width: 100%"
@@ -233,9 +229,29 @@ export default {
     tableHeight() {
       return window.innerHeight - 300;
     },
+    tableHeaderStyle() {
+      return {
+        height: '40px',
+        background: 'var(--el-fill-color-light, #f5f7fa)',
+        color: 'var(--el-text-color-primary, #333)',
+      };
+    },
   },
 
   methods: {
+    formatPlateauDate(value) {
+      if (!value) return "";
+      if (Array.isArray(value) && value.length >= 3) {
+        return `${value[0]}-${String(value[1]).padStart(2, "0")}-${String(
+          value[2]
+        ).padStart(2, "0")}`;
+      }
+      if (typeof value === "string") {
+        const m = value.match(/^(\d{4}-\d{2}-\d{2})/);
+        return m ? m[1] : value.slice(0, 10);
+      }
+      return "";
+    },
     // 获取用户列表
     async fetchUserData() {
       // console.log("Fetching user data...");
@@ -268,14 +284,10 @@ export default {
             ethnicity: item.ethnicity,
             EducationLevel: item.educationLevel,
 
-            // 日期格式转换
-            WorkOnPlateauStartDate: item.workOnPlateauStartDate
-              ? `${item.workOnPlateauStartDate[0]}-${String(
-                  item.workOnPlateauStartDate[1]
-                ).padStart(2, "0")}-${String(
-                  item.workOnPlateauStartDate[2]
-                ).padStart(2, "0")}`
-              : "",
+            // 兼容 Java 数组 [y,m,d] 与 ISO/日期字符串
+            WorkOnPlateauStartDate: this.formatPlateauDate(
+              item.workOnPlateauStartDate
+            ),
 
             department: item.department,
             SpecificOccupation: item.specificOccupation,
@@ -484,7 +496,7 @@ export default {
 
 .container {
   padding: 10px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
   border-radius: 5px;
 }
 

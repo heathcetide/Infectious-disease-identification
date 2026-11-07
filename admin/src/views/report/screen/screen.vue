@@ -1,41 +1,33 @@
 <template>
-  <div class="container">
-    <div class="title">川藏铁路突发传染病自主判别和现场调查软件数据大屏</div>
-
-    <el-form
-      :inline="true"
-      class="demo-form-inline"
-      style="margin-top: 30px; margin-left: 20px; margin-bottom: -10px"
-    >
-      <el-form-item label="选择日期">
-        <el-date-picker
-          v-model="selectedDate"
-          type="date"
-          placeholder="选择日期"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          :disabled-date="disabledFutureDate"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onConfirm">确 定</el-button>
-      </el-form-item>
-    </el-form>
-
-    <!-- 只有点击确定按钮后才传 queryDate 给子组件 -->
-    <Card :queryDate="queryDate" />
+  <div class="screen-page">
+    <Card :queryDate="queryDate">
+      <template #extra>
+        <el-form :inline="true" class="date-form" @submit.prevent>
+          <el-form-item label="选择日期">
+            <el-date-picker
+              v-model="selectedDate"
+              type="date"
+              placeholder="选择日期"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              :disabled-date="disabledFutureDate"
+              size="small"
+              @change="onConfirm"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="small" @click="onConfirm">确 定</el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+    </Card>
     <div class="elsedata">
       <div class="chartspartone">
-        <Chart01 :queryDate="queryDate"/>
-        <Chart02 :queryDate="queryDate" />
-        <Chart03 />
+        <Chart01 :queryDate="queryDate" />
+        <Chart04 :queryDate="queryDate" />
       </div>
       <div class="Map">
-        <Map :queryDate="queryDate"/>
-      </div>
-      <div class="chartspartthree">
-        <Chart04 />
-        <Chart05 />
+        <Map :queryDate="queryDate" />
       </div>
     </div>
   </div>
@@ -44,67 +36,95 @@
 <script>
 import Card from './components/card.vue';
 import Chart01 from './components/chart01.vue';
-import Chart02 from './components/chart02.vue';
-import Chart03 from './components/chart03.vue';
 import Map from './components/map.vue';
 import Chart04 from './components/chart04.vue';
-import Chart05 from './components/chart05.vue';
 
 export default {
+  name: 'Screen',
   components: {
     Card,
     Chart01,
-    Chart02,
-    Chart03,
     Map,
     Chart04,
-    Chart05,
   },
   data() {
     return {
-      selectedDate: '', // 用户选中的日期，但不立即传给子组件
-      queryDate: '',     // 点击确定后才赋值给这个传递给子组件
+      selectedDate: '',
+      queryDate: '',
     };
   },
   methods: {
+    localToday() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    },
+    disabledFutureDate(date) {
+      const end = new Date();
+      end.setHours(23, 59, 59, 999);
+      return date.getTime() > end.getTime();
+    },
     onConfirm() {
-      if (!this.selectedDate) {
-        const now = new Date();
-        this.queryDate = now.toISOString().slice(0, 10);
-      } else {
-        this.queryDate = this.selectedDate;
-      }
+      this.queryDate = this.selectedDate || this.localToday();
     },
   },
   mounted() {
-    // 初始化默认值
-    const now = new Date();
-    const today = now.toISOString().slice(0, 10);
+    const today = this.localToday();
     this.selectedDate = today;
     this.queryDate = today;
   },
 };
 </script>
 
-
 <style scoped>
-.container{
-  background: #FFFFFF;
-  width:100%;
-  height: auto;
+.screen-page {
+  background: var(--el-bg-color, #ffffff);
+  width: 100%;
+  height: calc(100vh - 136px);
+  max-height: calc(100vh - 136px);
   border-radius: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
 }
 
-.title{
-    text-align: center;
-    width: 100%;
-    font-size: 22px;
-    font-weight: bold;
-    color: #333333;
-    padding-top: 20px;
-    padding-left: 10px;
+.date-form {
+  margin: 0;
 }
-.elsedata{
+
+.date-form :deep(.el-form-item) {
+  margin-bottom: 0;
+  margin-right: 8px;
+}
+
+.elsedata {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 10px 6px;
+  box-sizing: border-box;
+}
+
+.chartspartone {
+  flex: 0 0 220px;
+  min-width: 200px;
+  max-width: 240px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.Map {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
 }
 </style>

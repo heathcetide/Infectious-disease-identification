@@ -308,7 +308,7 @@ export default {
 <style scoped>
 .container {
   padding: 10px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
   border-radius: 5px;
 }
 

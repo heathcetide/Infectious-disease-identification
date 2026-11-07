@@ -22,11 +22,7 @@
     <!-- 表格部分 -->
     <div class="usertable">
       <el-table
-        :header-cell-style="{
-          height: '40px',
-          background: '#f5f7fa',
-          color: '#333333',
-        }"
+        :header-cell-style="tableHeaderStyle"
         v-loading="loading"
         :data="allData"
         style="width: 100%"
@@ -141,6 +137,13 @@ export default {
   computed: {
     tableHeight() {
       return window.innerHeight - 300;
+    },
+    tableHeaderStyle() {
+      return {
+        height: '40px',
+        background: 'var(--el-fill-color-light, #f5f7fa)',
+        color: 'var(--el-text-color-primary, #333)',
+      };
     },
   },
 
@@ -262,7 +265,7 @@ async toggleStatus(row) {
 
 .container {
   padding: 10px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
   border-radius: 5px;
 }
 

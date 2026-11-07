@@ -45,12 +45,14 @@
           <el-form-item label="" prop="surveyContent">
             <el-input
               v-model="form.surveyContent"
-              style="width: 500px; margin-left: -60px"
+              class="survey-textarea"
               placeholder="请输入满意度调查内容"
               type="textarea"
-              clearable
-              row="4"
-            ></el-input>
+              :rows="8"
+              maxlength="2000"
+              show-word-limit
+              resize="vertical"
+            />
           </el-form-item>
         </div>
       </el-form>
@@ -185,5 +187,15 @@ p {
   font-size: 12px;
   font-weight: bold;
   color: #4a4a4a;
+}
+.survey-textarea {
+  width: 100%;
+  margin-left: -60px;
+  max-width: 560px;
+}
+.survey-textarea :deep(textarea) {
+  min-height: 180px;
+  line-height: 1.6;
+  font-size: 14px;
 }
 </style>

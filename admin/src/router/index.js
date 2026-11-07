@@ -11,7 +11,7 @@ import { useUserStore } from '@/store/userrole';
 // import alluser from '@/views/user/alluser/alluser.vue'
 const user = () => import('@/views/user/index.vue')
 const alluser = () => import('@/views/user/alluser/alluser.vue')
-const password = () => import('@/views/user//password/password.vue')
+const profile = () => import('@/views/user/profile/profile.vue')
 
 const workenv = () => import('@/views/work-env/index.vue')
 
@@ -24,7 +24,6 @@ const diagnosis = () => import('@/views/diagnosis/index.vue')
 const check = () => import('@/views/check/index.vue') 
 
 const system = () =>import('@/views/system/index.vue')
-const disdata = () =>import('@/views/system/disdata/disdata.vue')
 const weight = () =>import('@/views/system/weight/weight.vue')
 const autoweight = () =>import('@/views/system/autoweight/autoweight.vue')
 const expertAI = () =>import('@/views/system/expertAI/expertAI.vue')
@@ -39,10 +38,26 @@ const accuracymanage = () => import('@/views/system/accuracymanage/accuracymanag
 // 1.定义路由数据
 const routes=[
     {
+        path: '/login',
+        component: login,
+        name: 'login',
+    },
+    {
         path: '/',
-        redirect: '/login',
         component: layout,
         name: 'main',
+        redirect: () => {
+            try {
+                const raw = localStorage.getItem('user')
+                const user = raw ? JSON.parse(raw) : null
+                if (!user?.token) return '/login'
+                if (user.role === '系统管理员' || user.role === '疾控中心工作人员') return '/report/screen'
+                if (user.role === '专职医护人员') return '/check'
+                return '/user/profile'
+            } catch {
+                return '/login'
+            }
+        },
         children: [
             {
                 path: 'dashboard',
@@ -62,9 +77,14 @@ const routes=[
                         name: 'alluser',
                     },
                     {
+                        path: 'profile',
+                        component: profile,
+                        name: 'profile',
+                    },
+                    {
                         path: 'password',
-                        component: password,
-                        name: 'password'
+                        redirect: { path: '/user/profile', query: { tab: 'password' } },
+                        name: 'password',
                     },
                 ]
             },
@@ -127,7 +147,7 @@ const routes=[
                 children: [
                     {
                         path: 'dis-data',
-                        component: disdata,
+                        redirect: '/system/weight',
                         name: 'disdata'
                     },
                     {
@@ -177,10 +197,6 @@ const routes=[
                 name: 'satisfaction'
             }
         ]
-    },
-    {
-        path: '/login',
-        component: login
     },
 ]
 

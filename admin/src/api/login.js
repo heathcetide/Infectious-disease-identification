@@ -9,3 +9,8 @@ export const changePassword = async (data) => {
   const response = await axiosInstance.put("/api/v1/medical/password", data);
   return response;
 };
+
+export const updateProfile = async (data) => {
+  const response = await axiosInstance.put("/api/v1/employee/profile", data);
+  return response;
+};

@@ -221,7 +221,10 @@ export default {
           response.data &&
           response.data.code === 1
         ) {
-          const data = response.data.data;
+          const raw = response.data.data;
+          const data = Array.isArray(raw)
+            ? raw
+            : raw?.records || raw?.list || [];
 
           // 分发数据到各个子组件
           this.generalSymptomsData = data.filter(

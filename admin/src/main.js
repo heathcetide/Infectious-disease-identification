@@ -7,11 +7,20 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import axios from 'axios'
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
-import 'element-plus/theme-chalk/src/index.scss';  // 确保引入的是 SCSS 文件而不是 CSS
-import './styles/index.scss';  // 引入自定义样式
+import 'element-plus/theme-chalk/dark/css-vars.css';
+import './styles/index.scss';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import '@/styles/global.scss';
 import '@/styles/NextContainer.css';
+import { installAmapUrlRewrite, loadAMap } from '@/utils/amap'
+import { useThemeStore } from '@/store/theme'
+
+// Dev: rewrite AMap CDN requests to Vite proxy before any map code runs
+installAmapUrlRewrite()
+// Preload AMap so report/screen map opens without waiting on first enter
+loadAMap().catch((err) => {
+  console.warn('[amap] preload failed', err)
+})
 
 const app = createApp(App)
 
@@ -23,6 +32,7 @@ app.config.globalProperties.$http = axios;
 // 路由挂载
 app.use(router)
 app.use(createPinia());
+useThemeStore().init();
 
 // 只需调用一次 ElementPlus
 app.use(ElementPlus, {
@@ -36,3 +46,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 // 挂载 Vue 应用
 app.mount('#app')
+
+// 立刻去掉首屏占位，路由切换不再出现全屏 loading
+const splash = document.getElementById('boot-splash')
+if (splash) splash.remove()
+
+

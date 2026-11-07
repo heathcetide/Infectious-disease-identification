@@ -1,8 +1,13 @@
 <template>
   <div class="container">
-    <div class="title-container">
+    <div class="title-row">
+      <div class="title-container">
         <div class="blue-box"></div>
         <span class="title-text">打卡数据监控大屏</span>
+      </div>
+      <div class="title-extra">
+        <slot name="extra"></slot>
+      </div>
     </div>
     <div class="card-container">
         <div class="card" v-for="(item, index) in cardData" :key="index">
@@ -25,7 +30,6 @@ import todayhealth from '@/assets/screenimgs/todayhealth.svg';
 import todaydisease from '@/assets/screenimgs/todaydisease.svg';
 import todaynotcheckin from '@/assets/screenimgs/todaynotcheckin.svg';
 import { getStatisticsData } from '@/api/report/screen.js';
-import { watch, onMounted } from 'vue';
 
 export default {
   props: {
@@ -39,10 +43,10 @@ export default {
       cardData: [
         { title: "职工总人数 (人)", data: 0, imgSrc: allusernumber },
         { title: "打卡总次数 (次)", data: 0, imgSrc: allcheckinnumber },
-        { title: "今日打卡人数 (人)", data: 0, imgSrc: todaycheckin },
-        { title: "今日健康人数 (人)", data: 0, imgSrc: todayhealth },
-        { title: "今日患病人数 (人)", data: 0, imgSrc: todaydisease },
-        { title: "今日未打卡人数 (人)", data: 0, imgSrc: todaynotcheckin }
+        { title: "当日打卡人数 (人)", data: 0, imgSrc: todaycheckin },
+        { title: "当日健康人数 (人)", data: 0, imgSrc: todayhealth },
+        { title: "当日患病人数 (人)", data: 0, imgSrc: todaydisease },
+        { title: "当日未打卡人数 (人)", data: 0, imgSrc: todaynotcheckin }
       ]
     };
   },
@@ -55,18 +59,21 @@ export default {
     },
 
     async fetchStatisticsData(date) {
+      if (!date) return;
       try {
-        const response = await getStatisticsData(date); // 传入日期参数
+        const response = await getStatisticsData(date);
         if (response.data.code === 1) {
           const statistics = response.data.data;
-          this.cardData[0].data = statistics.userNumber; // 总人数
-          this.cardData[1].data = statistics.checkInNumber; // 总打卡数
-          this.cardData[2].data = statistics.userHealthNumber + statistics.userDiseaseNumber; // 今日打卡人数
-          this.cardData[3].data = statistics.userHealthNumber; // 今日健康人数
-          this.cardData[4].data = statistics.userDiseaseNumber; // 今日患病人数
-          this.cardData[5].data = statistics.userNumber - (statistics.userHealthNumber + statistics.userDiseaseNumber); // 今日未打卡人数
-
-          this.startCountAnimation(); // 动画
+          this.cardData[0].data = statistics.userNumber;
+          this.cardData[1].data = statistics.checkInNumber;
+          this.cardData[2].data = statistics.userHealthNumber + statistics.userDiseaseNumber;
+          this.cardData[3].data = statistics.userHealthNumber;
+          this.cardData[4].data = statistics.userDiseaseNumber;
+          this.cardData[5].data = Math.max(
+            0,
+            statistics.userNumber - (statistics.userHealthNumber + statistics.userDiseaseNumber)
+          );
+          this.startCountAnimation();
         } else {
           this.$message.error("获取统计数据失败，请重试！");
         }
@@ -74,11 +81,6 @@ export default {
         console.error("Error fetching statistics data:", error);
         this.$message.error("获取统计数据失败，请重试！");
       }
-    }
-  },
-  mounted() {
-    if (this.queryDate) {
-      this.fetchStatisticsData(this.queryDate);
     }
   },
   watch: {
@@ -96,15 +98,31 @@ export default {
 
 <style scoped>
 .container {
-  margin-top: 40px;
+  margin-top: 4px;
   width: 100%;
   height: auto;
 }
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 10px 0;
+  box-sizing: border-box;
+}
+
 .title-container {
   display: flex;
-  margin-left: 0px;
-  margin-bottom: 20px;
-  margin-top: 20px;
+  align-items: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.title-extra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .blue-box {
@@ -121,39 +139,48 @@ export default {
 }
 .card-container {
   display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 0 10px 4px;
+  box-sizing: border-box;
 }
 
 .card {
   background: #FAFAFA;
-  border-radius: 10px;
-  height: 130px;
-  width: 250px;
-  margin: 8px;
+  border-radius: 8px;
+  height: 72px;
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
 }
 
 .card-title {
-  margin: 15px;
-  font-size: 14px;
+  margin: 8px 10px 2px;
+  font-size: 11px;
   font-weight: 550;
   color: #4A4A4A;
 }
 
 .card-bottom {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 16px;
 }
 
 img {
-  height: 50px;
-  width: 50px;
-  margin-left: 50px;
-  margin-top: 5px;
+  height: 28px;
+  width: 28px;
+  margin-left: 0;
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .card-data {
-  width: 74px;
-  font-size: 24px;
-  margin-top: 15px;
-  margin-left: 15px;
+  min-width: 48px;
+  font-size: 18px;
+  margin-top: 2px;
+  margin-left: 10px;
   font-weight: bold;
   color: #333333;
 }

@@ -137,6 +137,18 @@ export default {
     };
   },
   methods: {
+    formatCheckInDate(value) {
+      if (!value) return "";
+      if (Array.isArray(value) && value.length >= 3) {
+        return `${value[0]}-${String(value[1]).padStart(2, "0")}-${String(
+          value[2]
+        ).padStart(2, "0")}`;
+      }
+      if (typeof value === "string") {
+        return value.slice(0, 10);
+      }
+      return "";
+    },
     showDrawer(statusId) {
       this.fetchCheckinPosition(statusId) 
       this.visible = true;
@@ -152,23 +164,33 @@ export default {
         const response = await selectCheckinInfoById(statusId); 
 
         if (response.data.code === 1) {
-          const data = response.data.data;
+          const data = response.data.data || {};
+          const profile = data.profile || {};
+          const user = data.user || {};
+          const status = data.status || {};
 
-          // 映射数据到表单中
-          this.form.userType = data.userType; // 用户类型
-          this.form.name = data.name; // 姓名
-          this.form.age = data.age; // 年龄
-          this.form.gender = data.gender; // 性别
-          this.form.ethnicity = data.ethnicity; // 民族
-          this.form.department = data.department; // 部门/工种
-            this.form.checkInDate = data.checkInDate
-              ? `${data.checkInDate[0]}-${String(data.checkInDate[1]).padStart(
-                  2,
-                  "0"
-                )}-${String(data.checkInDate[2]).padStart(2, "0")}`
-              : "";
-              console.log(data.longitude,data.latitude);
-          this.$refs.NormalMap.getPosition(data.longitude,data.latitude);
+          this.form = {
+            userType: data.userType || "",
+            name: data.name || user.name || "",
+            age: data.age ?? profile.age ?? "",
+            gender: data.gender || profile.gender || "",
+            ethnicity: data.ethnicity || profile.ethnicity || "",
+            department: data.department || profile.department || "",
+            checkInDate: this.formatCheckInDate(
+              data.checkInDate || status.checkInDate
+            ),
+          };
+
+          const longitude = data.longitude ?? status.longitude;
+          const latitude = data.latitude ?? status.latitude;
+          const address =
+            data.address ||
+            [data.province || status.province, data.city || status.city, data.county || status.county, data.locationName || status.locationName]
+              .filter(Boolean)
+              .join("");
+          this.$nextTick(() => {
+            this.$refs.NormalMap?.getPosition(longitude, latitude, address);
+          });
         } else {
           console.error("获取用户信息失败:", response.data.msg);
         }

@@ -11,6 +11,7 @@
 
 <script>
 import locationIcon from '@/assets/location.svg';
+import { loadAMap } from '@/utils/amap';
 
 export default {
   name: 'MapComponent',
@@ -25,50 +26,56 @@ export default {
   },
   methods: {
 
-    getPosition(longitude,latitude){
+    getPosition(longitude, latitude, fallbackAddress = '') {
+        this.destroyMap();
         this.longitude = longitude;
         this.latitude = latitude;
-        this.initializeMap(this.longitude,this.latitude); 
+        this.address = fallbackAddress || '';
+        this.initializeMap(this.longitude, this.latitude, fallbackAddress);
     },
-    initializeMap(longitude,latitude) {
-      // 模拟经纬度
+    async initializeMap(longitude, latitude, fallbackAddress = '') {
+      const AMap = await loadAMap();
       const LatLng = [longitude, latitude];
 
-      // 初始化地图
       this.map = new AMap.Map(this.$refs.mapContainer, {
-        center: LatLng, // 默认中心点设置为模拟经纬度
+        center: LatLng,
         zoom: 13,
-        resizeEnable: true, // 启用自动调整大小
+        resizeEnable: true,
       });
 
-      // 自定义定位图标
       const customIcon = new AMap.Icon({
-        size: new AMap.Size(48, 48), // 图标大小
-        image: locationIcon, // 自定义图标路径
-        imageSize: new AMap.Size(48, 48), // 图标显示大小
+        size: new AMap.Size(48, 48),
+        image: locationIcon,
+        imageSize: new AMap.Size(48, 48),
       });
 
-      // 添加标记
       this.marker = new AMap.Marker({
         position: LatLng,
         icon: customIcon,
         map: this.map,
       });
 
-      // 调用逆地理编码服务
-      this.getAddress(LatLng);
+      this.getAddress(AMap, LatLng, fallbackAddress);
     },
 
-    // 使用逆地理编码 API 获取地址信息
-    getAddress(latlng) {
-      const geocoder = new AMap.Geocoder();
-      geocoder.getAddress(latlng, (status, result) => {
-        if (status === 'complete' && result.info === 'OK') {
-          this.address = result.regeocode.formattedAddress;
-        } else {
-          this.address = '无法获取地点信息';
+    getAddress(AMap, latlng, fallbackAddress = '') {
+      if (fallbackAddress) {
+        this.address = fallbackAddress;
+      }
+      try {
+        const geocoder = new AMap.Geocoder();
+        geocoder.getAddress(latlng, (status, result) => {
+          if (status === 'complete' && result.info === 'OK') {
+            this.address = result.regeocode.formattedAddress;
+          } else if (!this.address) {
+            this.address = fallbackAddress || '无法获取地点信息';
+          }
+        });
+      } catch (e) {
+        if (!this.address) {
+          this.address = fallbackAddress || '无法获取地点信息';
         }
-      });
+      }
     },
 
     // 清理地图资源，防止内存泄露

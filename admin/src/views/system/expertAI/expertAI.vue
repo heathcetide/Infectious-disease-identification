@@ -2,145 +2,155 @@
   <div class="container">
     <div class="title-container">
       <div class="blue-box"></div>
-      <span class="title-text">专家/AI诊断切换</span>
+      <span class="title-text">专家 / AI 诊断模式</span>
     </div>
+
+    <p class="desc">
+      这里只控制「症状打分用哪套权重」。专家模式走人工标定权重，AI 模式走自动学习权重；与「权重自动更新」菜单不是同一件事。
+    </p>
+
     <div class="content">
-      <el-form :model="form" label-width="70px">
-        <el-form-item label="诊断方式">
+      <el-form :model="form" label-width="88px">
+        <el-form-item label="诊断模式">
           <el-radio-group v-model="form.diagnosisMethod">
             <el-radio value="expert">专家诊断</el-radio>
-            <el-radio value="ai">AI诊断</el-radio>
+            <el-radio value="ai">AI 诊断</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
     </div>
+
     <div class="status">
-      当前：<span v-if="form.diagnosisMethod === 'expert'">{{ expertStatus }}</span>
-      <span v-if="form.diagnosisMethod === 'ai'">{{ aiStatus }}</span>
+      当前生效：
+      <span>{{ activeLabel }}</span>
     </div>
+
+    <div class="hint">
+      <template v-if="form.diagnosisMethod === 'expert'">
+        专家诊断：按现有专家权重表计算患病率。
+      </template>
+      <template v-else>
+        AI 诊断：按 AI 权重表计算患病率；权重是否自动更新请到「启动自动权重更新」单独配置。
+      </template>
+    </div>
+
     <div class="button">
-        <el-button
-          type="primary"
-          @click="handleAction"
-        >
-          确认切换
-        </el-button>
+      <el-button type="primary" @click="handleAction">确认切换</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { systemChange,systemChangeSearch } from '@/api/system/expertAI'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { systemChange, systemChangeSearch } from '@/api/system/expertAI'
+
 export default {
   data() {
     return {
       form: {
-        diagnosisMethod: 'expert' 
+        diagnosisMethod: 'expert',
       },
-      expertStatus: '专家诊断未运行',
-      aiStatus: 'AI诊断未运行',
-    };
+      activeMode: 'expert',
+    }
+  },
+  computed: {
+    activeLabel() {
+      return this.activeMode === 'ai' ? 'AI 诊断' : '专家诊断'
+    },
   },
   methods: {
     async handleQuery() {
-      const response = await systemChangeSearch();
-      if (response.data.data === "AI诊断") {
-        this.aiStatus = "AI诊断正在运行";
-        this.expertStatus = "专家诊断未运行";
-        this.form.diagnosisMethod = 'ai';
-      } else {
-        this.expertStatus = "专家诊断正在运行";
-        this.aiStatus = "AI诊断未运行";
-        this.form.diagnosisMethod = 'expert';
-      }
-      console.log("this.form.diagnosisMethod",this.form.diagnosisMethod)
+      const response = await systemChangeSearch()
+      const payload = response?.data?.data
+      const isAI =
+        payload === 'AI诊断' ||
+        payload === true ||
+        payload?.isAI === true
+      this.activeMode = isAI ? 'ai' : 'expert'
+      this.form.diagnosisMethod = this.activeMode
     },
-
     async handleAction() {
-      ElMessageBox.confirm("是否确认切换", "确认", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      ElMessageBox.confirm('是否确认切换诊断模式？', '确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
         .then(async () => {
           try {
-            let response;
-            if(this.form.diagnosisMethod === "expert"){
-              // 传false 切换为专家诊断
-              response = await systemChange(false);
-            }else{
-              response = await systemChange(true);
-            }
-            if (response.data.code === 1) {
-              this.$message.success("切换成功");
-              this.handleQuery();
+            const toAI = this.form.diagnosisMethod === 'ai'
+            const response = await systemChange(toAI)
+            if (response.data.code === 1 || response.data.code === 200) {
+              ElMessage.success('切换成功')
+              this.handleQuery()
             } else {
-              this.$message.error("切换失败");
-              
+              ElMessage.error('切换失败')
             }
           } catch (error) {
-            console.error("Error toggling status:", error);
-            this.$message.error("切换失败，请重试！");
+            console.error('Error toggling status:', error)
+            ElMessage.error('切换失败，请重试')
           }
         })
-        .catch(() => {
-          // 取消
-        });
+        .catch(() => {})
     },
   },
-    mounted(){
-    this.handleQuery();
-  }
-};
+  mounted() {
+    this.handleQuery()
+  },
+}
 </script>
 
-<style  scoped>
+<style scoped>
 .container {
-  height: 250px;
-  width: 600px;
-  position: absolute;
-  left: 35%;
-  top: 25%;
-  background-color: #FFFFFF;
+  width: 640px;
+  margin: 12vh auto 0;
+  background-color: #ffffff;
   border-radius: 10px;
-  padding: 20px;
+  padding: 24px 28px 28px;
+  box-shadow: 0 8px 28px rgba(40, 90, 200, 0.08);
+}
+.desc {
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
 }
 .content {
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 .title-container {
-    display: flex;
-    margin-left: 0px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
-  
-  .blue-box {
-    width: 6px;
-    height: 18px;
-    background-color: #285ac8;
-    margin-right: 10px;
-  }
-  
-  .title-text {
-    font-size: 12px;
-    font-weight: bold;
-    color: #4a4a4a;
-  }
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.blue-box {
+  width: 6px;
+  height: 18px;
+  background-color: #285ac8;
+  margin-right: 10px;
+}
+.title-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2a44;
+}
 .status {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 14px;
+  color: #334155;
 }
 .status span {
-  color: #486AC8;
-  font-weight: bold;
+  color: #285ac8;
+  font-weight: 700;
+}
+.hint {
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
 }
 .button {
-  position: absolute;
-  left: 43%;
-  top: 75%;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

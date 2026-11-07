@@ -92,7 +92,7 @@ export default {
         "森林脑炎（蜱媒传染病）",
         "发热伴血小板减少综合征（蜱媒传染病）",
         "斑疹伤寒",
-        "流行性热出血",
+        "流行性出血热",
       ];
 
       const dataHigh = new Array(diseaseTypeName.length).fill(0);
@@ -283,10 +283,13 @@ export default {
 .container {
   padding-top: 10px;
   width: 100%;
-  height: 550px;
-  background-color: #ffffff;
-  padding-bottom: 5px;
+  min-height: calc(100vh - 140px);
+  height: auto;
+  background-color: var(--el-bg-color, #ffffff);
+  padding-bottom: 24px;
   padding-right: 5px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .title-container {
@@ -342,20 +345,27 @@ export default {
 .cards-container {
   margin-top: 30px;
   width: 100%;
-  height: 150px;
+  min-height: 150px;
   margin-bottom: 5px;
+  box-sizing: border-box;
 }
 
 .card-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 .card {
   background: #fafafa;
   border-radius: 10px;
   height: 130px;
-  width: 420px;
-  margin: 10px;
+  flex: 1 1 240px;
+  min-width: 220px;
+  max-width: 420px;
+  margin: 0;
 }
 
 .card-title {
@@ -367,17 +377,21 @@ export default {
 
 .card-bottom {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 16px;
 }
 
 img {
   height: 50px;
   width: 50px;
-  margin-left: 250px;
+  margin-left: 0;
   margin-top: 5px;
+  flex-shrink: 0;
 }
 
 .card-data {
-  width: 74px;
+  min-width: 74px;
   font-size: 24px;
   margin-top: 15px;
   margin-left: 15px;
@@ -387,13 +401,14 @@ img {
 
 .chart-container {
   width: auto;
-  height: 100%;
+  min-height: 420px;
+  height: clamp(420px, 55vh, 560px);
   background-color: #fafafa;
   border-radius: 5px;
-  margin-left: 10px;
-  margin-bottom: 5px;
+  margin: 0 12px 12px;
   position: relative;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 .chart-title {

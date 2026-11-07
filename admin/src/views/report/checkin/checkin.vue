@@ -211,6 +211,18 @@ export default {
     },
   },
   methods: {
+    formatCheckInDate(value) {
+      if (!value) return "";
+      if (Array.isArray(value) && value.length >= 3) {
+        return `${value[0]}-${String(value[1]).padStart(2, "0")}-${String(
+          value[2]
+        ).padStart(2, "0")}`;
+      }
+      if (typeof value === "string") {
+        return value.slice(0, 10);
+      }
+      return "";
+    },
    async handleQuery() {
   this.loading = true;
   try {
@@ -248,21 +260,20 @@ export default {
           index +
           1;
 
-        // 格式化 checkInDate 为 YYYY-MM-DD 格式
-        const checkInDate = item.checkInDate
-          ? `${item.checkInDate[0]}-${String(item.checkInDate[1]).padStart(
-              2,
-              "0"
-            )}-${String(item.checkInDate[2]).padStart(2, "0")}`
-          : "";
+        const checkInDate = this.formatCheckInDate(item.checkInDate);
 
         return {
-          // 先解构，再映射，不然有的字段就算经过处理，也会被原始返回的数据覆盖
-          ...item, // 其他字段直接解构，不做映射
+          ...item,
           serialNumber,
           checkInDate,
+          userType: item.userType || "",
+          name: item.name || "",
+          phoneNumber: item.phoneNumber || "",
+          gender: item.gender || "",
+          age: item.age || "",
+          department: item.department || "",
+          locationName: item.locationName || "",
           isHealth: item.isHealth,
-          
         };
       });
       this.total = response.data.data.total;
@@ -371,7 +382,7 @@ export default {
 <style  scoped>
 .container {
   padding: 10px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
   border-radius: 5px;
 }
 

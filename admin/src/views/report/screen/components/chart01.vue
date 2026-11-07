@@ -5,165 +5,245 @@
       <span class="title-text">其他数据</span>
     </div>
     <div class="chart-container">
-      <div class="chart-title">当日疾病分布百分比</div>
+      <div class="chart-title">当日疾病人数与占比</div>
       <div ref="chart" class="chart"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import * as echarts from 'echarts/core';
-import { GridComponent, TooltipComponent } from 'echarts/components';
-import { BarChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import { ref, onMounted, watch } from 'vue';
+import * as echarts from 'echarts';
+import { ref, onMounted, watch, onBeforeUnmount, nextTick } from 'vue';
+import { getDiseaseDataToday } from '@/api/report/screen.js';
 import { useDiseaseStore } from '@/store/diseaseStore';
 
-echarts.use([GridComponent, BarChart, CanvasRenderer, TooltipComponent]);
 const chart = ref(null);
 const diseaseStore = useDiseaseStore();
+let myChart = null;
+let pendingData = null;
+
+const props = defineProps({
+  queryDate: { type: String, default: '' },
+});
 
 const diseaseTypes = [
-  "新型冠状病毒感染", "流感", "鼠疫", "感染性腹泻", "炭疽", "结核病",
-  "登革热（蚊媒传染病）", "疟疾（蚊媒传染病）", "森林脑炎（蜱媒传染病）", 
-  "发热伴血小板减少综合征（蜱媒传染病）", "斑疹伤寒", "流行性热出血", "健康"
+  '新型冠状病毒感染', '流感', '鼠疫', '感染性腹泻', '炭疽', '结核病',
+  '登革热（蚊媒传染病）', '疟疾（蚊媒传染病）', '森林脑炎（蜱媒传染病）',
+  '发热伴血小板减少综合征（蜱媒传染病）', '斑疹伤寒', '流行性热出血', '健康',
 ];
 
-onMounted(() => {
-  const myChart = echarts.init(chart.value);
+const shortLabels = [
+  '新冠', '流感', '鼠疫', '腹泻', '炭疽', '结核',
+  '登革热', '疟疾', '森脑', '发热减板', '斑疹', '出血热', '健康',
+];
 
-  watch(
-    () => diseaseStore.diseaseData,
-    (newData) => {
+function buildSeries(data) {
+  const diseaseDataMap = Object.fromEntries(diseaseTypes.map((type) => [type, 0]));
+  (data || []).forEach((item) => {
+    const typeName = item?.diagnosisDiseaseTypeName || item?.diseaseTypeName || '健康';
+    if (typeName in diseaseDataMap) {
+      diseaseDataMap[typeName] = Number(item.count) || 0;
+    }
+  });
+  const countData = diseaseTypes.map((type) => diseaseDataMap[type]);
+  const total = countData.reduce((acc, n) => acc + n, 0);
+  const percentData = countData.map((n) => (total > 0 ? Number(((n / total) * 100).toFixed(2)) : 0));
+  return { countData, percentData };
+}
 
-      const diseaseDataMap = Object.fromEntries(
-        diseaseTypes.map(type => [type, 0])
-      );
-      newData.forEach(item => {
-        const typeName = item.diagnosisDiseaseTypeName || "健康";
-        diseaseDataMap[typeName] = item.count;
-      });
-
-      const countData = diseaseTypes.map(type => diseaseDataMap[type]);
-      const total = countData.reduce((acc, count) => acc + count, 0);
-      const percentData = countData.map(count => total > 0 ? ((count / total) * 100).toFixed(2) : 0);
-
-      const option = {
-        color: ['#285AC8'],
-        grid: {
-          top: '25%',
-          bottom: '5%',
+function renderChart(data) {
+  if (!myChart) {
+    pendingData = data;
+    return;
+  }
+  const { countData, percentData } = buildSeries(data);
+  try {
+    myChart.setOption(
+      {
+        color: ['#285AC8', '#D43030'],
+        legend: {
+          top: 28,
+          right: 4,
+          itemWidth: 10,
+          itemHeight: 6,
+          textStyle: { fontSize: 10, color: '#666' },
+          data: ['人数', '占比%'],
         },
+        grid: { top: '38%', left: '12%', right: '12%', bottom: '18%' },
         xAxis: {
           type: 'category',
-          data: diseaseTypes,
-          axisLabel: { show: false },
+          data: shortLabels,
+          axisLabel: { show: true, fontSize: 9, color: '#888', rotate: 35, interval: 0 },
           axisLine: { show: false },
           axisTick: { show: false },
-          splitLine: { show: false }
+          splitLine: { show: false },
         },
-        yAxis: {
-          type: 'value',
-          axisLine: { show: false },
-          axisTick: { show: false },
-          splitLine: { show: false }
-        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '人',
+            nameTextStyle: { fontSize: 10, color: '#999' },
+            axisLine: { show: false },
+            axisTick: { show: false },
+            splitLine: { show: false },
+            axisLabel: { fontSize: 9, color: '#999' },
+          },
+          {
+            type: 'value',
+            name: '%',
+            nameTextStyle: { fontSize: 10, color: '#999' },
+            axisLine: { show: false },
+            axisTick: { show: false },
+            splitLine: { show: false },
+            axisLabel: { fontSize: 9, color: '#999' },
+            max: 100,
+          },
+        ],
         tooltip: {
-          trigger: 'item',
-          formatter: function(params) {
-            const diseaseName = params.name;
-            const percent = percentData[params.dataIndex] || 0;
-            return `${diseaseName}: ${percent}%`;
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          formatter(params) {
+            if (!params || !params.length) return '';
+            const idx = params[0]?.dataIndex ?? 0;
+            const name = diseaseTypes[idx] || '';
+            const count = countData[idx] || 0;
+            const pct = percentData[idx] || 0;
+            return `${name}<br/>人数：${count}人<br/>占比：${pct}%`;
           },
           backgroundColor: '#FFFFFF',
           borderColor: '#FFFFFF',
           borderWidth: 1,
           padding: [10, 10],
-          textStyle: {
-            color: '#333333',
-            fontSize: 14,
-          },
-          extraCssText: 'border-radius: 4px;'
+          textStyle: { color: '#333333', fontSize: 13 },
+          extraCssText: 'border-radius: 4px;',
         },
         series: [
           {
+            name: '人数',
+            type: 'line',
+            yAxisIndex: 0,
+            data: countData,
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 5,
+            lineStyle: { width: 2 },
+            areaStyle: { opacity: 0.08 },
+          },
+          {
+            name: '占比%',
+            type: 'line',
+            yAxisIndex: 1,
             data: percentData,
-            type: 'bar',
-            barWidth: '40%',
-            itemStyle: { borderRadius: [3, 3, 0, 0] },
-            showBackground: true,
-            backgroundStyle: { color: '#F4F4F4' }
-          }
-        ]
-      };
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 5,
+            lineStyle: { width: 2, type: 'dashed' },
+          },
+        ],
+      },
+      { notMerge: true }
+    );
+    nextTick(() => myChart?.resize());
+  } catch (err) {
+    console.error('疾病图表渲染失败:', err);
+  }
+}
 
-      myChart.setOption(option);
-    },
-    { immediate: true }
-  );
+async function loadData(date) {
+  if (!date) return;
+  try {
+    const response = await getDiseaseDataToday(date);
+    if (response.data.code === 1) {
+      const data = response.data.data || [];
+      diseaseStore.setDiseaseData(data);
+      renderChart(data);
+    } else {
+      renderChart([]);
+    }
+  } catch (e) {
+    console.error(e);
+    renderChart([]);
+  }
+}
 
-  window.addEventListener('resize', () => {
-    myChart.resize();
-  });
+const onResize = () => myChart?.resize();
+
+onMounted(async () => {
+  await nextTick();
+  if (!chart.value) return;
+  myChart = echarts.init(chart.value);
+  myChart.resize();
+  if (pendingData != null) {
+    renderChart(pendingData);
+    pendingData = null;
+  }
+  watch(() => props.queryDate, (d) => loadData(d), { immediate: true });
+  window.addEventListener('resize', onResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize);
+  myChart?.dispose();
+  myChart = null;
 });
 </script>
 
-
-
-
-
-<style  scoped>
+<style scoped>
 .container {
-  margin-top: 30px;
+  margin-top: 0;
   width: 100%;
-  height: auto;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .title-container {
-    display: flex;
-    margin-left: 0px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
-  
-  .blue-box {
-    width: 6px;
-    height: 18px;
-    background-color: #285ac8;
-    margin-right: 10px;
-  }
-  
-  .title-text {
-    font-size: 12px;
-    font-weight: bold;
-    color: #4a4a4a;
-  }
-.chart-container {
-  width: 320px;
-  height: 200px;
-  background-color: #FAFAFA;
-  border-radius: 5px;
-  margin-left: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  position: relative;
-  padding: 10px;  
+  display: flex;
+  margin-left: 0px;
+  margin-bottom: 4px;
+  margin-top: 0;
+  flex-shrink: 0;
 }
-
+.blue-box {
+  width: 6px;
+  height: 14px;
+  background-color: #285ac8;
+  margin-right: 8px;
+}
+.title-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: #4a4a4a;
+}
+.chart-container {
+  width: 100%;
+  max-width: 240px;
+  flex: 1 1 0;
+  min-height: 140px;
+  background-color: #fafafa;
+  border-radius: 5px;
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+  padding: 6px;
+  box-sizing: border-box;
+}
 .chart-title {
   position: absolute;
   top: 10px;
   left: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
-  color: #4A4A4A;
-  background-color: #FAFAFA;
+  color: #4a4a4a;
+  background-color: #fafafa;
   padding: 2px 5px;
   border-radius: 3px;
-  z-index: 10;  
+  z-index: 10;
 }
-
 .chart {
   width: 100%;
   height: 100%;
+  min-height: 120px;
 }
 </style>

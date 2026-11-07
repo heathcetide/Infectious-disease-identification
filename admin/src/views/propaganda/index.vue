@@ -72,13 +72,10 @@
     <!-- 表格部分 -->
     <div class="usertable">
       <el-table
-        :header-cell-style="{
-          height: '40px',
-          background: '#f5f7fa',
-          color: '#333333',
-        }"
+        :header-cell-style="tableHeaderStyle"
         v-loading="loading"
         :data="allData"
+        class="data-table"
         style="width: 100%"
         :height="tableHeight"
         :show-overflow-tooltip="true"
@@ -87,12 +84,43 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="SequenceNumber" label="序号" width="80" />
         <el-table-column prop="MaterialType" label="宣传材料类型" width="120" />
-        <el-table-column prop="Title" label="标题" width="320" />
-        <el-table-column prop="Link" label="网页链接" width="200">
+        <el-table-column prop="Title" label="标题" min-width="220" />
+        <el-table-column label="材料预览" width="180">
           <template #default="scope">
-            <el-button link type="primary" @click="openLink(scope.row.Link)">
-              {{ scope.row.Link }}
-            </el-button>
+            <div class="preview-cell">
+              <el-image
+                v-if="isImageType(scope.row.MaterialType, scope.row.Link)"
+                :src="scope.row.Link"
+                fit="cover"
+                class="preview-thumb"
+                :preview-src-list="[scope.row.Link]"
+                preview-teleported
+              />
+              <div
+                v-else-if="isVideoType(scope.row.MaterialType, scope.row.Link)"
+                class="preview-video"
+                @click="openLink(scope.row.Link)"
+              >
+                <span>视频</span>
+                <el-button link type="primary" size="small">预览</el-button>
+              </div>
+              <div
+                v-else-if="isDocType(scope.row.MaterialType, scope.row.Link)"
+                class="preview-doc"
+                @click="openLink(scope.row.Link)"
+              >
+                <span>{{ scope.row.MaterialType || '文档' }}</span>
+                <el-button link type="primary" size="small">打开</el-button>
+              </div>
+              <el-button
+                v-else
+                link
+                type="primary"
+                @click="openLink(scope.row.Link)"
+              >
+                打开网页
+              </el-button>
+            </div>
           </template>
         </el-table-column>
 
@@ -172,6 +200,13 @@ export default {
   computed: {
     tableHeight() {
       return window.innerHeight - 300;
+    },
+    tableHeaderStyle() {
+      return {
+        height: '40px',
+        background: 'var(--el-fill-color-light, #f5f7fa)',
+        color: 'var(--el-text-color-primary, #333)',
+      };
     },
   },
 
@@ -267,6 +302,21 @@ export default {
       if (!link) return;
       window.open(link, "_blank");
     },
+    isImageType(type, link) {
+      const t = type || "";
+      const l = (link || "").toLowerCase();
+      return t === "图片" || /\.(png|jpe?g|gif|webp|bmp)(\?|$)/i.test(l);
+    },
+    isVideoType(type, link) {
+      const t = type || "";
+      const l = (link || "").toLowerCase();
+      return t === "视频" || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(l);
+    },
+    isDocType(type, link) {
+      const t = type || "";
+      const l = (link || "").toLowerCase();
+      return t === "文章" || t === "PDF" || /\.pdf(\?|$)/i.test(l);
+    },
 
     formatPublishDate(v) {
       if (!v) return "无发布日期";
@@ -304,12 +354,56 @@ export default {
 }
 
 .container {
-  padding: 10px;
-  background-color: #ffffff;
-  border-radius: 5px;
+  padding: 16px 16px 8px;
+  background-color: var(--el-bg-color, #ffffff);
+  border-radius: 8px;
+  border: 1px solid var(--el-border-color-light, #ebeef5);
+}
+
+.data-table {
+  --el-table-border-color: var(--el-border-color-lighter, #ebeef5);
+}
+
+.preview-video,
+.preview-doc {
+  color: var(--el-text-color-secondary, #666);
 }
 
 .el-form-item {
   margin-bottom: 10px;
+}
+
+.preview-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+}
+
+.preview-thumb {
+  width: 72px;
+  height: 54px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.preview-video,
+.preview-doc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+}
+
+:deep(.el-image-viewer__wrapper .el-image-viewer__img) {
+  max-height: 85vh !important;
+  max-width: 90vw !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
 }
 </style>

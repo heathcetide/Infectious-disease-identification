@@ -16,27 +16,15 @@ export const useTagsStore = defineStore('tags', {
     },
 
     removeTag(path) {
-      // 通过路径删除标签
       this.tagsList = this.tagsList.filter(tag => tag.path !== path);
-
-      // 如果删除后没有标签，则确保个人密码修改标签存在
-      if (this.tagsList.length === 0) {
-        this.addTag({ title: '个人密码修改', path: '/user/password' }); 
-      }
     },
 
     getPreviousTag(currentIndex) {
-      // 返回当前索引之前的标签
       return currentIndex > 0 ? this.tagsList[currentIndex - 1] : null;
     },
 
     removeAllTag(){
-      this.tagsList=[];
-      
-      // 如果删除后没有标签，则确保个人密码修改标签存在
-      if (this.tagsList.length === 0) {
-        this.addTag({ title: '个人密码修改', path: '/user/password' }); 
-      }
+      this.tagsList = [];
     },
   },
 });

@@ -68,11 +68,7 @@
     <!-- 表格部分 -->
     <div class="usertable">
       <el-table
-        :header-cell-style="{
-          height: '40px',
-          background: '#f5f7fa',
-          color: '#333333',
-        }"
+        :header-cell-style="tableHeaderStyle"
         v-loading="loading"
         :data="allData"
         style="width: 100%"
@@ -173,20 +169,34 @@ export default {
     tableHeight() {
       return window.innerHeight - 300;
     },
+    tableHeaderStyle() {
+      return {
+        height: '40px',
+        background: 'var(--el-fill-color-light, #f5f7fa)',
+        color: 'var(--el-text-color-primary, #333)',
+      };
+    },
   },
 
   methods: {
     // 格式化提交时间
     formatDate(submissionTime) {
-      // 暂时不加时间数组长度判断
-      const [year, month, day, hour, minute, second = 0] = submissionTime;
-      return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
-        2,
-        "0"
-      )} ${String(hour).padStart(2, "0")}:${String(minute).padStart(
-        2,
-        "0"
-      )}:${String(second).padStart(2, "0")}`;
+      if (!submissionTime) return "";
+      if (typeof submissionTime === "string") {
+        return submissionTime.replace("T", " ").slice(0, 19);
+      }
+      if (Array.isArray(submissionTime) && submissionTime.length >= 3) {
+        const [year, month, day, hour = 0, minute = 0, second = 0] =
+          submissionTime;
+        return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
+          2,
+          "0"
+        )} ${String(hour).padStart(2, "0")}:${String(minute).padStart(
+          2,
+          "0"
+        )}:${String(second).padStart(2, "0")}`;
+      }
+      return "";
     },
 
     async handleQuery() {
@@ -299,7 +309,7 @@ export default {
 <style scoped>
 .container {
   padding: 10px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
   border-radius: 5px;
 }
 

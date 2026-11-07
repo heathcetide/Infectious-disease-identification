@@ -112,16 +112,18 @@ export default {
 }
 
 .chart-container {
-  width: 340px;
+  width: 100%;
+  max-width: 360px;
   height: 280px;
   background-color: #FAFAFA;
   border-radius: 5px;
-  margin-left: 10px;
+  margin-left: 0;
   margin-top: 10px;
   margin-bottom: 10px;
   position: relative;
   padding: 10px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .chart-title {

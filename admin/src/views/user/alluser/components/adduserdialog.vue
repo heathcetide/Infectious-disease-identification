@@ -652,23 +652,38 @@ export default {
 
             // 直接调接口提交用户信息
             const response = await addOneUser(requestData);
-            // 判断响应 
-            if (response.data.code === 1) {
+            // 判断响应（后端成功码可能是 1 或 200）
+            if (response.data.code === 1 || response.data.code === 200) {
+              const data = response.data.data || {};
+              const tip =
+                data.message ||
+                (data.initialPassword
+                  ? `创建成功，初始密码为身份证号后六位：${data.initialPassword}`
+                  : null) ||
+                response.data.msg ||
+                "提交成功";
               ElMessage({
-                message: "提交成功",
+                message: tip,
                 type: "success",
+                duration: 5000,
               });
               this.visible = false; // 关闭弹窗
+              this.$emit("add-user");
             } else {
               ElMessage({
-                message: "提交失败：" + response.data.msg,
+                message: "提交失败：" + (response.data.msg || response.data.message || "未知错误"),
                 type: "error",
               });
             }
           } catch (error) {
             console.error("提交出错:", error);
+            const apiMsg =
+              error?.response?.data?.msg ||
+              error?.response?.data?.message ||
+              error?.message ||
+              "提交出错，请重试";
             ElMessage({
-              message: "提交出错，请重试",
+              message: apiMsg,
               type: "error",
             });
           }

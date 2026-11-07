@@ -69,7 +69,8 @@ function updateChart(data) {
   const diseaseDataMap = Object.fromEntries(diseaseTypes.map(type => [type, 0]));
 
   data.forEach(item => {
-    const typeName = item.diagnosisDiseaseTypeName || "健康";
+    const typeName =
+      item.diagnosisDiseaseTypeName || item.diseaseTypeName || "健康";
     if (typeName in diseaseDataMap) {
       diseaseDataMap[typeName] = item.count;
     }
@@ -144,15 +145,17 @@ window.addEventListener('resize', () => {
 }
 
 .chart-container {
-  width: 320px;
-  height: 200px;
+  width: 100%;
+  max-width: 260px;
+  height: 180px;
   background-color: #FAFAFA;
   border-radius: 5px;
-  margin-left: 10px;
+  margin-left: 0;
   margin-top: 10px;
   margin-bottom: 10px;
   position: relative;
-  padding: 10px;  
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .chart-title {

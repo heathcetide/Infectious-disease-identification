@@ -64,10 +64,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="subtypeName" label="子类型" min-width="500" />
-        <el-table-column fixed="right" label="操作" min-width="260">
+        <el-table-column fixed="right" label="操作" min-width="200">
           <template #default="scope">
             <el-button link type="primary" size="large" @click="handleWeight(scope.row)">
-              设置权重
+              查看并设置权重
             </el-button>
           </template>
         </el-table-column>

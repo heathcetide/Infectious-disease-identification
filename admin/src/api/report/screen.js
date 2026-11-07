@@ -7,9 +7,10 @@ export const getDiseaseDataToday = (date) => {
 };
 
 export const getCheckInDailyNumber = async (dateList) => {
+  const [startDate, endDate] = Array.isArray(dateList) ? dateList : [];
   const response = await axiosInstance.post(
     "/api/v1/cdc/dashboard/checkin-daily-series",
-    dateList
+    { startDate, endDate }
   );
   return response;
 };

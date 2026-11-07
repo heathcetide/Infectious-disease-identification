@@ -86,9 +86,9 @@ import dayjs from "dayjs";
 import DateSelection from "@/components/linedate.vue";
 import { getDiseaseStatisticsListInfo } from "@/api/report/screen.js";
 
-const radio = ref(1); // 默认选择当天
+const radio = ref(2); // 默认最近一周，便于看到趋势
 const checkList = ref("自动诊断");
-const DiseaseType = ref([]);
+const DiseaseType = ref(["流感", "新型冠状病毒感染", "感染性腹泻", "结核病"]);
 const customDateRange = ref([]);
 const chart = ref(null);
 
@@ -171,17 +171,15 @@ const updateChart = async () => {
         console.log(`正在处理 ${type} 的数据:`, typeData);
 
         typeData.forEach((entry) => {
-          const entryDate = dayjs(entry.key.join("-")).format("YYYY-MM-DD");
+          const keyParts = Array.isArray(entry.key) ? entry.key : [];
+          const entryKey =
+            keyParts.length === 1
+              ? String(keyParts[0])
+              : dayjs(keyParts.join("-")).format("YYYY-MM-DD");
           const entryValue = entry.value;
-
-          console.log(`正在处理 ${type} :`, { 日期: entryDate, 数值: entryValue });
-
-          const xAxisIndex = xAxisData.indexOf(entryDate);
+          const xAxisIndex = xAxisData.indexOf(entryKey);
           if (xAxisIndex !== -1) {
             seriesData[seriesIndex].data[xAxisIndex] = entryValue;
-            console.log(`匹配到日期 ${entryDate} 于索引 ${xAxisIndex}, 设置数值为 ${entryValue}`);
-          } else {
-            console.log(`日期 ${entryDate} 未在X轴数据中找到`);
           }
         });
       } else {
@@ -230,7 +228,7 @@ onMounted(() => initChart());
   padding-top: 10px;
   width: 100%;
   height: 900px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color, #ffffff);
 }
 .title-container {
   margin-top: 30px;

@@ -515,17 +515,17 @@ export default {
           this.form.Height = data.height; // 身高
           this.form.Weight = data.weight; // 体重
 
-          // 格式化 WorkOnPlateauStartDate
-          if (
-            data.workOnPlateauStartDate &&
-            data.workOnPlateauStartDate.length === 3
-          ) {
-            const [year, month, day] = data.workOnPlateauStartDate;
-            this.form.WorkOnPlateauStartDate = `${year}-${String(
-              month
-            ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          } else {
-            this.form.WorkOnPlateauStartDate = "";
+          // 格式化 WorkOnPlateauStartDate（兼容 [y,m,d] / ISO 字符串）
+          {
+            const raw = data.workOnPlateauStartDate;
+            if (Array.isArray(raw) && raw.length >= 3) {
+              const [year, month, day] = raw;
+              this.form.WorkOnPlateauStartDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            } else if (typeof raw === "string" && raw) {
+              this.form.WorkOnPlateauStartDate = raw.slice(0, 10);
+            } else {
+              this.form.WorkOnPlateauStartDate = "";
+            }
           }
 
           // 既往病史映射

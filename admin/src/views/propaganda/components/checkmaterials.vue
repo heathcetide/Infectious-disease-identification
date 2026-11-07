@@ -108,25 +108,54 @@
         <div class="select flex gap-2 mb-4">
           <div class="title-container">
             <div class="blue-box"></div>
-            <span class="title-text">材料文件</span>
+            <span class="title-text">材料预览 / 文件</span>
+          </div>
+
+          <div v-if="!isEditing && form.Link" class="material-preview">
+            <el-image
+              v-if="form.MaterialType === '图片'"
+              :src="form.Link"
+              fit="contain"
+              class="preview-image"
+              :preview-src-list="[form.Link]"
+              preview-teleported
+            />
+            <video
+              v-else-if="form.MaterialType === '视频'"
+              class="preview-video-player"
+              :src="form.Link"
+              controls
+              preload="metadata"
+            />
+            <iframe
+              v-else-if="form.MaterialType === '文章'"
+              class="preview-frame"
+              :src="form.Link"
+              title="文章预览"
+            />
+            <div v-else class="preview-link-box">
+              <el-link :href="form.Link" target="_blank" type="primary">
+                打开网页材料
+              </el-link>
+            </div>
           </div>
 
           <PdfUpload
-            v-if="form.MaterialType === '文章'"
+            v-if="isEditing && form.MaterialType === '文章'"
             :file-path="form.Link"
             :editable="isEditing"
             ref="PdfUpload"
           />
 
           <ImageUpload
-            v-if="form.MaterialType === '图片'"
+            v-if="isEditing && form.MaterialType === '图片'"
             :file-path="form.Link"
             :editable="isEditing"
             ref="ImageUpload"
           />
 
           <VedioUpload
-            v-if="form.MaterialType === '视频'"
+            v-if="isEditing && form.MaterialType === '视频'"
             :file-path="form.Link"
             :editable="isEditing"
             ref="VedioUpload"
@@ -135,7 +164,7 @@
           <el-input
             :disabled="allDisabled"
             v-model="form.Link"
-            v-if="form.MaterialType === '网页链接'"
+            v-if="form.MaterialType === '网页链接' && isEditing"
             style="width: 400px"
           />
         </div>
@@ -358,5 +387,38 @@ h3 {
 .LabTestReport {
   /* margin-left: -60px; */
   margin-top: 20px;
+}
+.material-preview {
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+}
+.preview-image {
+  width: 100%;
+  max-height: 360px;
+  border-radius: 6px;
+  background: #f5f5f5;
+}
+.preview-video-player {
+  width: 100%;
+  max-height: 360px;
+  background: #000;
+  border-radius: 6px;
+}
+.preview-frame {
+  width: 100%;
+  height: 360px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+.preview-link-box {
+  padding: 12px 0;
+}
+:deep(.el-image-viewer__wrapper .el-image-viewer__img) {
+  max-height: 85vh !important;
+  max-width: 90vw !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
 }
 </style>
