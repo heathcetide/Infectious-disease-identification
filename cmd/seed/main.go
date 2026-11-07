@@ -34,6 +34,32 @@ func main() {
 		fmt.Fprintf(os.Stderr, "migrate: %v\n", err)
 		os.Exit(1)
 	}
+
+	// Fast path: go run ./cmd/seed -dense
+	if len(os.Args) > 1 && (os.Args[1] == "-dense" || os.Args[1] == "--dense") {
+		if err := seedDenseSeason(db); err != nil {
+			fmt.Fprintf(os.Stderr, "dense: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -weights
+	if len(os.Args) > 1 && (os.Args[1] == "-weights" || os.Args[1] == "--weights") {
+		if err := seedFullWeights(db); err != nil {
+			fmt.Fprintf(os.Stderr, "weights: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -report
+	if len(os.Args) > 1 && (os.Args[1] == "-report" || os.Args[1] == "--report") {
+		if err := seedReportEnrichment(db); err != nil {
+			fmt.Fprintf(os.Stderr, "report: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	if err := seed(db); err != nil {
 		fmt.Fprintf(os.Stderr, "seed: %v\n", err)
 		os.Exit(1)
@@ -43,12 +69,20 @@ func main() {
 	fmt.Println("  admin    phone 13800000001")
 	fmt.Println("  cdc      phone 13800000002")
 	fmt.Println("  medical  phone 13800000003")
+	fmt.Println("  bulk workers phone 13980000001 … (8000 铁路职工，11.8–12.31 每日大量打卡)")
 }
 
 func ensureUser(db *gorm.DB, phone, email, name, role string, hash string) error {
 	var existing models.User
 	err := db.Where("phone_number = ?", phone).First(&existing).Error
 	if err == nil {
+		// Keep demo accounts' password/role in sync for local testing.
+		_ = db.Model(&existing).Updates(map[string]any{
+			"password": hash,
+			"name":     name,
+			"role":     role,
+			"status":   models.UserStatusActive,
+		}).Error
 		return nil
 	}
 	if err != gorm.ErrRecordNotFound {
@@ -115,24 +149,14 @@ func seed(db *gorm.DB) error {
 			return err
 		}
 
-		var wCount int64
-		if err := db.Model(&models.SymptomWeighting{}).
-			Where("disease_type_name = ?", name).
-			Count(&wCount).Error; err != nil {
-			return err
-		}
-		if wCount > 0 {
-			continue
-		}
-		// Minimal demo weights so scoring returns non-zero for common fever/cough symptoms.
-		demo := []models.SymptomWeighting{
-			{DiseaseTypeID: int(dt.DiseaseTypeID), DiseaseTypeName: name, SourceTable: "generalsymptoms", SymptomFieldName: "HasFever", WeightScore: 5},
-			{DiseaseTypeID: int(dt.DiseaseTypeID), DiseaseTypeName: name, SourceTable: "generalsymptoms", SymptomFieldName: "HasChills", WeightScore: 3},
-			{DiseaseTypeID: int(dt.DiseaseTypeID), DiseaseTypeName: name, SourceTable: "generalsymptoms", SymptomFieldName: "HasFatigue", WeightScore: 2},
-			{DiseaseTypeID: int(dt.DiseaseTypeID), DiseaseTypeName: name, SourceTable: "respiratorysymptoms", SymptomFieldName: "HasCough", WeightScore: 4},
-			{DiseaseTypeID: int(dt.DiseaseTypeID), DiseaseTypeName: name, SourceTable: "respiratorysymptoms", SymptomFieldName: "HasSoreThroat", WeightScore: 2},
-		}
-		if err := db.Create(&demo).Error; err != nil {
+	}
+
+	var wCount int64
+	if err := db.Model(&models.SymptomWeighting{}).Count(&wCount).Error; err != nil {
+		return err
+	}
+	if wCount < 100 {
+		if err := seedFullWeights(db); err != nil {
 			return err
 		}
 	}
@@ -164,6 +188,35 @@ func seed(db *gorm.DB) error {
 		if err := db.Create(&mats).Error; err != nil {
 			return err
 		}
+	}
+
+	// Realistic Qinghai–Tibet Railway corridor users + check-ins for dashboards.
+	if err := seedQingzangDemo(db, hash); err != nil {
+		return err
+	}
+	if err := seedBulkWorkers(db, hash); err != nil {
+		return err
+	}
+	if err := seedDenseSeason(db); err != nil {
+		return err
+	}
+	if err := seedDiseaseSubtypes(db); err != nil {
+		return err
+	}
+	if err := fillStaffProfiles(db); err != nil {
+		return err
+	}
+	if err := seedSatisfactionDemo(db); err != nil {
+		return err
+	}
+	if err := seedScatteredCheckIns(db); err != nil {
+		return err
+	}
+	if err := seedClinicalDemo(db); err != nil {
+		return err
+	}
+	if err := seedFeedbackDemo(db); err != nil {
+		return err
 	}
 	return nil
 }
