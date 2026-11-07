@@ -1,0 +1,4 @@
+# Copy to config.local.yaml (gitignored) or set QINIU_* / APP_STORAGE_* env vars.
+storage:
+  accessKey: "your-access-key"
+  secretKey: "your-secret-key"
