@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "调查信息",
-  "usingComponents": {
-    "uni-custom-tabbar": "/components/uni-custom-tabbar/uni-custom-tabbar"
-  }
-}
