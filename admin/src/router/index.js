@@ -35,6 +35,10 @@ const satisfaction = () => import('@/views/satisfaction/index.vue')
 const accuracy = () => import('@/views/report/accuracy/accuracy.vue')
 
 const accuracymanage = () => import('@/views/system/accuracymanage/accuracymanage.vue')
+const llmChat = () => import('@/views/system/llmChat/llmChat.vue')
+const visionDataset = () => import('@/views/system/visionDataset/index.vue')
+const evalLoop = () => import('@/views/system/eval/index.vue')
+const riskAlerts = () => import('@/views/system/riskAlerts/index.vue')
 // 1.定义路由数据
 const routes=[
     {
@@ -174,6 +178,26 @@ const routes=[
                         path: 'accuracy-manage',
                         component: accuracymanage,
                         name: 'accuracymanage'
+                    },
+                    {
+                        path: 'llm-chat',
+                        component: llmChat,
+                        name: 'llmChat'
+                    },
+                    {
+                        path: 'vision-dataset',
+                        component: visionDataset,
+                        name: 'visionDataset'
+                    },
+                    {
+                        path: 'eval',
+                        component: evalLoop,
+                        name: 'evalLoop'
+                    },
+                    {
+                        path: 'risk-alerts',
+                        component: riskAlerts,
+                        name: 'riskAlerts'
                     }
                 ]
             },

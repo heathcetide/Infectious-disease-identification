@@ -1,7 +1,7 @@
 <template>
   <div class="aside-container">
     <div class="brand">
-      <img class="brand-logo" src="/logo.svg" alt="logo" />
+      <img class="brand-logo" src="/logo.png" alt="logo" />
       <p class="logo-lg">{{ getTitle() }}</p>
     </div>
     <TreeMenu />

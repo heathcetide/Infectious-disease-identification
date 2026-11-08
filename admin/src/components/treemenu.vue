@@ -91,6 +91,24 @@
       </el-menu-item>
     </el-sub-menu>
 
+    <!-- AI / 视觉 / 评测：顶层平铺，不折叠进系统管理 -->
+    <el-menu-item index="/system/llm-chat" v-if="userStore.role === '系统管理员'">
+      <img src="../assets/menu_icons/ExpertorAI_diagnosis_switching.svg" alt="" class="menu-icons" />
+      <span>诊断专家</span>
+    </el-menu-item>
+    <el-menu-item index="/system/vision-dataset" v-if="userStore.role === '系统管理员'">
+      <img src="../assets/menu_icons/virus.svg" alt="" class="menu-icons" />
+      <span>症状视觉训练库</span>
+    </el-menu-item>
+    <el-menu-item index="/system/eval" v-if="userStore.role === '系统管理员'">
+      <img src="../assets/menu_icons/accuracy.svg" alt="" class="menu-icons" />
+      <span>专家/AI评测闭环</span>
+    </el-menu-item>
+    <el-menu-item index="/system/risk-alerts" v-if="userStore.role === '系统管理员' || userStore.role === '疾控中心工作人员'">
+      <img src="../assets/menu_icons/accuracy_manage.svg" alt="" class="menu-icons" />
+      <span>高风险预警</span>
+    </el-menu-item>
+
     <!-- 用户反馈：仅系统管理员可见 -->
     <el-menu-item index="/feedback" v-if="userStore.role === '系统管理员'">
       <img src="../assets/menu_icons/user_feedback.svg" alt="" class="menu-icons" />
@@ -168,6 +186,10 @@ export default {
         '/satisfaction': '满意度调查',
         '/report/accuracy' : '疾病诊断准确率报表',
         '/system/accuracy-manage' :'准确率范围管理',
+        '/system/llm-chat': '诊断专家',
+        '/system/vision-dataset': '症状视觉训练库',
+        '/system/eval': '专家/AI评测闭环',
+        '/system/risk-alerts': '高风险预警',
       };
       return menuMap[path] || '未知标题';
     }

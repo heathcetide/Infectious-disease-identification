@@ -83,7 +83,18 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="SequenceNumber" label="序号" width="80" />
-        <el-table-column prop="MaterialType" label="宣传材料类型" width="120" />
+        <el-table-column prop="MaterialType" label="宣传材料类型" width="130">
+          <template #default="scope">
+            <el-tag
+              size="small"
+              effect="light"
+              round
+              :type="materialTypeTagType(scope.row.MaterialType)"
+            >
+              {{ scope.row.MaterialType || '未知' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="Title" label="标题" min-width="220" />
         <el-table-column label="材料预览" width="180">
           <template #default="scope">
@@ -211,6 +222,22 @@ export default {
   },
 
   methods: {
+    materialTypeTagType(t) {
+      const s = String(t || '').toLowerCase()
+      if (s.includes('图') || s.includes('image') || s.includes('img') || s.includes('png') || s.includes('jpg')) {
+        return 'success'
+      }
+      if (s.includes('视') || s.includes('video') || s.includes('mp4')) {
+        return 'warning'
+      }
+      if (s.includes('pdf') || s.includes('文档') || s.includes('文') || s.includes('doc')) {
+        return 'info'
+      }
+      if (s.includes('链') || s.includes('网页') || s.includes('web') || s.includes('url')) {
+        return ''
+      }
+      return 'primary'
+    },
     handleClick(materialId) {
       this.$refs.Checkmaterials.showDrawer(materialId);
     },
