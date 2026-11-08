@@ -3,19 +3,14 @@
     <aside class="visual" aria-hidden="true">
       <img class="visual-img" :src="heroImg" alt="" />
       <div class="visual-shade" />
-      <div class="visual-copy">
-        <p class="brand">症状筛查与预警</p>
-        <h2 class="headline">突发传染病管理端</h2>
-        <p class="tagline">自主判别 · 现场调查 · 数据决策</p>
-      </div>
+      <p class="visual-caption">突发传染病症状筛查与预警系统</p>
     </aside>
 
     <section class="panel">
       <div class="panel-inner">
         <header class="card-head">
-          <p class="eyebrow">ADMIN CONSOLE</p>
-          <h1>登录</h1>
-          <p class="sub">使用已开通的手机号与密码进入系统</p>
+          <h1>管理端登录</h1>
+          <p class="sub">请输入已开通账号的手机号与密码</p>
         </header>
 
         <form class="form" @submit.prevent="handleSubmit">
@@ -27,7 +22,7 @@
               inputmode="numeric"
               maxlength="11"
               autocomplete="username"
-              placeholder="11 位手机号"
+              placeholder="请输入手机号"
               @blur="validateAndFormatphoneNumber"
             />
             <span v-if="phoneNumberError" class="err">{{ phoneNumberError }}</span>
@@ -41,10 +36,15 @@
                 v-model="password"
                 maxlength="16"
                 autocomplete="current-password"
-                placeholder="6–16 位密码"
+                placeholder="请输入密码"
                 @blur="validateAndFormatPassword"
               />
-              <button class="eye" type="button" aria-label="显示或隐藏密码" @click="togglePasswordVisibility">
+              <button
+                class="eye"
+                type="button"
+                aria-label="显示或隐藏密码"
+                @click="togglePasswordVisibility"
+              >
                 <img
                   :src="passwordFieldType === 'password' ? passwordClose : passwordOpen"
                   alt=""
@@ -55,15 +55,13 @@
           </label>
 
           <button class="submit" type="submit" :disabled="submitting">
-            {{ submitting ? '登录中…' : '登 录' }}
+            {{ submitting ? '登录中…' : '登录' }}
           </button>
 
           <button class="linkish" type="button" @click="resetPassword">
-            忘记密码？填入手机号后六位
+            忘记密码？使用手机号后六位
           </button>
         </form>
-
-        <footer class="foot">突发传染病症状筛查与预警系统</footer>
       </div>
     </section>
   </div>
@@ -226,21 +224,18 @@ export default {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap");
-
 .login-page {
-  --ink: #122033;
-  --muted: #5b6b7c;
-  --line: #d7e0ea;
-  --accent: #1a5f7a;
-  --accent-deep: #0f3d4f;
-  --panel: #f4f7fa;
-  --field: #ffffff;
+  --ink: #1f2a37;
+  --muted: #667085;
+  --line: #d0d5dd;
+  --accent: #175cd3;
+  --panel: #ffffff;
+  --field-bg: #ffffff;
   min-height: 100vh;
   height: 100vh;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
-  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  grid-template-columns: minmax(0, 1.2fr) minmax(380px, 420px);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: var(--ink);
   overflow: hidden;
   background: var(--panel);
@@ -249,7 +244,7 @@ export default {
 .visual {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  background: #e8eef4;
 }
 
 .visual-img {
@@ -259,52 +254,27 @@ export default {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transform: scale(1.02);
-  animation: drift 18s ease-in-out infinite alternate;
 }
 
 .visual-shade {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(8, 22, 36, 0.28) 0%, rgba(8, 22, 36, 0.55) 55%, rgba(8, 22, 36, 0.78) 100%),
-    linear-gradient(90deg, rgba(8, 22, 36, 0.15) 0%, transparent 40%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.45) 100%);
   pointer-events: none;
 }
 
-.visual-copy {
+.visual-caption {
   position: absolute;
-  left: clamp(28px, 4vw, 56px);
-  bottom: clamp(36px, 6vh, 72px);
+  left: 28px;
+  bottom: 28px;
   z-index: 1;
-  max-width: min(420px, 80%);
-  color: #f4f8fb;
-  animation: rise 0.8s ease-out both;
-}
-
-.brand {
-  margin: 0 0 10px;
-  font-family: "DM Sans", sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.85;
-}
-
-.headline {
   margin: 0;
-  font-size: clamp(28px, 3.2vw, 40px);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-}
-
-.tagline {
-  margin: 14px 0 0;
+  max-width: 70%;
+  color: #fff;
   font-size: 14px;
-  letter-spacing: 0.08em;
-  opacity: 0.78;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .panel {
@@ -314,82 +284,65 @@ export default {
   align-items: center;
   justify-content: center;
   background: var(--panel);
-  border-left: 1px solid rgba(18, 32, 51, 0.06);
-  animation: panel-in 0.55s ease-out both;
+  border-left: 1px solid #eaecf0;
 }
 
 .panel-inner {
-  width: min(400px, calc(100% - 64px));
-  padding: 8px 0 24px;
-}
-
-.card-head .eyebrow {
-  margin: 0 0 10px;
-  font-family: "DM Sans", sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--accent);
+  width: min(340px, calc(100% - 56px));
 }
 
 .card-head h1 {
   margin: 0;
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .card-head .sub {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .form {
-  margin-top: 36px;
+  margin-top: 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .label {
   font-size: 13px;
-  font-weight: 600;
-  color: #314356;
+  font-weight: 500;
+  color: #344054;
 }
 
 .field input {
-  height: 48px;
+  height: 40px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0 14px;
-  font-size: 15px;
-  background: var(--field);
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 14px;
+  background: var(--field-bg);
   outline: none;
   box-sizing: border-box;
   width: 100%;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .field input::placeholder {
-  color: #93a1b0;
-}
-
-.field input:hover {
-  border-color: #b7c6d6;
+  color: #98a2b3;
 }
 
 .field input:focus {
   border-color: var(--accent);
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(26, 95, 122, 0.12);
+  box-shadow: 0 0 0 3px rgba(23, 92, 211, 0.12);
 }
 
 .pwd-wrap {
@@ -397,18 +350,17 @@ export default {
 }
 
 .pwd-wrap input {
-  padding-right: 46px;
+  padding-right: 40px;
 }
 
 .eye {
   position: absolute;
-  right: 8px;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border: 0;
-  border-radius: 8px;
   background: transparent;
   cursor: pointer;
   padding: 0;
@@ -416,50 +368,36 @@ export default {
   place-items: center;
 }
 
-.eye:hover {
-  background: rgba(18, 32, 51, 0.05);
-}
-
 .eye img {
-  width: 16px;
-  height: 16px;
-  opacity: 0.55;
+  width: 15px;
+  height: 15px;
+  opacity: 0.5;
 }
 
 .err {
-  color: #b42318;
+  color: #d92d20;
   font-size: 12px;
 }
 
 .submit {
-  margin-top: 10px;
-  height: 48px;
+  margin-top: 4px;
+  height: 40px;
   border: 0;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #21708e 0%, var(--accent) 100%);
+  border-radius: 6px;
+  background: var(--accent);
   color: #fff;
-  font-size: 15px;
-  font-weight: 650;
-  letter-spacing: 0.18em;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(26, 95, 122, 0.22);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .submit:hover:not(:disabled) {
-  filter: brightness(1.04);
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(26, 95, 122, 0.28);
-}
-
-.submit:active:not(:disabled) {
-  transform: translateY(0);
+  background: #1570ef;
 }
 
 .submit:disabled {
-  opacity: 0.72;
+  opacity: 0.65;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .linkish {
@@ -468,36 +406,13 @@ export default {
   color: var(--accent);
   font-size: 13px;
   cursor: pointer;
-  padding: 6px 0;
+  padding: 2px 0;
   align-self: flex-start;
 }
 
 .linkish:hover {
-  color: var(--accent-deep);
   text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.foot {
-  margin-top: 40px;
-  color: #8a98a8;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-}
-
-@keyframes drift {
-  from { transform: scale(1.02) translate3d(0, 0, 0); }
-  to { transform: scale(1.06) translate3d(-1.2%, -0.8%, 0); }
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes panel-in {
-  from { opacity: 0; transform: translateX(12px); }
-  to { opacity: 1; transform: translateX(0); }
+  text-underline-offset: 2px;
 }
 
 @media (max-width: 900px) {
@@ -509,23 +424,20 @@ export default {
   }
 
   .visual {
-    min-height: 36vh;
-    max-height: 42vh;
+    min-height: 28vh;
+    max-height: 32vh;
   }
 
-  .visual-copy {
-    bottom: 24px;
-    left: 24px;
-  }
-
-  .headline {
-    font-size: 26px;
+  .visual-caption {
+    left: 16px;
+    bottom: 16px;
+    font-size: 13px;
   }
 
   .panel {
     min-height: auto;
     align-items: flex-start;
-    padding: 36px 0 48px;
+    padding: 40px 0 56px;
     border-left: 0;
   }
 }
