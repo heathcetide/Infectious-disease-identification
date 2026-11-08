@@ -45,4 +45,11 @@ const (
 	TableUserFeedback               = "user_feedback"
 	TableSatisfactionRatings        = "satisfaction_ratings"
 	TableSatisfactionSurveys        = "satisfaction_surveys"
+
+	TableSymptomPhotos   = "symptom_photos"
+	TableVisionSamples   = "vision_samples"
+	TableScoringVersions = "scoring_versions"
+	TableEvalRuns        = "eval_runs"
+	TableEvalCases       = "eval_cases"
+	TableRiskAlerts      = "risk_alerts"
 )

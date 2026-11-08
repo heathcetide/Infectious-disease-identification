@@ -45,6 +45,12 @@ type DiagnosisReport struct {
 	FilePath   string    `json:"filePath,omitempty" gorm:"size:500"`
 	FileType   string    `json:"fileType,omitempty" gorm:"size:50"`
 	UploadDate time.Time `json:"uploadDate"`
+
+	// P3 report understanding: OCR → structured metrics.
+	OCRStatus   string `json:"ocrStatus,omitempty" gorm:"size:20"`  // pending|done|failed|skipped
+	OCRText     string `json:"ocrText,omitempty" gorm:"type:text"`
+	MetricsJSON string `json:"metricsJson,omitempty" gorm:"type:text"`
+	OCRError    string `json:"ocrError,omitempty" gorm:"size:500"`
 }
 
 func (DiagnosisReport) TableName() string { return constants.TableDiagnosisReports }

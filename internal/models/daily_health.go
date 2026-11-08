@@ -29,6 +29,10 @@ type DailyHealthStatus struct {
 	City         string  `json:"city,omitempty" gorm:"size:50"`
 	County       string  `json:"county,omitempty" gorm:"size:50"`
 	LocationName string  `json:"locationName,omitempty" gorm:"size:200"`
+
+	// Hybrid AI vs expert scoring QA (P1).
+	ScoringDisagreement *bool      `json:"scoringDisagreement,omitempty"`
+	ScoringConfirmedAt  *time.Time `json:"scoringConfirmedAt,omitempty"`
 }
 
 func (DailyHealthStatus) TableName() string { return constants.TableDailyHealthStatuses }

@@ -34,7 +34,18 @@ type Config struct {
 	Lock           LockConfig           `yaml:"lock"`
 	Retry          RetryConfig          `yaml:"retry"`
 	Fallback       FallbackConfig       `yaml:"fallback"`
+	LLM            LLMConfig            `yaml:"llm"`
 	App            AppConfig            `yaml:"app"`
+}
+
+// LLMConfig configures OpenAI-compatible or Anthropic chat for AI diagnosis.
+type LLMConfig struct {
+	Enabled  bool          `yaml:"enabled"`
+	Protocol string        `yaml:"protocol"` // openai | anthropic
+	APIKey   string        `yaml:"apiKey"`
+	BaseURL  string        `yaml:"baseURL"`
+	Model    string        `yaml:"model"`
+	Timeout  time.Duration `yaml:"timeout"`
 }
 
 type ServerConfig struct {
@@ -255,6 +266,14 @@ func Default() *Config {
 			Enabled:        true,
 			DefaultMessage: "service temporarily unavailable",
 			StatusCode:     503,
+		},
+		LLM: LLMConfig{
+			Enabled:  false,
+			Protocol: "openai",
+			APIKey:   "",
+			BaseURL:  "https://api.openai.com/v1",
+			Model:    "gpt-4o-mini",
+			Timeout:  60 * time.Second,
 		},
 		App: AppConfig{
 			Name:        "infectious-disease",
@@ -544,6 +563,27 @@ func applyEnvOverrides(cfg *Config) {
 	}
 	if v := os.Getenv("APP_FALLBACK_MESSAGE"); v != "" {
 		cfg.Fallback.DefaultMessage = v
+	}
+	// LLM (AI diagnosis)
+	if v := os.Getenv("APP_LLM_ENABLED"); v != "" {
+		cfg.LLM.Enabled = strings.EqualFold(v, "true") || v == "1"
+	}
+	if v := os.Getenv("APP_LLM_PROTOCOL"); v != "" {
+		cfg.LLM.Protocol = v
+	}
+	if v := os.Getenv("APP_LLM_API_KEY"); v != "" {
+		cfg.LLM.APIKey = v
+	}
+	if v := os.Getenv("APP_LLM_BASE_URL"); v != "" {
+		cfg.LLM.BaseURL = v
+	}
+	if v := os.Getenv("APP_LLM_MODEL"); v != "" {
+		cfg.LLM.Model = v
+	}
+	if v := os.Getenv("APP_LLM_TIMEOUT"); v != "" {
+		if d, err := time.ParseDuration(v); err == nil {
+			cfg.LLM.Timeout = d
+		}
 	}
 }
 

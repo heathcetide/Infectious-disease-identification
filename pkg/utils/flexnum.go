@@ -9,6 +9,29 @@ import (
 	"strings"
 )
 
+// normalizeNumericString accepts common mobile-input variants: "38，5" / "38．5" / "３８.５".
+func normalizeNumericString(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return s
+	}
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch {
+		case r >= '０' && r <= '９':
+			b.WriteRune(r - '０' + '0')
+		case r == '，' || r == '、' || r == '．' || r == '。' || r == ',':
+			b.WriteByte('.')
+		case r == '℃' || r == '°' || r == ' ':
+			// drop units / spaces
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
 // FlexInt unmarshals JSON numbers or numeric strings (e.g. uni-app text inputs).
 type FlexInt int
 
@@ -23,7 +46,7 @@ func (v *FlexInt) UnmarshalJSON(b []byte) error {
 		if err := json.Unmarshal(b, &s); err != nil {
 			return err
 		}
-		s = strings.TrimSpace(s)
+		s = normalizeNumericString(s)
 		if s == "" {
 			*v = 0
 			return nil
@@ -65,7 +88,7 @@ func (v *FlexFloat) UnmarshalJSON(b []byte) error {
 		if err := json.Unmarshal(b, &s); err != nil {
 			return err
 		}
-		s = strings.TrimSpace(s)
+		s = normalizeNumericString(s)
 		if s == "" {
 			*v = 0
 			return nil

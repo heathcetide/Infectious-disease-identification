@@ -1,4 +1,20 @@
-# Copy to config.local.yaml (gitignored) or set QINIU_* / APP_STORAGE_* env vars.
+# Copy to config.local.yaml (gitignored) or set QINIU_* / APP_STORAGE_* / APP_LLM_* env vars.
 storage:
   accessKey: "your-access-key"
   secretKey: "your-secret-key"
+
+# AI diagnosis LLM (used when admin switches to AI mode)
+llm:
+  enabled: true
+  protocol: openai          # openai | anthropic
+  apiKey: "sk-..."
+  baseURL: "https://api.openai.com/v1"
+  # DeepSeek example:
+  # baseURL: "https://api.deepseek.com/v1"
+  # model: "deepseek-chat"
+  # Anthropic example:
+  # protocol: anthropic
+  # baseURL: "https://api.anthropic.com"
+  # model: "claude-3-5-sonnet-latest"
+  model: "gpt-4o-mini"
+  timeout: 60s

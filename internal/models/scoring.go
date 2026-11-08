@@ -43,6 +43,10 @@ type AIDiseaseScoring struct {
 	DiseaseTypeID   int        `json:"diseaseTypeId,omitempty"`
 	DiseaseTypeName string     `json:"diseaseTypeName,omitempty" gorm:"size:100"`
 	Score           float64    `json:"score"`
+	// Reason is a short Chinese explanation linking positive symptoms → disease.
+	Reason string `json:"reason,omitempty" gorm:"size:255"`
+	// EvidenceJSON is a JSON array of positive symptom field names used as evidence.
+	EvidenceJSON string `json:"evidenceJson,omitempty" gorm:"type:text"`
 }
 
 func (AIDiseaseScoring) TableName() string { return constants.TableAIDiseaseScoring }

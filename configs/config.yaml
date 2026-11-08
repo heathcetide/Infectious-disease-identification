@@ -124,6 +124,16 @@ fallback:
   defaultMessage: "service temporarily unavailable"
   statusCode: 503          # fallback HTTP status code
 
+# LLM for AI diagnosis mode (OpenAI-compatible or Anthropic).
+# Prefer putting secrets in configs/config.local.yaml (gitignored) or env APP_LLM_*.
+llm:
+  enabled: false
+  protocol: openai          # openai | anthropic
+  apiKey: ""                # or APP_LLM_API_KEY
+  baseURL: "https://api.openai.com/v1"  # openai: .../v1 ; anthropic: https://api.anthropic.com
+  model: "gpt-4o-mini"      # e.g. MiniMax-M3 (openai multimodal) / gpt-4o-mini / MiniMax-M2.7 (anthropic text)
+  timeout: 60s
+
 app:
   name: infectious-disease
   environment: dev        # dev | test | prod (maps to constants.ENV_DEV / ENV_PROD)

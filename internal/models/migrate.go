@@ -44,5 +44,11 @@ func AllModels() []any {
 		&UserFeedback{},
 		&SatisfactionRating{},
 		&SatisfactionSurvey{},
+		&SymptomPhoto{},
+		&VisionSample{},
+		&ScoringVersion{},
+		&EvalRun{},
+		&EvalCase{},
+		&RiskAlert{},
 	}
 }

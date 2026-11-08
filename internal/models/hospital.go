@@ -8,10 +8,12 @@ import (
 
 // Hospital is a hospital reference record.
 type Hospital struct {
-	HospitalID          uint   `json:"hospitalId" gorm:"primaryKey;autoIncrement"`
-	HospitalName        string `json:"hospitalName" gorm:"size:200;not null"`
-	HospitalPhoneNumber string `json:"hospitalPhoneNumber,omitempty" gorm:"size:30"`
-	Address             string `json:"address,omitempty" gorm:"size:500"`
+	HospitalID          uint    `json:"hospitalId" gorm:"primaryKey;autoIncrement"`
+	HospitalName        string  `json:"hospitalName" gorm:"size:200;not null"`
+	HospitalPhoneNumber string  `json:"hospitalPhoneNumber,omitempty" gorm:"size:30"`
+	Address             string  `json:"address,omitempty" gorm:"size:500"`
+	Latitude            float64 `json:"latitude,omitempty"`
+	Longitude           float64 `json:"longitude,omitempty"`
 }
 
 func (Hospital) TableName() string { return constants.TableHospitals }
