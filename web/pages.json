@@ -65,7 +65,13 @@
 		{
 			"path": "pages/clockFail/clockFail",
 			"style": {
-				"navigationBarTitleText": "打卡失败"
+				"navigationBarTitleText": "打卡结果"
+			}
+		},
+		{
+			"path": "pages/nearbyHospital/nearbyHospital",
+			"style": {
+				"navigationBarTitleText": "就近医院"
 			}
 		},
 		{
