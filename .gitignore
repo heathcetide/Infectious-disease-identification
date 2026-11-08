@@ -52,3 +52,10 @@ logs/
 # Uploads (local storage backend) — 目录由 stores/local 自动创建
 /uploads/
 configs/config.local.yaml
+
+# Local binaries / YOLO weights & train runs (keep scripts + docs)
+/seed
+/models/
+/runs/
+/assets/vision/train/
+/assets/vision/val/
