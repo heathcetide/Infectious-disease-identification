@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+// Embedded admin (prod build on :8080): same-origin empty baseURL.
+// Vite DEV: default to local Go API. Override anytime with VITE_API_BASE.
+const apiBase =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE) ||
+  (typeof import.meta !== 'undefined' && import.meta.env?.DEV
+    ? 'http://127.0.0.1:8080'
+    : '');
+
 const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:8080',
+    baseURL: apiBase,
     timeout: 300000,
 });
 

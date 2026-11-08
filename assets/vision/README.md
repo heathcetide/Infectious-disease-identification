@@ -29,11 +29,19 @@ Wikimedia 在部分网络下会 SSL 超时；`itchy_rash` / `cyanosis` 目前用
 python3 scripts/vision/yolo_train.py --epochs 25
 ```
 
-训完后启动 API 前：
+训完后权重默认在（gitignore，需本地训出或拷贝）：
+
+```
+runs/classify/symptom-cls/weights/best.pt
+```
+
+启动 API 前：
 
 ```bash
-source scripts/vision/env.sh
+source scripts/vision/env.sh   # 设置 SYMPTOM_YOLO_MODEL / BIN / SCRIPT
 go run cmd/server/main.go
 ```
 
 未配置 `SYMPTOM_YOLO_MODEL` 时，打卡皮肤图回退多模态 LLM 分类。
+
+管理端已嵌入后端：浏览器打开 `http://127.0.0.1:8080/` 即可（无需再单独 `bun run dev`）。更新前端后执行 `./scripts/build-admin.sh` 再重启 Go。

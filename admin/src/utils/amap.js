@@ -5,13 +5,17 @@ const AMAP_SECURITY =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_SECURITY_CODE) ||
   ''
 
-const useDevProxy =
-  typeof import.meta !== 'undefined' && !!import.meta.env?.DEV
+// Prefer same-origin proxy when Vite DEV or when explicitly enabled for
+// embedded admin (VITE_AMAP_PROXY=1). Otherwise hit the official CDN.
+const useAmapProxy =
+  (typeof import.meta !== 'undefined' && !!import.meta.env?.DEV) ||
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_PROXY === '1') ||
+  (typeof window !== 'undefined' && window.location?.port === '8080')
 
-/** Dev: same-origin catch-all proxy. Prod: official CDN. */
+/** Same-origin proxy when needed; else official CDN. */
 function mapsScriptUrl(cacheBust = 0) {
   const qs = `v=2.0&key=${AMAP_KEY}${cacheBust ? `&_r=${cacheBust}` : ''}`
-  if (useDevProxy) {
+  if (useAmapProxy) {
     return `/_AMapProxy/https/webapi.amap.com/maps?${qs}`
   }
   return `https://webapi.amap.com/maps?${qs}`
@@ -31,7 +35,7 @@ function applySecurityConfig() {
 
 export function rewriteAmapUrl(url) {
   if (typeof url !== 'string' || !url) return url
-  if (!useDevProxy) return url
+  if (!useAmapProxy) return url
   if (url.startsWith('/_AMapProxy/')) return url
 
   // protocol-relative
@@ -55,7 +59,7 @@ export function rewriteAmapUrl(url) {
  * In Vite DEV, rewrite script / image / XHR / fetch URLs through /_AMapProxy.
  */
 export function installAmapUrlRewrite() {
-  if (!useDevProxy || rewriteInstalled || typeof window === 'undefined') return
+  if (!useAmapProxy || rewriteInstalled || typeof window === 'undefined') return
   rewriteInstalled = true
 
   const rewrite = rewriteAmapUrl

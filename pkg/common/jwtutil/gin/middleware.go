@@ -211,6 +211,13 @@ func UserIDFromGin(c *gin.Context) string {
 // isPublicPath 判断路径是否为公开路径。
 func isPublicPath(path string, prefixes []string) bool {
 	for _, prefix := range prefixes {
+		// Bare "/" means exact root only — never treat it as a prefix of every path.
+		if prefix == "/" {
+			if path == "/" {
+				return true
+			}
+			continue
+		}
 		if strings.HasPrefix(path, prefix) {
 			return true
 		}

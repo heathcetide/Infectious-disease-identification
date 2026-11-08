@@ -16,6 +16,7 @@ import (
 	localmw "github.com/heathcetide/infectious-disease/internal/middlewares"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
+	"github.com/heathcetide/infectious-disease/internal/webui"
 	pkgcache "github.com/heathcetide/infectious-disease/pkg/cache"
 	pkglock "github.com/heathcetide/infectious-disease/pkg/lock"
 	pkgretry "github.com/heathcetide/infectious-disease/pkg/retry"
@@ -248,6 +249,8 @@ func (c *httpServerComponent) Start(ctx context.Context) error {
 			"/docs", "/openapi",
 			// Public learning media (mini-app image/video/pdf preview without JWT)
 			"/api/v1/infect-files/learning",
+			// Embedded admin SPA + AMap proxy ("/" is exact-root only)
+			"/", "/index.html", "/assets", "/logo.png", "/vite.svg", "/_AMapProxy",
 		)))
 	}
 	// Mount apidocs first to get huma.API (for registering routes with OpenAPI docs)
@@ -264,6 +267,12 @@ func (c *httpServerComponent) Start(ctx context.Context) error {
 	// Create handlers and register routes (humax.Group: Gin + OpenAPI docs)
 	h := handlers.New(c.cfg, *c.info, c.db)
 	h.Register(r, api)
+
+	// Embedded admin console (Vite build) + optional AMap same-origin proxy.
+	webui.MountAMapProxy(r)
+	if err := webui.Mount(r); err != nil {
+		logger.Lg.Warn("admin UI embed unavailable", zap.Error(err))
+	}
 
 	c.server = &http.Server{
 		Addr:         fmt.Sprintf(":%d", c.cfg.Server.Port),
