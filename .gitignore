@@ -15,6 +15,9 @@ unpackage/
 dist/
 dist-ssr/
 *.local
+# Keep embedded admin SPA (Vite output copied by scripts/build-admin.sh)
+!internal/webui/dist/
+!internal/webui/dist/**
 
 # Test
 *.test
