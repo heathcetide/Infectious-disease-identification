@@ -12,15 +12,10 @@ import './styles/index.scss';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import '@/styles/global.scss';
 import '@/styles/NextContainer.css';
-import { installAmapUrlRewrite, loadAMap } from '@/utils/amap'
 import { useThemeStore } from '@/store/theme'
 
-// Dev: rewrite AMap CDN requests to Vite proxy before any map code runs
-installAmapUrlRewrite()
-// Preload AMap so report/screen map opens without waiting on first enter
-loadAMap().catch((err) => {
-  console.warn('[amap] preload failed', err)
-})
+// AMap is lazy-loaded from map views via loadAMap() — do not rewrite/preload
+// on boot (login page was hitting /_AMapProxy 502 when Node DNS cannot resolve amap.com).
 
 const app = createApp(App)
 

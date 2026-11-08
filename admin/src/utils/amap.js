@@ -5,11 +5,10 @@ const AMAP_SECURITY =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_SECURITY_CODE) ||
   ''
 
-// Proxy only in Vite DEV (browser often cannot reach amap.com) or when explicitly forced.
-// Embedded admin on :8080 should prefer the official CDN — Go proxy can 502/503 under load.
+// Only force proxy when explicitly requested. Vite DEV used to always proxy, but
+// Node often cannot resolve/reach amap.com (→ /_AMapProxy 502) while the browser can.
 const forceProxy =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_PROXY === '1') ||
-  (typeof import.meta !== 'undefined' && !!import.meta.env?.DEV)
+  typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_PROXY === '1'
 
 let preferProxy = forceProxy
 let rewriteInstalled = false
@@ -44,6 +43,7 @@ export function rewriteAmapUrl(url) {
 
 /**
  * Rewrite script / image / XHR / fetch through /_AMapProxy when proxy mode is on.
+ * Call only after deciding to use the proxy — never on app boot by default.
  */
 export function installAmapUrlRewrite() {
   if (!preferProxy || rewriteInstalled || typeof window === 'undefined') return
@@ -239,7 +239,8 @@ export function loadAMap(maxAttempts = 3) {
   }
   loadingPromise = (async () => {
     let lastErr
-    // Pass 1: current mode (direct unless Vite DEV / VITE_AMAP_PROXY=1)
+    // Pass 1: browser → CDN (works when Node proxy DNS fails)
+    preferProxy = forceProxy
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       try {
         return await injectScript(attempt)
@@ -248,8 +249,8 @@ export function loadAMap(maxAttempts = 3) {
         await new Promise((r) => setTimeout(r, 300 * (attempt + 1)))
       }
     }
-    // Pass 2: if direct failed, try Go /_AMapProxy once
-    if (!preferProxy) {
+    // Pass 2: same-origin Vite/Go proxy (only if CDN blocked in browser)
+    if (!forceProxy) {
       preferProxy = true
       rewriteInstalled = false
       for (let attempt = 0; attempt < 2; attempt += 1) {
