@@ -2,7 +2,10 @@
 
 package services
 
-import "gorm.io/gorm"
+import (
+	"github.com/heathcetide/infectious-disease/internal/llm"
+	"gorm.io/gorm"
+)
 
 // Services holds domain service stubs for infect APIs.
 type Services struct {
@@ -15,13 +18,14 @@ type Services struct {
 	CDC       *CDCService
 	Medical   *MedicalService
 	Profile   *ProfileService
+	LLM       *llm.Client
 }
 
 // New wires service stubs with the given database handle (may be nil in tests).
-func New(db *gorm.DB) *Services {
+func New(db *gorm.DB, chat *llm.Client) *Services {
 	return &Services{
 		Employee:  NewEmployeeService(db),
-		CheckIn:   NewCheckInService(db),
+		CheckIn:   NewCheckInService(db, chat),
 		Diagnosis: NewDiagnosisService(db),
 		Lab:       NewLabService(db),
 		Learning:  NewLearningService(db),
@@ -29,5 +33,6 @@ func New(db *gorm.DB) *Services {
 		CDC:       NewCDCService(db),
 		Medical:   NewMedicalService(db),
 		Profile:   NewProfileService(db),
+		LLM:       chat,
 	}
 }

@@ -124,7 +124,7 @@ func scoreForDisease(weights []models.SymptomWeighting, diseaseName string, acti
 	return total
 }
 
-// ComputeScores calculates weighted disease scores, persists rows, and returns them.
+// ComputeScores calculates weighted disease scores, applies P2 multi-source priors, persists rows.
 func ComputeScores(db *gorm.DB, statusID uint, symptoms AllSymptoms) ([]models.DiseaseScoring, error) {
 	var weights []models.SymptomWeighting
 	if err := db.Find(&weights).Error; err != nil {
@@ -139,6 +139,13 @@ func ComputeScores(db *gorm.DB, statusID uint, symptoms AllSymptoms) ([]models.D
 		Delete(&models.DiseaseScoring{}).Error; err != nil {
 		return nil, err
 	}
+
+	var userID uint
+	var st models.DailyHealthStatus
+	if err := db.First(&st, statusID).Error; err == nil {
+		userID = st.UserID
+	}
+	ctx := loadScoringContext(db, userID, statusID)
 
 	diseaseNames := models.JavaScoringDiseaseNames
 	out := make([]models.DiseaseScoring, 0, len(diseaseNames))
@@ -159,10 +166,13 @@ func ComputeScores(db *gorm.DB, statusID uint, symptoms AllSymptoms) ([]models.D
 			DiseaseTypeName: diseaseName,
 			Score:           score,
 		}
-		if err := db.Create(&row).Error; err != nil {
+		out = append(out, row)
+	}
+	_ = applyContextFusion(out, ctx, active)
+	for i := range out {
+		if err := db.Create(&out[i]).Error; err != nil {
 			return nil, err
 		}
-		out = append(out, row)
 	}
 	return out, nil
 }

@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
@@ -33,6 +34,24 @@ func (h *Handlers) AdminHello(c *gin.Context) {
 	respgin.Success(c, gin.H{"message": "hello"})
 }
 
+// AdminGetUser GET /api/v1/admin/users/:id — profile + user fields for drawers.
+func (h *Handlers) AdminGetUser(c *gin.Context) {
+	id, ok := h.pathUint(c, "id")
+	if !ok {
+		return
+	}
+	data, err := h.svc.Admin.GetUserDetail(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			respgin.WriteError(c, response.Err(response.CodeNotFound))
+			return
+		}
+		respgin.WriteError(c, response.Err(response.CodeInternal))
+		return
+	}
+	respgin.Success(c, data)
+}
+
 // AdminCreateStaffUser POST /api/v1/admin/users
 // Accepts the admin drawer payload (phone/name/userType + profile fields).
 func (h *Handlers) AdminCreateStaffUser(c *gin.Context) {
@@ -54,7 +73,7 @@ func (h *Handlers) AdminCreateStaffUser(c *gin.Context) {
 	idNumber := strings.TrimSpace(dto.IDNumber)
 	plainPwd := services.InitialPasswordForDisplay(idNumber, strings.TrimSpace(dto.PhoneNumber))
 	respgin.Success(c, gin.H{
-		"userId":           user.ID,
+		"userId":           strconv.FormatUint(uint64(user.ID), 10),
 		"name":             user.Name,
 		"phoneNumber":      user.PhoneNumber,
 		"role":             user.Role,
@@ -194,11 +213,21 @@ func (h *Handlers) AdminResetUserPassword(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if err := h.svc.Admin.ResetUserPassword(id); err != nil {
+	plain, err := h.svc.Admin.ResetUserPassword(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			respgin.WriteError(c, response.Err(response.CodeNotFound))
+			return
+		}
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	respgin.Success(c, gin.H{"message": "password reset", "defaultPassword": "Passw0rd!"})
+	respgin.Success(c, gin.H{
+		"message":          "password reset",
+		"defaultPassword":  plain,
+		"initialPassword":  plain,
+		"hint":             "已重置为身份证号后六位（无身份证则手机号后六位）",
+	})
 }
 
 // AdminWeightsBatch PUT /api/v1/admin/weights/batch

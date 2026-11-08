@@ -4,7 +4,9 @@ package handlers
 
 import (
 	"errors"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
@@ -86,16 +88,26 @@ func (h *Handlers) DiagnosisUploadFile(c *gin.Context) {
 			resultID = result.DiagnosisResultsID
 		}
 	}
+	reportType := strings.TrimSpace(c.PostForm("reportType"))
 	meta := models.DiagnosisReport{
 		DiagnosisResultsID: resultID,
+		ReportType:         reportType,
 		FileName:           name,
 		FilePath:           key,
+		FileType:           filepath.Ext(name),
 		UploadDate:         time.Now(),
+		OCRStatus:          "pending",
 	}
 	if h.db != nil {
 		if err := h.db.Create(&meta).Error; err != nil {
 			respgin.WriteError(c, response.Err(response.CodeInternal))
 			return
+		}
+		// P3: OCR → structured metrics → later AI ranking (blood / imaging).
+		if services.ShouldOCRReportType(reportType) {
+			services.EnqueueDiagnosisReportOCR(h.db, h.svc.LLM, meta.ReportID)
+		} else {
+			_ = h.db.Model(&meta).Update("ocr_status", "skipped").Error
 		}
 	}
 	respgin.Created(c, gin.H{

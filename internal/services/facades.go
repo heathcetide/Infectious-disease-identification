@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	"gorm.io/gorm"
@@ -48,9 +49,14 @@ func (s *EmployeeService) SubmitSatisfaction(userID uint, dto SubmitSatisfaction
 }
 
 // CheckInService wraps daily check-in and symptoms.
-type CheckInService struct{ db *gorm.DB }
+type CheckInService struct {
+	db  *gorm.DB
+	llm *llm.Client
+}
 
-func NewCheckInService(db *gorm.DB) *CheckInService { return &CheckInService{db: db} }
+func NewCheckInService(db *gorm.DB, chat *llm.Client) *CheckInService {
+	return &CheckInService{db: db, llm: chat}
+}
 
 func (s *CheckInService) CheckIn(userID uint, dto CheckInDTO) (*models.DailyHealthStatus, error) {
 	return CheckIn(s.db, userID, dto)
@@ -61,8 +67,11 @@ func (s *CheckInService) GetDaily(userID uint, date time.Time) (*DailyCheckInVO,
 func (s *CheckInService) GetMonth(userID uint, yearMonth string) ([]MonthlyHealthDay, error) {
 	return GetMonth(s.db, userID, yearMonth)
 }
-func (s *CheckInService) SaveSymptomsAndScore(userID uint, symptoms AllSymptoms) ([]models.DiseaseScoring, error) {
-	return SaveSymptomsAndScore(s.db, userID, symptoms)
+func (s *CheckInService) SaveSymptomsAndScore(userID uint, symptoms AllSymptoms) (*HybridScoringResult, error) {
+	return SaveSymptomsAndScore(s.db, s.llm, userID, symptoms)
+}
+func (s *CheckInService) ConfirmScoring(userID uint) (*HybridMeta, error) {
+	return ConfirmScoring(s.db, userID)
 }
 func (s *CheckInService) SaveWorkEnvironment(userID uint, dto WorkEnvironmentDTO) (*models.WorkEnvironmentInfo, error) {
 	return SaveWorkEnvironment(s.db, userID, dto)
@@ -131,6 +140,10 @@ func (s *LearningService) PageSelect(dto LearningMaterialsPageDTO) (*response.Pa
 	return PageSelectLearningMaterials(s.db, dto)
 }
 
+func (s *LearningService) RecordStudy(userID, materialID uint) error {
+	return RecordMaterialStudy(s.db, userID, materialID)
+}
+
 // AdminService wraps admin CRUD and stats.
 type AdminService struct{ db *gorm.DB }
 
@@ -138,6 +151,9 @@ func NewAdminService(db *gorm.DB) *AdminService { return &AdminService{db: db} }
 
 func (s *AdminService) PageUsers(q PageQuery) (*response.Page, error) {
 	return PageUsers(s.db, q)
+}
+func (s *AdminService) GetUserDetail(userID uint) (map[string]any, error) {
+	return GetAdminUserDetail(s.db, userID)
 }
 func (s *AdminService) PageHospitals(q PageQuery) (*response.Page, error) {
 	return PageHospitals(s.db, q)
@@ -194,7 +210,7 @@ func (s *AdminService) DeleteHospital(id uint) error {
 func (s *AdminService) SetUserActive(id uint, active bool) error {
 	return SetUserActive(s.db, id, active)
 }
-func (s *AdminService) ResetUserPassword(id uint) error {
+func (s *AdminService) ResetUserPassword(id uint) (string, error) {
 	return ResetUserPassword(s.db, id)
 }
 func (s *AdminService) UpdateWeightsBatch(items []SymptomWeightUpdateDTO) error {
@@ -278,7 +294,7 @@ func (s *CDCService) StatisticsData(date string) (*CDCStatisticsData, error) {
 func (s *CDCService) DiseaseToday(date string) ([]DiseaseNameCount, error) {
 	return CDCDiseaseToday(s.db, date)
 }
-func (s *CDCService) UserStations(date string) ([]UserStation, error) {
+func (s *CDCService) UserStations(date string) (*UserStationsMapDTO, error) {
 	return CDCUserStations(s.db, date)
 }
 func (s *CDCService) CheckInSearch(q string, limit int) ([]CheckInSearchItem, error) {

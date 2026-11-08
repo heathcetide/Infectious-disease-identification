@@ -156,12 +156,26 @@ func (h *Handlers) CheckInSymptoms(c *gin.Context) {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
 		return
 	}
-	scores, err := h.svc.CheckIn.SaveSymptomsAndScore(userID, body)
+	result, err := h.svc.CheckIn.SaveSymptomsAndScore(userID, body)
 	if err != nil {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
 		return
 	}
-	respgin.Success(c, gin.H{"diseasescoringList": scores})
+	respgin.Success(c, result)
+}
+
+// CheckInConfirmScoring POST /api/v1/checkin/scoring/confirm
+func (h *Handlers) CheckInConfirmScoring(c *gin.Context) {
+	userID, ok := h.currentUserID(c)
+	if !ok {
+		return
+	}
+	meta, err := h.svc.CheckIn.ConfirmScoring(userID)
+	if err != nil {
+		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
+		return
+	}
+	respgin.Success(c, meta)
 }
 
 // CheckInEnvironment POST /api/v1/checkin/environment

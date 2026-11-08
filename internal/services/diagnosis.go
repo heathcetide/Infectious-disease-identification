@@ -192,11 +192,15 @@ func GetDiagnosisByDate(db *gorm.DB, userID uint, dateStr string) (*AllDiagnosis
 	_ = loadChild(&out.Diagnosiscomplications)
 	_ = loadChild(&out.Diagnosisexaminations)
 
-	var reportIDs []uint
-	if err := db.Model(&models.DiagnosisReport{}).
-		Where("diagnosis_results_id = ?", rid).
-		Pluck("report_id", &reportIDs).Error; err == nil {
-		out.FileIDList = reportIDs
+	var reports []models.DiagnosisReport
+	if err := db.Where("diagnosis_results_id = ?", rid).
+		Order("report_id ASC").Find(&reports).Error; err == nil {
+		out.Files = reports
+		ids := make([]uint, 0, len(reports))
+		for _, r := range reports {
+			ids = append(ids, r.ReportID)
+		}
+		out.FileIDList = ids
 	}
 	return out, nil
 }

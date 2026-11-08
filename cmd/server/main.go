@@ -15,6 +15,7 @@ import (
 	"github.com/heathcetide/infectious-disease/internal/listeners"
 	localmw "github.com/heathcetide/infectious-disease/internal/middlewares"
 	"github.com/heathcetide/infectious-disease/internal/models"
+	"github.com/heathcetide/infectious-disease/internal/services"
 	pkgcache "github.com/heathcetide/infectious-disease/pkg/cache"
 	pkglock "github.com/heathcetide/infectious-disease/pkg/lock"
 	pkgretry "github.com/heathcetide/infectious-disease/pkg/retry"
@@ -109,6 +110,7 @@ func main() {
 		if cfg.App.Environment == "dev" || cfg.App.Environment == "test" {
 			appOpts = append(appOpts, bootstrap.WithAutoMigrate(db, models.AllModels()...))
 		}
+		_ = services.EnsureHospitalCoordinates(db)
 	}
 
 	// Initialize object storage (pkg/storage; local or kodo/qiniu)

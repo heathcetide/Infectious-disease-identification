@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/types"
@@ -40,6 +41,24 @@ func (h *Handlers) LearningMaterialsPage(c *gin.Context) {
 		return
 	}
 	respgin.Success(c, pageData)
+}
+
+// LearningMaterialStudy POST /api/v1/learning/materials/:id/study
+func (h *Handlers) LearningMaterialStudy(c *gin.Context) {
+	userID, ok := h.currentUserID(c)
+	if !ok {
+		return
+	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil || id == 0 {
+		respgin.WriteError(c, response.Err(response.CodeBadRequest))
+		return
+	}
+	if err := h.svc.Learning.RecordStudy(userID, uint(id)); err != nil {
+		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
+		return
+	}
+	respgin.Success(c, gin.H{"ok": true})
 }
 
 // InfectLearningFile GET /api/v1/infect-files/learning/:filename

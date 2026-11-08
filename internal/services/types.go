@@ -63,6 +63,8 @@ type AllSymptoms struct {
 	LocalSymptoms          models.LocalSymptoms       `json:"localSymptoms"`
 	OtherSymptoms          models.OtherSymptoms       `json:"otherSymptoms"`
 	RiskFactorsAndExposure RiskFactorsDTO             `json:"riskFactorsAndExposure"`
+	// SymptomPhotoIDs: skin/rash photos classified by YOLO/VLM (P4 auxiliary).
+	SymptomPhotoIDs []uint `json:"symptomPhotoIds,omitempty"`
 }
 
 // GeneralSymptomsDTO accepts stringy numeric inputs from uni-app text fields.
@@ -139,7 +141,8 @@ type DailyCheckInVO struct {
 	HasSignedToday     bool                      `json:"hasSignedToday"`
 	HasMonthSigned     bool                      `json:"hasMonthSigned"` // monthly work-environment filled
 	Dailyhealthstatus  *models.DailyHealthStatus `json:"dailyhealthstatus,omitempty"`
-	DiseasescoringList []models.DiseaseScoring   `json:"diseasescoringList,omitempty"`
+	DiseasescoringList []ScoredDiseaseItem       `json:"diseasescoringList,omitempty"`
+	Hybrid             *HybridMeta               `json:"hybrid,omitempty"`
 }
 
 // MonthlyHealthDay is one calendar day in the month summary.
@@ -280,6 +283,8 @@ type AllDiagnosisDTO struct {
 	Diagnosispersonalinfo         DiagnosisPersonalDTO                   `json:"diagnosispersonalinfo"`
 	Diagnosisrespiratorysymptoms  models.DiagnosisRespiratorySymptoms    `json:"diagnosisrespiratorysymptoms"`
 	FileIDList                    []uint                                 `json:"fileIdList"`
+	// Files is populated on read so the mini-app can restore uploaded reports.
+	Files []models.DiagnosisReport `json:"files,omitempty"`
 }
 
 // LabTestReportDTO matches frontend lab report submission.
@@ -387,19 +392,20 @@ type CheckInLocationFlatVO struct {
 }
 
 // AdminUserListItem is the admin user table row (Java-compatible field names).
+// UserID is a string so snowflake IDs survive JSON→JS without precision loss.
 type AdminUserListItem struct {
-	UserID                 uint    `json:"userId"`
-	UserType               string  `json:"userType"`
-	Name                   string  `json:"name"`
-	PhoneNumber            string  `json:"phoneNumber"`
-	Gender                 string  `json:"gender"`
-	Age                    int     `json:"age"`
-	Ethnicity              string  `json:"ethnicity"`
-	EducationLevel         string  `json:"educationLevel"`
-	WorkOnPlateauStartDate []int   `json:"workOnPlateauStartDate"`
-	Department             string  `json:"department"`
-	SpecificOccupation     string  `json:"specificOccupation"`
-	IsActived              bool    `json:"isActived"`
+	UserID                 string `json:"userId"`
+	UserType               string `json:"userType"`
+	Name                   string `json:"name"`
+	PhoneNumber            string `json:"phoneNumber"`
+	Gender                 string `json:"gender"`
+	Age                    int    `json:"age"`
+	Ethnicity              string `json:"ethnicity"`
+	EducationLevel         string `json:"educationLevel"`
+	WorkOnPlateauStartDate []int  `json:"workOnPlateauStartDate"`
+	Department             string `json:"department"`
+	SpecificOccupation     string `json:"specificOccupation"`
+	IsActived              bool   `json:"isActived"`
 }
 
 // DiseaseSubtypeItem is nested under disease type page rows.
@@ -463,6 +469,40 @@ type NeedRatingVO struct {
 	SurveyID      uint   `json:"surveyID,omitempty"`
 	SurveyTitle   string `json:"surveyTitle,omitempty"`
 	SurveyContent string `json:"surveyContent,omitempty"`
+}
+
+// ScoredDiseaseItem is one disease row returned to the mini-app (AI or expert).
+type ScoredDiseaseItem struct {
+	ScoringID       uint     `json:"scoringId,omitempty"`
+	StatusID        uint     `json:"statusId,omitempty"`
+	SymptomTime     *time.Time `json:"symptomTime,omitempty"`
+	DiseaseTypeID   int      `json:"diseaseTypeId,omitempty"`
+	DiseaseTypeName string   `json:"diseaseTypeName"`
+	Score           float64  `json:"score"`
+	Reason          string   `json:"reason,omitempty"`
+	Evidence        []string `json:"evidence,omitempty"`
+	ExpertScore     float64  `json:"expertScore,omitempty"`
+}
+
+// HybridMeta describes expert vs AI consistency for P1 hybrid reasoning.
+type HybridMeta struct {
+	IsAI               bool     `json:"isAI"`
+	Disagreement       bool     `json:"disagreement"`
+	NeedsHumanConfirm  bool     `json:"needsHumanConfirm"`
+	Confirmed          bool     `json:"confirmed"`
+	LLMDegraded        bool     `json:"llmDegraded"`
+	ExpertTop          []string `json:"expertTop,omitempty"`
+	AITop              []string `json:"aiTop,omitempty"`
+	Message            string   `json:"message,omitempty"`
+}
+
+// HybridScoringResult is the symptoms-submit payload (backward-compatible list + hybrid).
+type HybridScoringResult struct {
+	DiseasescoringList []ScoredDiseaseItem `json:"diseasescoringList"`
+	Hybrid             HybridMeta          `json:"hybrid"`
+	HighRisk           bool                `json:"highRisk,omitempty"`
+	RiskAlerts         []models.RiskAlert  `json:"riskAlerts,omitempty"`
+	NearestHospital    string              `json:"nearestHospital,omitempty"`
 }
 
 // ParseDate parses yyyy-MM-dd in local timezone.

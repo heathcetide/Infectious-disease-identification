@@ -75,6 +75,26 @@ func GetHospitalByID(db *gorm.DB, id uint) (*models.Hospital, error) {
 	return &h, nil
 }
 
+// EnsureHospitalCoordinates fills lat/lng for known corridor hospitals when missing.
+func EnsureHospitalCoordinates(db *gorm.DB) error {
+	coords := map[string][2]float64{
+		"青海省交通医院西宁院区":         {36.6175, 101.8234},
+		"格尔木市人民医院":            {36.4020, 94.9030},
+		"青藏铁路疾病预防控制站（格尔木）": {36.4155, 94.9088},
+		"那曲市人民医院":             {31.4762, 92.0512},
+		"西藏自治区人民医院":          {29.6573, 91.1325},
+		"拉萨市人民医院":             {29.6548, 91.1142},
+		"海西州人民医院":             {37.3697, 97.3701},
+		"安多县人民医院":             {32.2642, 91.6815},
+	}
+	for name, c := range coords {
+		_ = db.Model(&models.Hospital{}).
+			Where("hospital_name = ? AND (latitude = 0 OR latitude IS NULL)", name).
+			Updates(map[string]any{"latitude": c[0], "longitude": c[1]}).Error
+	}
+	return nil
+}
+
 // CreateHospital inserts a hospital.
 func CreateHospital(db *gorm.DB, h models.Hospital) (*models.Hospital, error) {
 	if err := db.Create(&h).Error; err != nil {
@@ -94,6 +114,8 @@ func UpdateHospital(db *gorm.DB, id uint, h models.Hospital) (*models.Hospital, 
 		"hospital_name":         h.HospitalName,
 		"hospital_phone_number": h.HospitalPhoneNumber,
 		"address":               h.Address,
+		"latitude":              h.Latitude,
+		"longitude":             h.Longitude,
 	}).Error; err != nil {
 		return nil, err
 	}
@@ -128,13 +150,25 @@ func SetUserActive(db *gorm.DB, id uint, active bool) error {
 	return nil
 }
 
-// ResetUserPassword sets password to defaultResetPassword.
-func ResetUserPassword(db *gorm.DB, id uint) error {
-	hash, err := password.Hash(defaultResetPassword, nil)
-	if err != nil {
-		return err
+// ResetUserPassword resets to 身份证后六位 (fallback: phone last 6 / Passw0rd!).
+// Returns the plaintext so the admin UI can show the real initial password.
+func ResetUserPassword(db *gorm.DB, id uint) (string, error) {
+	var u models.User
+	if err := db.First(&u, id).Error; err != nil {
+		return "", err
 	}
-	return models.User{}.UpdatePassword(db, id, hash)
+	var profile models.EmployeeProfile
+	_ = db.Where("user_id = ?", id).First(&profile).Error
+	phone := firstNonEmpty(u.PhoneNumber, u.Phone)
+	plain := initialPasswordFromID(profile.IDNumber, phone)
+	hash, err := password.Hash(plain, nil)
+	if err != nil {
+		return "", err
+	}
+	if err := (models.User{}).UpdatePassword(db, id, hash); err != nil {
+		return "", err
+	}
+	return plain, nil
 }
 
 // UpdateSymptomWeightsBatch updates many weight rows.

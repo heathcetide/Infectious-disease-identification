@@ -3,6 +3,7 @@
 package services
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
@@ -53,7 +54,7 @@ func PageUsers(db *gorm.DB, q PageQuery) (*response.Page, error) {
 	list := make([]AdminUserListItem, 0, len(users))
 	for _, u := range users {
 		item := AdminUserListItem{
-			UserID:      u.ID,
+			UserID:      strconv.FormatUint(uint64(u.ID), 10),
 			UserType:    roleDisplayName(u.Role),
 			Name:        u.Name,
 			PhoneNumber: firstNonEmpty(u.PhoneNumber, u.Phone),
@@ -105,6 +106,43 @@ func roleDisplayName(role string) string {
 	default:
 		return role
 	}
+}
+
+// GetAdminUserDetail returns user + employee profile for the admin drawers.
+func GetAdminUserDetail(db *gorm.DB, userID uint) (map[string]any, error) {
+	vo, err := GetEmployeeProfileVO(db, userID)
+	if err != nil {
+		return nil, err
+	}
+	out := FormatEmployeeProfileVO(vo)
+	u, uerr := models.User{}.FindByID(db, userID)
+	if uerr != nil {
+		return nil, uerr
+	}
+	idStr := strconv.FormatUint(uint64(u.ID), 10)
+	out["userId"] = idStr
+	out["id"] = idStr
+	out["userType"] = roleDisplayName(u.Role)
+	out["role"] = u.Role
+	out["name"] = firstNonEmpty(vo.Name, u.Name)
+	out["phoneNumber"] = firstNonEmpty(vo.PhoneNumber, u.PhoneNumber, u.Phone)
+	// Legacy admin form field aliases (typo casing from old Java UI).
+	if v, ok := out["otherPositionName"]; ok {
+		out["otherPositionname"] = v
+	}
+	if v, ok := out["otherPhoneNumber"]; ok {
+		out["otherphoneNumber"] = v
+	}
+	if v, ok := out["emergencyContactName"]; ok {
+		out["emergencyContactname"] = v
+	}
+	if v, ok := out["otherDiseasesName"]; ok {
+		out["otherDiseasesname"] = v
+	}
+	if v, ok := out["otherCancerName"]; ok {
+		out["OtherCancername"] = v
+	}
+	return out, nil
 }
 
 func firstNonEmpty(vals ...string) string {

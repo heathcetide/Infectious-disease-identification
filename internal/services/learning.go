@@ -3,6 +3,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -74,4 +75,21 @@ func PageSelectLearningMaterials(db *gorm.DB, dto LearningMaterialsPageDTO) (*re
 		})
 	}
 	return response.NewPage(items, total, page, size), nil
+}
+
+// RecordMaterialStudy inserts one learning click for studyCount aggregation.
+func RecordMaterialStudy(db *gorm.DB, userID, materialID uint) error {
+	if userID == 0 || materialID == 0 {
+		return fmt.Errorf("userId and materialId required")
+	}
+	var mat models.DiseaseLearningMaterial
+	if err := db.Select("material_id").First(&mat, materialID).Error; err != nil {
+		return err
+	}
+	rec := models.MaterialLearningRecord{
+		UserID:      userID,
+		MaterialID:  materialID,
+		ClickedDate: time.Now(),
+	}
+	return db.Create(&rec).Error
 }

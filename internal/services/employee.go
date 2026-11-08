@@ -5,6 +5,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/models"
@@ -161,10 +162,23 @@ func ChangePassword(db *gorm.DB, userID uint, dto ChangePasswordDTO) error {
 
 // SubmitFeedback records user feedback.
 func SubmitFeedback(db *gorm.DB, userID uint, dto FeedbackDTO) error {
+	name := strings.TrimSpace(dto.Name)
+	phone := strings.TrimSpace(dto.PhoneNumber)
+	if name == "" || phone == "" {
+		var u models.User
+		if err := db.Select("name", "phone_number").Where("user_id = ?", userID).First(&u).Error; err == nil {
+			if name == "" {
+				name = u.Name
+			}
+			if phone == "" {
+				phone = u.PhoneNumber
+			}
+		}
+	}
 	fb := models.UserFeedback{
 		UserID:        userID,
-		Name:          dto.Name,
-		PhoneNumber:   dto.PhoneNumber,
+		Name:          name,
+		PhoneNumber:   phone,
 		FeedbackTitle: dto.FeedbackTitle,
 		FeedbackText:  dto.FeedbackText,
 		FeedbackDate:  time.Now(),

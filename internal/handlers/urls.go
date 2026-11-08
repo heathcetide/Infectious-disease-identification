@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/heathcetide/infectious-disease/internal/configs"
+	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/services"
-	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
 	"github.com/heathcetide/infectious-disease/pkg/apidocs/humax"
+	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -36,13 +37,21 @@ type Handlers struct {
 
 // New creates a new Handlers instance.
 func New(cfg *configs.Config, info AppInfo, db *gorm.DB) *Handlers {
+	chat := llm.New(llm.Config{
+		Enabled:  cfg.LLM.Enabled,
+		Protocol: cfg.LLM.Protocol,
+		APIKey:   cfg.LLM.APIKey,
+		BaseURL:  cfg.LLM.BaseURL,
+		Model:    cfg.LLM.Model,
+		Timeout:  cfg.LLM.Timeout,
+	})
 	return &Handlers{
 		cfg:       cfg,
 		info:      info,
 		db:        db,
 		startTime: time.Now(),
 		jwtAuth:   info.JWTAuth,
-		svc:       services.New(db),
+		svc:       services.New(db, chat),
 	}
 }
 
@@ -127,6 +136,7 @@ func (h *Handlers) registerEmployeeRoutes(r *humax.Group) {
 		emp.POST("/feedback", h.EmployeeSubmitFeedback)
 		emp.GET("/satisfaction/need-rating", h.EmployeeNeedRating)
 		emp.POST("/satisfaction", h.EmployeeSubmitSatisfaction)
+		emp.GET("/hospitals/nearby", h.EmployeeNearbyHospitals)
 	}
 }
 
@@ -138,6 +148,8 @@ func (h *Handlers) registerCheckInRoutes(r *humax.Group) {
 		checkin.GET("/month", h.CheckInMonth)
 		checkin.GET("/reverse-geocode", h.CheckInReverseGeocode)
 		checkin.POST("/symptoms", h.CheckInSymptoms)
+		checkin.POST("/symptom-photo", h.CheckInUploadSymptomPhoto)
+		checkin.POST("/scoring/confirm", h.CheckInConfirmScoring)
 		checkin.POST("/environment", h.CheckInEnvironment)
 		checkin.PUT("/environment", h.CheckInEnvironmentUpdate)
 		checkin.GET("/environment", h.CheckInEnvironmentGet)
@@ -166,6 +178,7 @@ func (h *Handlers) registerLearningRoutes(r *humax.Group) {
 	learning := r.Group("/api/v1/learning")
 	{
 		learning.POST("/materials/page", h.LearningMaterialsPage)
+		learning.POST("/materials/:id/study", h.LearningMaterialStudy)
 	}
 }
 
@@ -187,7 +200,7 @@ func (h *Handlers) registerAdminInfectRoutes(r *humax.Group) {
 		admin.GET("/users", h.ListUsers)
 		admin.GET("/users/export", h.AdminExportUsers)
 		admin.POST("/users/import", h.AdminImportUsers)
-		admin.GET("/users/:id", h.GetUser)
+		admin.GET("/users/:id", h.AdminGetUser)
 		admin.POST("/users", h.AdminCreateStaffUser)
 		admin.PUT("/users/:id", h.UpdateUser)
 		admin.PUT("/users/:id/active", h.AdminSetUserActive)
@@ -217,6 +230,30 @@ func (h *Handlers) registerAdminInfectRoutes(r *humax.Group) {
 		admin.PUT("/settings/ai-mode", h.AdminSetAIMode)
 		admin.POST("/weights/batch-with-diagnosis", h.AdminWeightsBatchWithDiagnosis)
 		admin.PUT("/weights/batch-with-diagnosis", h.AdminWeightsBatchWithDiagnosis)
+
+		admin.GET("/llm/info", h.AdminLLMInfo)
+		admin.POST("/llm/chat", h.AdminLLMChat)
+
+		admin.GET("/vision/samples", h.AdminVisionSamplesPage)
+		admin.POST("/vision/samples", h.AdminVisionSampleCreate)
+		admin.GET("/vision/samples/:id/file", h.AdminVisionSampleFile)
+		admin.DELETE("/vision/samples/:id", h.AdminVisionSampleDelete)
+		admin.GET("/vision/summary", h.AdminVisionDatasetSummary)
+		admin.GET("/vision/export", h.AdminVisionDatasetExport)
+		admin.POST("/vision/classify", h.AdminVisionClassifyTrial)
+		admin.POST("/vision/promote", h.AdminVisionPromotePhoto)
+
+		admin.GET("/eval/versions", h.AdminListScoringVersions)
+		admin.POST("/eval/versions", h.AdminCreateScoringVersion)
+		admin.GET("/eval/versions/:id", h.AdminGetScoringVersion)
+		admin.GET("/eval/versions/:id/download", h.AdminDownloadScoringVersion)
+		admin.POST("/eval/versions/:id/restore", h.AdminRestoreScoringVersion)
+		admin.GET("/eval/runs", h.AdminListEvalRuns)
+		admin.POST("/eval/runs", h.AdminRunEval)
+		admin.GET("/eval/runs/:id/cases", h.AdminListEvalCases)
+
+		admin.GET("/risk-alerts", h.AdminListRiskAlerts)
+		admin.PUT("/risk-alerts/:id/ack", h.AdminAckRiskAlert)
 	}
 }
 
@@ -295,6 +332,7 @@ func (h *Handlers) registerCDCRoutes(r *humax.Group) {
 		cdc.PUT("/materials/:id", h.CDCUpdateMaterial)
 		cdc.PUT("/materials/:id/status", h.CDCMaterialStatus)
 		cdc.PUT("/materials/:id/sequence", h.CDCMaterialSequence)
+		cdc.GET("/eval/latest", h.CDCLatestEvalCompare)
 	}
 }
 
