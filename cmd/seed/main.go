@@ -35,12 +35,65 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Fast path: go run ./cmd/seed -hospitals  (upsert expanded hospital catalog with coords)
+	if len(os.Args) > 1 && (os.Args[1] == "-hospitals" || os.Args[1] == "--hospitals") {
+		if err := ensureHospitalsUpsert(db); err != nil {
+			fmt.Fprintf(os.Stderr, "hospitals: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -high-risk  (real check-in + severe symptoms → risk_alerts ≥80%)
+	if len(os.Args) > 1 && (os.Args[1] == "-high-risk" || os.Args[1] == "--high-risk") {
+		if err := seedHighRiskCheckIns(db, 10); err != nil {
+			fmt.Fprintf(os.Stderr, "high-risk: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 	// Fast path: go run ./cmd/seed -dense
 	if len(os.Args) > 1 && (os.Args[1] == "-dense" || os.Args[1] == "--dense") {
 		if err := seedDenseSeason(db); err != nil {
 			fmt.Fprintf(os.Stderr, "dense: %v\n", err)
 			os.Exit(1)
 		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -relocate  (scatter existing dense check-ins onto 300+ offset points)
+	if len(os.Args) > 1 && (os.Args[1] == "-relocate" || os.Args[1] == "--relocate") {
+		fmt.Printf("offset catalog size=%d\n", len(offsetStations))
+		if err := seedRelocateCheckIns(db); err != nil {
+			fmt.Fprintf(os.Stderr, "relocate: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -workers  (expand railway staff + dense fill)
+	if len(os.Args) > 1 && (os.Args[1] == "-workers" || os.Args[1] == "--workers") {
+		hash, err := password.Hash("Passw0rd!", nil)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "hash: %v\n", err)
+			os.Exit(1)
+		}
+		if err := seedBulkWorkers(db, hash); err != nil {
+			fmt.Fprintf(os.Stderr, "workers: %v\n", err)
+			os.Exit(1)
+		}
+		if err := seedDenseSeason(db); err != nil {
+			fmt.Fprintf(os.Stderr, "dense: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+	// Fast path: go run ./cmd/seed -fix-pwd 13980007999
+	if len(os.Args) > 2 && (os.Args[1] == "-fix-pwd" || os.Args[1] == "--fix-pwd") {
+		phone := os.Args[2]
+		plain, err := resetPhoneToIDPassword(db, phone)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "fix-pwd: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("reset ok phone=%s password=%s\n", phone, plain)
 		return
 	}
 	// Fast path: go run ./cmd/seed -weights
@@ -69,7 +122,36 @@ func main() {
 	fmt.Println("  admin    phone 13800000001")
 	fmt.Println("  cdc      phone 13800000002")
 	fmt.Println("  medical  phone 13800000003")
-	fmt.Println("  bulk workers phone 13980000001 … (8000 铁路职工，11.8–12.31 每日大量打卡)")
+	fmt.Println("  bulk workers phone 13980000001 … (~12000 铁路职工，密集打卡至 2027-07)")
+}
+
+func resetPhoneToIDPassword(db *gorm.DB, phone string) (string, error) {
+	var u models.User
+	if err := db.Where("phone_number = ?", phone).First(&u).Error; err != nil {
+		return "", err
+	}
+	var profile models.EmployeeProfile
+	_ = db.Where("user_id = ?", u.ID).First(&profile).Error
+	idDigits := make([]rune, 0, len(profile.IDNumber))
+	for _, r := range profile.IDNumber {
+		if r >= '0' && r <= '9' {
+			idDigits = append(idDigits, r)
+		}
+	}
+	plain := "Passw0rd!"
+	if len(idDigits) >= 6 {
+		plain = string(idDigits[len(idDigits)-6:])
+	} else if len(phone) >= 6 {
+		plain = phone[len(phone)-6:]
+	}
+	hash, err := password.Hash(plain, nil)
+	if err != nil {
+		return "", err
+	}
+	if err := (models.User{}).UpdatePassword(db, u.ID, hash); err != nil {
+		return "", err
+	}
+	return plain, nil
 }
 
 func ensureUser(db *gorm.DB, phone, email, name, role string, hash string) error {
@@ -213,6 +295,10 @@ func seed(db *gorm.DB) error {
 		return err
 	}
 	if err := seedClinicalDemo(db); err != nil {
+		return err
+	}
+	// Always refresh hospital catalog (coords/phone) even if clinical skip paths change.
+	if err := ensureHospitalsUpsert(db); err != nil {
 		return err
 	}
 	if err := seedFeedbackDemo(db); err != nil {

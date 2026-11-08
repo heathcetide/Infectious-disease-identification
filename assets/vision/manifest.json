@@ -1,0 +1,4294 @@
+{
+  "classNames": [
+    "painful_red_rash",
+    "skin_ulcer",
+    "itchy_rash",
+    "petechial_rash",
+    "blood_blister",
+    "cyanosis",
+    "normal_skin",
+    "other"
+  ],
+  "count": 611,
+  "format": "ultralytics-classify-manifest",
+  "items": [
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_02.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_1._ds01015_im00672_r7_ebsimplexthu_jpg.png",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_1._ds01015_im00672_r7_ebsimplexthu_jpg.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_10._hands-of-a-36-year-old-woman-with-epidermolysis-bullosa-a5xtgm.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_10._hands-of-a-36-year-old-woman-with-epidermolysis-bullosa-a5xtgm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_11._epidermolysis-bullosa-child.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_11._epidermolysis-bullosa-child.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_13._43080tn.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_13._43080tn.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_14._189774626f71fd00551583230f4c8215d370ec3d.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_14._189774626f71fd00551583230f4c8215d370ec3d.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_15._epidermolysis-bullosa-40651.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_15._epidermolysis-bullosa-40651.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_19._epidermolysis-bullosa.png",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_19._epidermolysis-bullosa.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_20._epidermolysis_bullosa_dystrofic_dominant1.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_20._epidermolysis_bullosa_dystrofic_dominant1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_27._cu-ynaqweaepq6x.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_27._cu-ynaqweaepq6x.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_29._epidermolysis-bullosa-29503.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_29._epidermolysis-bullosa-29503.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_3._rdeb-1.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_3._rdeb-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_30._epidermolysis-bullosa-29502.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_30._epidermolysis-bullosa-29502.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_33._epidermolysis-bullosa-diagnosis-babys-feet.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_33._epidermolysis-bullosa-diagnosis-babys-feet.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_39._c0024009-epidermolysis-bullosa-skin-disease-science-photo-library-high.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_39._c0024009-epidermolysis-bullosa-skin-disease-science-photo-library-high.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_43._eb6.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_43._eb6.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_49._rd10.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_49._rd10.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_50._maisy006_1_orig.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_50._maisy006_1_orig.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_51._butterfly-babies-cd75bc94-455b-11e7-a196-a1bb629f64cb.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_51._butterfly-babies-cd75bc94-455b-11e7-a196-a1bb629f64cb.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_52._epidermolysis-bullosa-1.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_52._epidermolysis-bullosa-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_53._1211cfp_pcbullosa_2.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_53._1211cfp_pcbullosa_2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_56._sd-aspect-1485885303-epidermolysis-bullosa.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_56._sd-aspect-1485885303-epidermolysis-bullosa.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_57._eba3.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_57._eba3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_58._epidermolysis-bullosa-57822.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_58._epidermolysis-bullosa-57822.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_59._ijps_2013_46_1_153_113742_f1.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_59._ijps_2013_46_1_153_113742_f1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_60._744-2_default.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_60._744-2_default.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_61._ds01015_im00673_r7_ebjunctionalthu_jpg.png",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_61._ds01015_im00673_r7_ebjunctionalthu_jpg.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_62._43bb427600000578-0-image-a-83_1504142387943.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_62._43bb427600000578-0-image-a-83_1504142387943.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_63._c0088387.2e16d0ba.fill-920x613.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_63._c0088387.2e16d0ba.fill-920x613.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_68._type_responsive-gallery-fullscreen.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_68._type_responsive-gallery-fullscreen.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_69._6409173_daylon27adwb_400.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_69._6409173_daylon27adwb_400.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_7._dystrophic-epidermolysis-bullosa.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_7._dystrophic-epidermolysis-bullosa.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_71._abc_eb_111216_wg.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_71._abc_eb_111216_wg.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_75._eb7.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_75._eb7.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_76._4-figure9-1.png",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_76._4-figure9-1.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_80._7_281121.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_80._7_281121.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_81._27843tn.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_81._27843tn.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_87._1200px-handsebs.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_87._1200px-handsebs.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_88._3-s2.0-b9780323430401000105-f10-12-9780323430401.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_88._3-s2.0-b9780323430401000105-f10-12-9780323430401.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_89._4c0b261431b38a047aee6bc1acfc006b--medical-conditions-genetics.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_89._4c0b261431b38a047aee6bc1acfc006b--medical-conditions-genetics.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_9._eb.jpg",
+      "filePath": "assets/vision/train/blood_blister/real_epidermolysis-bullosa_9._eb.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_00.jpg",
+      "filePath": "assets/vision/train/cyanosis/real_unsplash_cyanosis_00.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_01.jpg",
+      "filePath": "assets/vision/train/cyanosis/real_unsplash_cyanosis_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_02.jpg",
+      "filePath": "assets/vision/train/cyanosis/real_unsplash_cyanosis_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_04.jpg",
+      "filePath": "assets/vision/train/cyanosis/real_unsplash_cyanosis_04.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_05.jpg",
+      "filePath": "assets/vision/train/cyanosis/real_unsplash_cyanosis_05.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_00.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_00.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_01.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_02.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_04.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_04.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_06.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_06.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_08.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_08.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_09.jpg",
+      "filePath": "assets/vision/train/itchy_rash/real_unsplash_itchy_rash_09.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_00.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_00.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_01.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_02.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_04.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_04.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_05.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_05.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_08.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_08.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_09.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_09.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_00.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_00.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_01.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_02.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_04.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_04.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_05.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_05.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_06.jpg",
+      "filePath": "assets/vision/train/normal_skin/real_unsplash_normal_skin_06.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_01.jpg",
+      "filePath": "assets/vision/train/other/real_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_02.jpg",
+      "filePath": "assets/vision/train/other/real_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_1._cas_4979671__fig_1.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_1._cas_4979671__fig_1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_10._abdominal-wound-on-day-of-discharge-postoperative-day-19-with-necrotic-ulcers.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_10._abdominal-wound-on-day-of-discharge-postoperative-day-19-with-necrotic-ulcers.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_11._dehisced-surgical-wound.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_11._dehisced-surgical-wound.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_12._post-surgical-abdominal-day1.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_12._post-surgical-abdominal-day1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_14._1200px-wound_dehiscence_post_inguinal_hernia_repair_2014-05-27_00-46.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_14._1200px-wound_dehiscence_post_inguinal_hernia_repair_2014-05-27_00-46.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_15._rejano_dehiscence_13dec-2.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_15._rejano_dehiscence_13dec-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_17._cas_6078537__may.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_17._cas_6078537__may.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_18._abdominal-wound-dehiscence-13-638.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_18._abdominal-wound-dehiscence-13-638.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_21._improved-abdominal-wound-with-enterocutaneous-fistula.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_21._improved-abdominal-wound-with-enterocutaneous-fistula.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_22._abdominal_gunshot_wound.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_22._abdominal_gunshot_wound.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_23._p1010828.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_23._p1010828.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_24._111113-11517423.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_24._111113-11517423.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_26._abdominal-wound-the-ruptured-colon-at-the-center-of-the-abdominal-cavity-1-and-the.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_26._abdominal-wound-the-ruptured-colon-at-the-center-of-the-abdominal-cavity-1-and-the.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_27._pmc2742396_eplasty09e34_fig2.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_27._pmc2742396_eplasty09e34_fig2.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_28._3-figure3-1.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_28._3-figure3-1.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_3._cas_5599144__fig_2.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_3._cas_5599144__fig_2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_31._11179606058100_3142.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_31._11179606058100_3142.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_32._abdominal-wound-3-months-postoperatively-contracting-with-granulation-tissue.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_32._abdominal-wound-3-months-postoperatively-contracting-with-granulation-tissue.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_34._cas_8806325__fig_4.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_34._cas_8806325__fig_4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_35._skin-closure-abdominal-wound-step-450w-1100565683.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_35._skin-closure-abdominal-wound-step-450w-1100565683.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_38._ss2746880.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_38._ss2746880.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_39._effects-11.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_39._effects-11.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_40._cas_6777954__img0151.jpg",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_40._cas_6777954__img0151.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_43._management1.png",
+      "filePath": "assets/vision/train/other/real_abdominal-wounds_43._management1.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_1._potential-risks-of-burn-wounds.jpg",
+      "filePath": "assets/vision/train/other/real_burns_1._potential-risks-of-burn-wounds.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_10._ea7fdda619126495407fa574f7b90be6.jpg",
+      "filePath": "assets/vision/train/other/real_burns_10._ea7fdda619126495407fa574f7b90be6.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_11._burn-wound-on-leg-boiling-450w-646481599.jpg",
+      "filePath": "assets/vision/train/other/real_burns_11._burn-wound-on-leg-boiling-450w-646481599.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_12._hqdefault.jpg",
+      "filePath": "assets/vision/train/other/real_burns_12._hqdefault.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_13._wound-care_0.jpg",
+      "filePath": "assets/vision/train/other/real_burns_13._wound-care_0.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_14._burn10.jpg",
+      "filePath": "assets/vision/train/other/real_burns_14._burn10.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_16._blog-012.png",
+      "filePath": "assets/vision/train/other/real_burns_16._blog-012.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_17._burn-wound-skin-red-burn-wound-skin-white-background-113135414.jpg",
+      "filePath": "assets/vision/train/other/real_burns_17._burn-wound-skin-red-burn-wound-skin-white-background-113135414.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_18._23387tn.jpg",
+      "filePath": "assets/vision/train/other/real_burns_18._23387tn.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_2._burn-wound-care.png",
+      "filePath": "assets/vision/train/other/real_burns_2._burn-wound-care.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_20._c55e2e56d845ab8d423506607bd9b568.jpg",
+      "filePath": "assets/vision/train/other/real_burns_20._c55e2e56d845ab8d423506607bd9b568.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_21._r207812_793952.jpg",
+      "filePath": "assets/vision/train/other/real_burns_21._r207812_793952.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_22._burn-wound-treatment.png",
+      "filePath": "assets/vision/train/other/real_burns_22._burn-wound-treatment.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_24._how-to-treat-a-burn.jpg",
+      "filePath": "assets/vision/train/other/real_burns_24._how-to-treat-a-burn.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_25._mccullowound_ch21_f002.png",
+      "filePath": "assets/vision/train/other/real_burns_25._mccullowound_ch21_f002.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_28._skin-with-burn-wound-ebrwrh.jpg",
+      "filePath": "assets/vision/train/other/real_burns_28._skin-with-burn-wound-ebrwrh.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_29._depositphotos_189557954-stock-photo-burn-wound-on-skin.jpg",
+      "filePath": "assets/vision/train/other/real_burns_29._depositphotos_189557954-stock-photo-burn-wound-on-skin.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_30._inf1.jpg",
+      "filePath": "assets/vision/train/other/real_burns_30._inf1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_33._1.jpg",
+      "filePath": "assets/vision/train/other/real_burns_33._1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_38._pmc3038404_ijps-43-101-g002.png",
+      "filePath": "assets/vision/train/other/real_burns_38._pmc3038404_ijps-43-101-g002.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000001.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000001.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000002.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000002.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000003.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000003.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000005.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000005.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000006.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000006.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000008.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000008.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000010.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000010.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000011.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000011.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000012.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000012.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000013.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000013.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000015.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000015.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000016.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000016.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000017.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000017.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000018.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000018.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000020.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000020.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000022.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000022.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000023.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000023.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000025.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000025.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000026.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000026.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000027.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000027.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000030.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000030.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000031.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000031.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000032.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000032.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000033.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000033.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000036.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000036.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000037.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000037.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000038.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000038.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000040.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000040.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000041.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000041.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000043.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000043.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000045.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000045.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000046.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000046.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000047.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000047.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000048.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000048.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000050.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000050.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000051.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000051.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000052.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000052.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000053.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000053.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000055.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000055.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000057.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000057.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000058.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000058.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000060.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000060.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000061.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000061.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000062.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000062.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000065.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000065.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000066.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000066.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000067.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000067.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000068.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000068.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000071.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000071.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000072.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000072.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000073.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000073.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000075.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000075.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000076.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000076.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000078.jpg",
+      "filePath": "assets/vision/train/other/real_isic_ISIC_0000078.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_1._amputation_site_infected_and_sloughy.jpg",
+      "filePath": "assets/vision/train/other/real_toes_1._amputation_site_infected_and_sloughy.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_10._21511662-ingrown-toenail-disease-blood-wound-infection-bacteria-finger-skin-scab-pus-toe-liquid-whitlow-felon.jpg",
+      "filePath": "assets/vision/train/other/real_toes_10._21511662-ingrown-toenail-disease-blood-wound-infection-bacteria-finger-skin-scab-pus-toe-liquid-whitlow-felon.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_11._89510126-accident-flip-flop-cut-foot-nail-toe-have-a-bloody-and-bleeding-wound-from-injury.jpg",
+      "filePath": "assets/vision/train/other/real_toes_11._89510126-accident-flip-flop-cut-foot-nail-toe-have-a-bloody-and-bleeding-wound-from-injury.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_12._toes-0041.jpg",
+      "filePath": "assets/vision/train/other/real_toes_12._toes-0041.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_14._21511663-ingrown-toenail-disease-blood-wound-infection-bacteria-finger-skin-scab-pus-toe-liquid-whitlow-felon.jpg",
+      "filePath": "assets/vision/train/other/real_toes_14._21511663-ingrown-toenail-disease-blood-wound-infection-bacteria-finger-skin-scab-pus-toe-liquid-whitlow-felon.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_15._diabetic-foot-infection-for-insensitive-repetitive-trauma-the-wound-is-close-to-deep.png",
+      "filePath": "assets/vision/train/other/real_toes_15._diabetic-foot-infection-for-insensitive-repetitive-trauma-the-wound-is-close-to-deep.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_17._depositphotos_70208379-stock-photo-toe-wound.jpg",
+      "filePath": "assets/vision/train/other/real_toes_17._depositphotos_70208379-stock-photo-toe-wound.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_18._screen_shot_2014-10-20_at_1.33.14_pm.jpg",
+      "filePath": "assets/vision/train/other/real_toes_18._screen_shot_2014-10-20_at_1.33.14_pm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_2._infected-toe-odor.png",
+      "filePath": "assets/vision/train/other/real_toes_2._infected-toe-odor.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_20._men-have-wound-big-toe-450w-769593181.jpg",
+      "filePath": "assets/vision/train/other/real_toes_20._men-have-wound-big-toe-450w-769593181.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_22._toe-wound.jpg",
+      "filePath": "assets/vision/train/other/real_toes_22._toe-wound.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_23._bentoe-550x383.jpg",
+      "filePath": "assets/vision/train/other/real_toes_23._bentoe-550x383.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_25._e26_neuropathic_uninfected_ulcer_april_8_2003.jpg",
+      "filePath": "assets/vision/train/other/real_toes_25._e26_neuropathic_uninfected_ulcer_april_8_2003.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_26._wound0905.jpg",
+      "filePath": "assets/vision/train/other/real_toes_26._wound0905.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_28._85233570-wet-dressing-wound-at-big-toe-clean-diabetic-foot-.jpg",
+      "filePath": "assets/vision/train/other/real_toes_28._85233570-wet-dressing-wound-at-big-toe-clean-diabetic-foot-.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_29._cs-type-2-diabetes-wound-care-1440x810.jpg",
+      "filePath": "assets/vision/train/other/real_toes_29._cs-type-2-diabetes-wound-care-1440x810.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_30._diabetic-foot-ulcers.jpg",
+      "filePath": "assets/vision/train/other/real_toes_30._diabetic-foot-ulcers.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_32._figure11.jpg",
+      "filePath": "assets/vision/train/other/real_toes_32._figure11.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_35._toes-0016.jpg",
+      "filePath": "assets/vision/train/other/real_toes_35._toes-0016.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_36._ulcer2.jpg",
+      "filePath": "assets/vision/train/other/real_toes_36._ulcer2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_38._3812ab7246b84c5e9439c7c692cb3d42_a.jpeg",
+      "filePath": "assets/vision/train/other/real_toes_38._3812ab7246b84c5e9439c7c692cb3d42_a.jpeg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_39._83828381-diabetes-wound-infected-foot-loss-toe.jpg",
+      "filePath": "assets/vision/train/other/real_toes_39._83828381-diabetes-wound-infected-foot-loss-toe.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_4._pt0515micro.png",
+      "filePath": "assets/vision/train/other/real_toes_4._pt0515micro.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_40._a-wound-after-an-amputation-of-the-fourth-toe-on-the-back-of-the-foot-there-are-small.jpg",
+      "filePath": "assets/vision/train/other/real_toes_40._a-wound-after-an-amputation-of-the-fourth-toe-on-the-back-of-the-foot-there-are-small.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_44._pt12diabeteso21.jpg",
+      "filePath": "assets/vision/train/other/real_toes_44._pt12diabeteso21.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_5._100019677-fresh-cut-wound-at-right-toe-of-male-asian-patient-caused-by-broken-glass-skin-peeled-off-bleeding-f.jpg",
+      "filePath": "assets/vision/train/other/real_toes_5._100019677-fresh-cut-wound-at-right-toe-of-male-asian-patient-caused-by-broken-glass-skin-peeled-off-bleeding-f.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_51._woman-foot-detail-toe-injury-bleed-toenail-replaced-injures-wound-blood-toenail-injury-nail-injury-x7715a.jpg",
+      "filePath": "assets/vision/train/other/real_toes_51._woman-foot-detail-toe-injury-bleed-toenail-replaced-injures-wound-blood-toenail-injury-nail-injury-x7715a.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_52._arterial_ulcer_on_foot.jpg",
+      "filePath": "assets/vision/train/other/real_toes_52._arterial_ulcer_on_foot.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_1._haemangioma-1_superficial_anne-halbert.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_1._haemangioma-1_superficial_anne-halbert.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_10._800wm.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_10._800wm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_11._haemangioma.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_11._haemangioma.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_12._haemangioma-2_mixed_anne-halbert.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_12._haemangioma-2_mixed_anne-halbert.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_14._haeman1.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_14._haeman1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_15._hemangioma2.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_15._hemangioma2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_16._skin-angioma..jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_16._skin-angioma..jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_17._img_1437.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_17._img_1437.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_18._haemangioma7.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_18._haemangioma7.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_2._haemangioma-102.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_2._haemangioma-102.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_20._c0345401-haemangioma-spl.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_20._c0345401-haemangioma-spl.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_21._cherry-1.jpeg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_21._cherry-1.jpeg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_22._haemangioma-3_deep_anne-halbert.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_22._haemangioma-3_deep_anne-halbert.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_24._haemangioma-of-lip-in-elderly-female-usually-asymptomatic-but-can-cxmtbm.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_24._haemangioma-of-lip-in-elderly-female-usually-asymptomatic-but-can-cxmtbm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_25._cap-haem5.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_25._cap-haem5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_26._f1.large.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_26._f1.large.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_29._skye_extra2.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_29._skye_extra2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_3._haemangioma.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_3._haemangioma.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_30._haemangioma-1-4.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_30._haemangioma-1-4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_33._f1.large.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_33._f1.large.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_35._inf-haem-after-propranolol3.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_35._inf-haem-after-propranolol3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_36._young-girl-leg-haemangioma1.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_36._young-girl-leg-haemangioma1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_37._angioma1.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_37._angioma1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_41._figure5.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_41._figure5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_43._otolaryngology-lobular-haemangioma-5-200-g004.png",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_43._otolaryngology-lobular-haemangioma-5-200-g004.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_44._4edbfc8706ef19683060655d4d3d4f_gallery.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_44._4edbfc8706ef19683060655d4d3d4f_gallery.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_45._endoscopic-picture-of-lobular-capillary-haemangioma.png",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_45._endoscopic-picture-of-lobular-capillary-haemangioma.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_47._c5d94819-a831-4d14-baf0-2fc1d4240865.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_47._c5d94819-a831-4d14-baf0-2fc1d4240865.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_49._choroidal-haemangioma-1.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_49._choroidal-haemangioma-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_5._300px-capillary_haemangioma.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_5._300px-capillary_haemangioma.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_52._800wm.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_52._800wm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_53._haemangioma-in-the-upper-lip.png",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_53._haemangioma-in-the-upper-lip.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_56._haemangioma-axbn80.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_56._haemangioma-axbn80.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_57._haemangioma.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_57._haemangioma.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_63._a-and-b-congenital-haemangioma-a-rich-at-1-month-b-after-resolution-at-7-months.png",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_63._a-and-b-congenital-haemangioma-a-rich-at-1-month-b-after-resolution-at-7-months.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_65._capillary-haemangioma.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_65._capillary-haemangioma.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_66._4130088_377x171.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_66._4130088_377x171.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_67._c0072717-pigmented_haemangioma_on_the_skin-spl.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_haemangioma_67._c0072717-pigmented_haemangioma_on_the_skin-spl.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000000.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000000.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000007.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000007.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000021.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000021.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000028.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000028.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000035.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000035.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000042.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000042.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000056.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000056.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000063.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000063.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000070.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000070.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000077.jpg",
+      "filePath": "assets/vision/train/painful_red_rash/real_isic_ISIC_0000077.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_10._meningitis-rash-1296x728-body.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_10._meningitis-rash-1296x728-body.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_12._meningitis.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_12._meningitis.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_27._meningococcalmeningitis0415_756873.png",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_27._meningococcalmeningitis0415_756873.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_34._642x361_gallery_3_bacterial_meningitis.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_34._642x361_gallery_3_bacterial_meningitis.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_38._viral-meningitis-answers.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_38._viral-meningitis-answers.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_44._marsoburnunitlegs.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_44._marsoburnunitlegs.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_56._meningitis.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_56._meningitis.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_57.__45695194_tumbler226.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_57.__45695194_tumbler226.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_58._meningitis-2.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_58._meningitis-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-1.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-2.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-3.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-4.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-5.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-6.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-elbow-6.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-feet-1.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-feet-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-feet-2.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-feet-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-feet-4.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-feet-4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-feet-5.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-feet-5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-1.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-10.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-10.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-2.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-3.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-4.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-5.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-7.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-7.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-8.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-8.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-9.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-1-hand-9.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-2-showing-skin-changes.jpg",
+      "filePath": "assets/vision/train/petechial_rash/real_meningitis_meningitis-case-2-showing-skin-changes.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_01.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_02.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_03.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_03.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_04.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_04.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_05.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_05.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_06.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_06.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_07.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_07.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_08.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_08.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_1._extrav.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_1._extrav.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_12._4-figure3-1.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_12._4-figure3-1.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_13._baby4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_13._baby4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_14._jcanresther_2015_11_4_835_144589_f1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_14._jcanresther_2015_11_4_835_144589_f1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_19._baby2a.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_19._baby2a.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_2._baby3a.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_2._baby3a.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_23._781128-fig4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_23._781128-fig4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_25._deep-dermal-staining-over-the-hand-dorsum-appearing-4h-following-acyclovir-extravasation_q320.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_25._deep-dermal-staining-over-the-hand-dorsum-appearing-4h-following-acyclovir-extravasation_q320.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_28._extravasation.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_28._extravasation.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_29._full-thickness-skin-necrosis-presenting-48h-fol-lowing-chemotherapy-extravasation_q320.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_29._full-thickness-skin-necrosis-presenting-48h-fol-lowing-chemotherapy-extravasation_q320.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_3._baby2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_3._baby2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_33._extravasation-wound-d-006.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_33._extravasation-wound-d-006.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_35._boot.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_35._boot.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_37._janaesthclinpharmacol_2012_28_4_534_101954_u1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_37._janaesthclinpharmacol_2012_28_4_534_101954_u1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_39._indianjdermatol_2012_57_1_78_92692_f1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_39._indianjdermatol_2012_57_1_78_92692_f1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_42._2bahjune076.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_42._2bahjune076.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_43._baby2c.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_43._baby2c.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_44._what-is-an-extravasation-injury.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_44._what-is-an-extravasation-injury.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_46._extravasation-wound-d-002.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_46._extravasation-wound-d-002.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_50._f1.large.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_50._f1.large.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_53._58796168-person-revealing-an-extravasation-injury-on-their-stomach-with-contusions-and-swelling-due-to-subcut.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_53._58796168-person-revealing-an-extravasation-injury-on-their-stomach-with-contusions-and-swelling-due-to-subcut.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_54._extravasation-wound-d-003.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_extravasation-wound-images_54._extravasation-wound-d-003.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_1._gettyimages-840167308-1-650x450.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_1._gettyimages-840167308-1-650x450.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_11._diabeticfootulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_11._diabeticfootulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_12._foot-ulcer-217x300.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_12._foot-ulcer-217x300.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_13._233462272_pressingonfoot.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_13._233462272_pressingonfoot.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_14._diabetic-foot-ulcers.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_14._diabetic-foot-ulcers.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_15._depositphotos_10608893_l-20151-1170x1920.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_15._depositphotos_10608893_l-20151-1170x1920.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_16._diabetic-foot-ulcerqq.jpeg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_16._diabetic-foot-ulcerqq.jpeg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_18._diabetic-foot-ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_18._diabetic-foot-ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_19._m2800025-diabetic_neuropathy_ulceration_of_sole_of_foot-spl_popup.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_19._m2800025-diabetic_neuropathy_ulceration_of_sole_of_foot-spl_popup.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_30._diabetic-foot-ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_30._diabetic-foot-ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_31._1445728563-g-foot-and-leg-ulcers-151053709.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_31._1445728563-g-foot-and-leg-ulcers-151053709.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_32._608313.fig.001a.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_32._608313.fig.001a.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_34._e7837a8fafa10c3e5d7f9af58083c145--medicine-student-wound-care.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_34._e7837a8fafa10c3e5d7f9af58083c145--medicine-student-wound-care.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_37._treating-foot-ulcer-85183120m.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_37._treating-foot-ulcer-85183120m.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_38._0.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_38._0.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_39._feat_footulcer_necro_1110_127573.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_39._feat_footulcer_necro_1110_127573.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_41._maxresdefault.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_41._maxresdefault.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_44._1200px-diabetic_foot_syndrome2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_44._1200px-diabetic_foot_syndrome2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_45._hyperbaric-oxygen-therapy-for-diabetic-wounds-does-it-work-rm-1440x810.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_45._hyperbaric-oxygen-therapy-for-diabetic-wounds-does-it-work-rm-1440x810.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_46._diabetic-foot-ulcer.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_46._diabetic-foot-ulcer.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_47._103c0beb026f4ed5a66d81367c09d114.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_47._103c0beb026f4ed5a66d81367c09d114.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_53._foot4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_53._foot4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_56._poster-diabetic-foot-ulcer-treatment-video.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_56._poster-diabetic-foot-ulcer-treatment-video.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_57._9diabetes-open-224x300.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_57._9diabetes-open-224x300.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_58._300px-neuropathic_heel_ulcer_diabetic.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_58._300px-neuropathic_heel_ulcer_diabetic.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_61._figure1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_61._figure1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_64._foot-ulcer-at-month-6-of-treatment.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_64._foot-ulcer-at-month-6-of-treatment.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_66._pt12diabetes1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_66._pt12diabetes1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_68._foot.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_68._foot.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_72._feat_footulcer_cellul_1110_127752_127753.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_72._feat_footulcer_cellul_1110_127752_127753.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_73._diabetic-foot-ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_73._diabetic-foot-ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_74._diabetic-foot-ulcer_opt.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_74._diabetic-foot-ulcer_opt.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_79._diabetic-wound-and-ulcer-1024x576.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_79._diabetic-wound-and-ulcer-1024x576.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_80._diabetic-wound-care-for-foot-ulcers.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_80._diabetic-wound-care-for-foot-ulcers.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_81._resizeddiabeticulceredfoot_mono.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_81._resizeddiabeticulceredfoot_mono.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_83._f2.large.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_83._f2.large.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_86._shutterstock_176653277a-590x377.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_86._shutterstock_176653277a-590x377.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_88._1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_88._1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_9._cellulitis-1200x768.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_9._cellulitis-1200x768.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_90._1-figure1-1.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_90._1-figure1-1.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_91._diabetic_foot_ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_foot-ulcers_91._diabetic_foot_ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_10._1245499_screen-shot-2012-03-22-at-7.15.35-pm.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_10._1245499_screen-shot-2012-03-22-at-7.15.35-pm.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_12._legulcer41-390x218.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_12._legulcer41-390x218.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_13._varicose_ulcer_500_375_70.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_13._varicose_ulcer_500_375_70.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_15._legs_matter_venous_leg_ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_15._legs_matter_venous_leg_ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_16._venous-ulcer-02.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_16._venous-ulcer-02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_17._leg-ulcers-cryoglobulinaemic-vasculitis-from-multiple-myeloma-iv-kurtgebauer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_17._leg-ulcers-cryoglobulinaemic-vasculitis-from-multiple-myeloma-iv-kurtgebauer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_18._m3_01.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_18._m3_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_19._venous-ulcer-03.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_19._venous-ulcer-03.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_21._spray-onskin.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_21._spray-onskin.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_22._m280096-close_up_of_ankle_showing_venous_ulcer_342x198.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_22._m280096-close_up_of_ankle_showing_venous_ulcer_342x198.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_25._legulcerhealed23.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_25._legulcerhealed23.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_26._1wm.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_26._1wm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_28._leg-ulcers-in-a-patient-with-mycosis-fungoides-a-before-ulcer-treatment-and-b-after.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_28._leg-ulcers-in-a-patient-with-mycosis-fungoides-a-before-ulcer-treatment-and-b-after.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_30._f1.large.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_30._f1.large.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_31._venous-leg-ulcers-e1508833041133.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_31._venous-leg-ulcers-e1508833041133.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_32._4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_32._4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_34._venous-leg-ulcers-13298.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_34._venous-leg-ulcers-13298.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_35._leg-ulcers.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_35._leg-ulcers.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_37._leg-ulcers-both-legs-with-macerated-skin-due-to-dressings.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_37._leg-ulcers-both-legs-with-macerated-skin-due-to-dressings.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_38._a-venous-leg-ulcer-on-the-medial-aspect-of-the-lower-leg-near-the-medial-malleolus.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_38._a-venous-leg-ulcer-on-the-medial-aspect-of-the-lower-leg-near-the-medial-malleolus.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_4._foot-ulcer1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_4._foot-ulcer1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_40._img4ebd1c668a9e8_300.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_40._img4ebd1c668a9e8_300.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_44._picture29-1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_44._picture29-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_47._legulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_47._legulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_48._dis130.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_48._dis130.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_49._customerlegulcerbefore.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_49._customerlegulcerbefore.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_5._leg-ulcer-with-macerated-skin-due-to-dressings.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_5._leg-ulcer-with-macerated-skin-due-to-dressings.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_53._m4_01.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_53._m4_01.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_54._vein_venous_ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_54._vein_venous_ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_55._customerlegulcerafter.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_55._customerlegulcerafter.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_56._image7.jpeg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_56._image7.jpeg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_59._dsc02642-e1487324070958.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_59._dsc02642-e1487324070958.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_6._nop.2018.e1004_0001.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_6._nop.2018.e1004_0001.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_60._ulcer-ven5.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_60._ulcer-ven5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_62._img_8985.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_leg-ulcer-images_62._img_8985.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_10._pt07_woundqa111.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_10._pt07_woundqa111.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_12._wound-healing-process-in-a-patient-with-malignant-melanoma-of-the-palate-1-week-after.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_12._wound-healing-process-in-a-patient-with-malignant-melanoma-of-the-palate-1-week-after.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_13._fig-5-melanoma-leg.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_13._fig-5-melanoma-leg.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_16._bcc3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_16._bcc3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_17._mal-0006.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_17._mal-0006.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_18._wound-healing-process-in-a-patient-with-malignant-melanoma-of-the-palate-1-year-after_q320.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_18._wound-healing-process-in-a-patient-with-malignant-melanoma-of-the-palate-1-year-after_q320.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_19._niehaus1_7.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_19._niehaus1_7.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_21._2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_21._2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_22._fig-2-fungating-breast.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_22._fig-2-fungating-breast.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_24._malignant-wounds.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_24._malignant-wounds.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_27._1253644_stoma-paste-around-wound-edge.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_27._1253644_stoma-paste-around-wound-edge.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_29._fig-1-melanoma-back.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_29._fig-1-melanoma-back.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_3._malignant-wound-metastatic-disease-2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_3._malignant-wound-metastatic-disease-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_33._pmfaon17-complex-wounds-fig-10b.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_33._pmfaon17-complex-wounds-fig-10b.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_34._ns_v16_n52_3266_0004.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_34._ns_v16_n52_3266_0004.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_45._fung1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_45._fung1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_5._bcc4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_5._bcc4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_52._1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_52._1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_6._1253644_stoma-paste-around-wound-edge.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_6._1253644_stoma-paste-around-wound-edge.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_70._ns_v16_n52_3266_0002.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_70._ns_v16_n52_3266_0002.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_72._charcoal_dressings_for_odor.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_72._charcoal_dressings_for_odor.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_73._dsc01853.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_73._dsc01853.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_8._scc1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_malignant-wound-images_8._scc1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_1._satellite_blobcol_urldata_blobkey_id_blobtable_mungoblobs_blobwhere_1226631308260_ssbinary_true.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_1._satellite_blobcol_urldata_blobkey_id_blobtable_mungoblobs_blobwhere_1226631308260_ssbinary_true.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_10._orthopaedic-wound-13-0.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_10._orthopaedic-wound-13-0.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_19._orthopaedic-wound-8.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_19._orthopaedic-wound-8.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_2._thumbnailimage.img.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_2._thumbnailimage.img.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_4._orthopaedic-wound-2-3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_4._orthopaedic-wound-2-3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_42._2012-09-13_13-45-01_286.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_42._2012-09-13_13-45-01_286.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_7._orthopaedic-wound-9-0.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_7._orthopaedic-wound-9-0.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_86._orthopaedic-wound-3-0-.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_86._orthopaedic-wound-3-0-.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-10.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-10.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-11.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-11.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-12.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-12.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-14.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-14.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-15.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-15.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-16.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-16.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-4.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-4.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-5.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-5.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-6.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-6.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-7.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-7.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-9.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-9.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-10.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-10.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-11.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-11.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-12.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-12.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-13-1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-13-1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-13-2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-13-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-13-3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-13-3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-14.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-14.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_13._426887-45f7d353-5c14-42ff-b89b-c9df0d2e9737.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_13._426887-45f7d353-5c14-42ff-b89b-c9df0d2e9737.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_16._pilonidal-sinus-treatment-service-500x500.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_16._pilonidal-sinus-treatment-service-500x500.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_19._s2237936315000106_gr3.jpeg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_19._s2237936315000106_gr3.jpeg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_23._pilonidal-sinus-2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_23._pilonidal-sinus-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_24._800wm.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_24._800wm.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_25._infected-pilonidal-sinus-found-cleft-450w-1038485239.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_25._infected-pilonidal-sinus-found-cleft-450w-1038485239.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_27._feb_2010.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_27._feb_2010.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_3._pilonidal-sinus-abscess.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_3._pilonidal-sinus-abscess.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_32._egyptjsurg_2017_36_1_13_199901_f1.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_32._egyptjsurg_2017_36_1_13_199901_f1.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_34._probing-of-the-pilonidal-sinus-tract.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_34._probing-of-the-pilonidal-sinus-tract.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_35._m_1408033143.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_35._m_1408033143.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_4._recurrent-pilonidal-sinus-before-treatment.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_4._recurrent-pilonidal-sinus-before-treatment.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_40._2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_40._2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_41._m_1408039600.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_41._m_1408039600.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_43._pilonidal_sinus02.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_43._pilonidal_sinus02.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_5._pilonidal-sinus-disease-sinus-and-abscess-1024x555.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_5._pilonidal-sinus-disease-sinus-and-abscess-1024x555.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_52._pilonidal_cysts.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_52._pilonidal_cysts.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_53._pmc3108719_idr-1-013f3.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_53._pmc3108719_idr-1-013f3.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_55._1-s2.0-s1878788613000714-gr12.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_55._1-s2.0-s1878788613000714-gr12.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_57._ns_v21_n52_6597_0001.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_57._ns_v21_n52_6597_0001.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_58._stock-photo-infected-pilonidal-sinus-is-found-at-a-cleft-between-buttock-1038485239.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_58._stock-photo-infected-pilonidal-sinus-is-found-at-a-cleft-between-buttock-1038485239.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_59._demonstration-of-the-complex-pilonidal-sinus-disease-with-multiple-pits-on-and-beside-the_q320.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_59._demonstration-of-the-complex-pilonidal-sinus-disease-with-multiple-pits-on-and-beside-the_q320.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_62._medjdypatiluniv_2014_7_5_574_140398_u6.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_62._medjdypatiluniv_2014_7_5_574_140398_u6.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_69._pilonidal-sinus.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_69._pilonidal-sinus.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_70._excised-pilonidal-sinus-dr-p-marazziscience-photo-library.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_70._excised-pilonidal-sinus-dr-p-marazziscience-photo-library.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_72._pilonidal-sinus-after-operation.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_72._pilonidal-sinus-after-operation.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_74._pilonidalsinus.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pilonidal-sinus_74._pilonidalsinus.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_1._r7_bedsore-8col.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_1._r7_bedsore-8col.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_14._pressure_ulcer.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_14._pressure_ulcer.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_15._.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_15._.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_18._bedsorefoot_145706.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_18._bedsorefoot_145706.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_21._lf00944u-2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_21._lf00944u-2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_24._238.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_24._238.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_25._sacral-pressure-ulcer-in-a-patient-with-60-total-body-surface-burn.png",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_25._sacral-pressure-ulcer-in-a-patient-with-60-total-body-surface-burn.png",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_28._pressure_ulcer_12.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_28._pressure_ulcer_12.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_3._bedsores-decubitus-ulcer-pressure-260nw-1133480588.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_3._bedsores-decubitus-ulcer-pressure-260nw-1133480588.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_32._sloughy-pressure-ulcer-0028.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_32._sloughy-pressure-ulcer-0028.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_36._m1400399-diabetic_foot_with_large_ulcer-spl_popup.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_36._m1400399-diabetic_foot_with_large_ulcer-spl_popup.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_40._pressure-ulcer3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_40._pressure-ulcer3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_42._leg_ulcer_2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_42._leg_ulcer_2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_44._c0220456-sacral_pressure_ulcer_stage_iv-spl_popup.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_44._c0220456-sacral_pressure_ulcer_stage_iv-spl_popup.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_50._dekubitus_back.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_50._dekubitus_back.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_53._pressure_ulcer_on_sacrum_maybe_tunneling_3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_53._pressure_ulcer_on_sacrum_maybe_tunneling_3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_57._heelpressureulcer3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_57._heelpressureulcer3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_6._stage_i_pressure_ulcer_buttocks_high.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_6._stage_i_pressure_ulcer_buttocks_high.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_60._chart2.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_60._chart2.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_66._35951tn.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_66._35951tn.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_67._pressure-sores-on-the-heels.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_67._pressure-sores-on-the-heels.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_7._c0220501-foot-pressure-ulcer-science-photo-library-high.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_7._c0220501-foot-pressure-ulcer-science-photo-library-high.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_70._23.-ankle-stage-iii.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_70._23.-ankle-stage-iii.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_72._stage_iv_pressure_ulcer_knee_high.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_72._stage_iv_pressure_ulcer_knee_high.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_75._decubitus-ulcer_ls.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_75._decubitus-ulcer_ls.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_76._pressure_ulcer_3.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_76._pressure_ulcer_3.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_77._nurse-dressing-decubitus-ulcer-or-pressure-ulcer-in-patient-home-p8wgen.jpg",
+      "filePath": "assets/vision/train/skin_ulcer/real_pressure-ulcer-images_77._nurse-dressing-decubitus-ulcer-or-pressure-ulcer-in-patient-home-p8wgen.jpg",
+      "source": "assets",
+      "split": "train"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_01.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_01.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_14._189774626f71fd00551583230f4c8215d370ec3d.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_14._189774626f71fd00551583230f4c8215d370ec3d.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_15._epidermolysis-bullosa-40651.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_15._epidermolysis-bullosa-40651.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_19._epidermolysis-bullosa.png",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_19._epidermolysis-bullosa.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_28._27841tn.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_28._27841tn.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_34._eb1.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_34._eb1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_5._epidermolysis_bullosa.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_5._epidermolysis_bullosa.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_55._epidermolysis-bullosa-simplex.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_55._epidermolysis-bullosa-simplex.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_6._epidermolysis-bullosa.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_6._epidermolysis-bullosa.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_67._hqdefault.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_67._hqdefault.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_72._27839tn.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_72._27839tn.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_85._epidermolysis-bullosa-1.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_85._epidermolysis-bullosa-1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "blood_blister",
+      "fileName": "real_epidermolysis-bullosa_91._epidermolysis-bullosa-acquisita-1.jpg",
+      "filePath": "assets/vision/val/blood_blister/real_epidermolysis-bullosa_91._epidermolysis-bullosa-acquisita-1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_03.jpg",
+      "filePath": "assets/vision/val/cyanosis/real_unsplash_cyanosis_03.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "cyanosis",
+      "fileName": "real_unsplash_cyanosis_07.jpg",
+      "filePath": "assets/vision/val/cyanosis/real_unsplash_cyanosis_07.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_03.jpg",
+      "filePath": "assets/vision/val/itchy_rash/real_unsplash_itchy_rash_03.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "itchy_rash",
+      "fileName": "real_unsplash_itchy_rash_07.jpg",
+      "filePath": "assets/vision/val/itchy_rash/real_unsplash_itchy_rash_07.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_03.jpg",
+      "filePath": "assets/vision/val/normal_skin/real_unsplash_03.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_07.jpg",
+      "filePath": "assets/vision/val/normal_skin/real_unsplash_07.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "normal_skin",
+      "fileName": "real_unsplash_normal_skin_07.jpg",
+      "filePath": "assets/vision/val/normal_skin/real_unsplash_normal_skin_07.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_13._surgical-abdominal-wounds-patients-some-450w-615294257.jpg",
+      "filePath": "assets/vision/val/other/real_abdominal-wounds_13._surgical-abdominal-wounds-patients-some-450w-615294257.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_2._cas_5461674__fig_3.jpg",
+      "filePath": "assets/vision/val/other/real_abdominal-wounds_2._cas_5461674__fig_3.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_25._11245645973dsc01926.jpg",
+      "filePath": "assets/vision/val/other/real_abdominal-wounds_25._11245645973dsc01926.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_30._hqdefault.jpg",
+      "filePath": "assets/vision/val/other/real_abdominal-wounds_30._hqdefault.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_abdominal-wounds_44._pmc2742396_eplasty09e34_fig1.png",
+      "filePath": "assets/vision/val/other/real_abdominal-wounds_44._pmc2742396_eplasty09e34_fig1.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_13._wound-care_0.jpg",
+      "filePath": "assets/vision/val/other/real_burns_13._wound-care_0.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_14._burn10.jpg",
+      "filePath": "assets/vision/val/other/real_burns_14._burn10.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_16._blog-012.png",
+      "filePath": "assets/vision/val/other/real_burns_16._blog-012.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_23._maxresdefault.jpg",
+      "filePath": "assets/vision/val/other/real_burns_23._maxresdefault.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_3._mistakes-to-avoid-burns.jpg",
+      "filePath": "assets/vision/val/other/real_burns_3._mistakes-to-avoid-burns.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_burns_4._maxresdefault.jpg",
+      "filePath": "assets/vision/val/other/real_burns_4._maxresdefault.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000004.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000004.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000009.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000009.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000019.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000019.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000024.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000024.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000029.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000029.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000034.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000034.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000039.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000039.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000044.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000044.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000054.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000054.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000059.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000059.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000064.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000064.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000069.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000069.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000074.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000074.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_isic_ISIC_0000079.jpg",
+      "filePath": "assets/vision/val/other/real_isic_ISIC_0000079.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_13._bandaid_l1.jpg",
+      "filePath": "assets/vision/val/other/real_toes_13._bandaid_l1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_24._diabetic-foot-ulcer.jpg",
+      "filePath": "assets/vision/val/other/real_toes_24._diabetic-foot-ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_3._infected_toe_nail_bed.jpg",
+      "filePath": "assets/vision/val/other/real_toes_3._infected_toe_nail_bed.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_37._toe-wound-nail-tackle-450w-566831587.jpg",
+      "filePath": "assets/vision/val/other/real_toes_37._toe-wound-nail-tackle-450w-566831587.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_43._nga.jpg",
+      "filePath": "assets/vision/val/other/real_toes_43._nga.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "other",
+      "fileName": "real_toes_55._pt12news1_4.jpg",
+      "filePath": "assets/vision/val/other/real_toes_55._pt12news1_4.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_14._haeman1.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_14._haeman1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_15._hemangioma2.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_15._hemangioma2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_16._skin-angioma..jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_16._skin-angioma..jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_19._1041-1-hlight_default.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_19._1041-1-hlight_default.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_23._haemangioma-1.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_23._haemangioma-1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_28._1-s2.0-s1879729611000330-gr1.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_28._1-s2.0-s1879729611000330-gr1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_32._capillary-haemangioma-atb09d.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_32._capillary-haemangioma-atb09d.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_38._ss2170381.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_38._ss2170381.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_46._capillary-haemangioma-on-the-vulva-of-a-child-dr-p-marazziscience-photo-library.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_46._capillary-haemangioma-on-the-vulva-of-a-child-dr-p-marazziscience-photo-library.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_50._haemangioma-dr-p-marazziscience-photo-library.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_50._haemangioma-dr-p-marazziscience-photo-library.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_59._hemangiom_2.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_59._hemangiom_2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_haemangioma_69._eye2011233f1.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_haemangioma_69._eye2011233f1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000014.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_isic_ISIC_0000014.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "painful_red_rash",
+      "fileName": "real_isic_ISIC_0000049.jpg",
+      "filePath": "assets/vision/val/painful_red_rash/real_isic_ISIC_0000049.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_38._viral-meningitis-answers.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_38._viral-meningitis-answers.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_44._marsoburnunitlegs.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_44._marsoburnunitlegs.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_56._meningitis.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_56._meningitis.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_71._642x361_gallery_2_bacterial_meningitis.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_71._642x361_gallery_2_bacterial_meningitis.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-elbow-5_1_.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_meningitis-case-1-elbow-5_1_.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-feet-3.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_meningitis-case-1-feet-3.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-11.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_meningitis-case-1-hand-11.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-1-hand-6.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_meningitis-case-1-hand-6.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "petechial_rash",
+      "fileName": "real_meningitis_meningitis-case-3-necrotic-wound.jpg",
+      "filePath": "assets/vision/val/petechial_rash/real_meningitis_meningitis-case-3-necrotic-wound.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_01.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_01.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_02.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_02.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_16._jpharmacolpharmacother_2016_7_1_44_179353_f2.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_16._jpharmacolpharmacother_2016_7_1_44_179353_f2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_24._extravasation-wound-a-006.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_24._extravasation-wound-a-006.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_30._screen_shot_2014-03-12_at_3.04.27_pm.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_30._screen_shot_2014-03-12_at_3.04.27_pm.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_40._jkms-22-588-g002-l.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_40._jkms-22-588-g002-l.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_47._2007_12_130-132-fig1.jpg.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_47._2007_12_130-132-fig1.jpg.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_extravasation-wound-images_55._1-s2.0-s2213576615001165-gr1.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_extravasation-wound-images_55._1-s2.0-s2213576615001165-gr1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_14._diabetic-foot-ulcers.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_14._diabetic-foot-ulcers.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_15._depositphotos_10608893_l-20151-1170x1920.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_15._depositphotos_10608893_l-20151-1170x1920.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_16._diabetic-foot-ulcerqq.jpeg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_16._diabetic-foot-ulcerqq.jpeg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_26._foot-ulcer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_26._foot-ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_36._img_4187.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_36._img_4187.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_43._1diabetesfigure_3a1.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_43._1diabetesfigure_3a1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_50._figure3.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_50._figure3.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_60._diab-foot2.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_60._diab-foot2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_70._img_0763.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_70._img_0763.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_87._patient-with-diabetic-foot-ulcer-2-years-after-amputation-of-right-foot-fingers.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_87._patient-with-diabetic-foot-ulcer-2-years-after-amputation-of-right-foot-fingers.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_foot-ulcers_92._diabetic-ulcer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_foot-ulcers_92._diabetic-ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_15._legs_matter_venous_leg_ulcer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_15._legs_matter_venous_leg_ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_16._venous-ulcer-02.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_16._venous-ulcer-02.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_17._leg-ulcers-cryoglobulinaemic-vasculitis-from-multiple-myeloma-iv-kurtgebauer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_17._leg-ulcers-cryoglobulinaemic-vasculitis-from-multiple-myeloma-iv-kurtgebauer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_2._300px-venous_ulcer_dorsal_leg.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_2._300px-venous_ulcer_dorsal_leg.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_24._leg-ulcer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_24._leg-ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_29._leg-ulcers.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_29._leg-ulcers.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_33._a-venous-leg-ulcer-at-time-of-operation-standard-state-of-the-art-treatment-failed-to.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_33._a-venous-leg-ulcer-at-time-of-operation-standard-state-of-the-art-treatment-failed-to.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_39._venous_stasis-201606070141366801-20160609113400192.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_39._venous_stasis-201606070141366801-20160609113400192.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_45._leg-ulcer.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_45._leg-ulcer.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_52._venous-ulcer-box.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_52._venous-ulcer-box.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_leg-ulcer-images_57._venous-ulcers-13.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_leg-ulcer-images_57._venous-ulcers-13.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_14._mal-0005.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_14._mal-0005.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_2._scc2.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_2._scc2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_28._ns_v16_n52_3266_0001.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_28._ns_v16_n52_3266_0001.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_37._slide_19.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_37._slide_19.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_7._mal-0003.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_7._mal-0003.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_malignant-wound-images_83._perroct062.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_malignant-wound-images_83._perroct062.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_26._orthopaedic-wound-5.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_26._orthopaedic-wound-5.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_98._12f05.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_98._12f05.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-13.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-13.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-3.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-3.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-1-8.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-1-8.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-13-0.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-13-0.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_orthopaedic-wounds_orthopaedic-wound-15.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_orthopaedic-wounds_orthopaedic-wound-15.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_20._pilonidal_sinushero1.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_20._pilonidal_sinushero1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_29._pns.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_29._pns.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_37._stacks-image-bd62b5b.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_37._stacks-image-bd62b5b.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_49._2-figure1-1.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_49._2-figure1-1.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_56._pilonidal-sinus-operation-1.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_56._pilonidal-sinus-operation-1.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_67._translsurg_2016_1_1_14_179563_f2.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_67._translsurg_2016_1_1_14_179563_f2.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pilonidal-sinus_8._infected-pilonidal-sinus-found-cleft-450w-1038485245.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pilonidal-sinus_8._infected-pilonidal-sinus-found-cleft-450w-1038485245.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_2._heelpressureulcer4.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pressure-ulcer-images_2._heelpressureulcer4.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_4._heel.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pressure-ulcer-images_4._heel.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_51._pressure-injury-ulcer-figure-2.png",
+      "filePath": "assets/vision/val/skin_ulcer/real_pressure-ulcer-images_51._pressure-injury-ulcer-figure-2.png",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_61._superficial_pressure_ulcer0002.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pressure-ulcer-images_61._superficial_pressure_ulcer0002.jpg",
+      "source": "assets",
+      "split": "val"
+    },
+    {
+      "classLabel": "skin_ulcer",
+      "fileName": "real_pressure-ulcer-images_71._chart1.jpg",
+      "filePath": "assets/vision/val/skin_ulcer/real_pressure-ulcer-images_71._chart1.jpg",
+      "source": "assets",
+      "split": "val"
+    }
+  ],
+  "note": "Pure-Go YOLO weight training is not practical; use scripts/vision/yolo_train.py after this prepare step. Inference can stay Go-orchestrated via SYMPTOM_YOLO_BIN."
+}

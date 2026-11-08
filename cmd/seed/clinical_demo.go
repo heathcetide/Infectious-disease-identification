@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -18,18 +19,64 @@ var clinicalDiseaseNames = []string{
 }
 
 var hospitalCatalog = []models.Hospital{
-	{HospitalName: "青海省交通医院西宁院区", HospitalPhoneNumber: "0971-6268120", Address: "青海省西宁市城东区互助中路12号"},
-	{HospitalName: "格尔木市人民医院", HospitalPhoneNumber: "0979-8412120", Address: "青海省格尔木市昆仑路88号"},
-	{HospitalName: "青藏铁路疾病预防控制站（格尔木）", HospitalPhoneNumber: "0979-8458000", Address: "青海省格尔木市青藏路"},
-	{HospitalName: "那曲市人民医院", HospitalPhoneNumber: "0896-3822120", Address: "西藏自治区那曲市色尼区浙江中路"},
-	{HospitalName: "西藏自治区人民医院", HospitalPhoneNumber: "0891-6332462", Address: "西藏自治区拉萨市城关区林廓北路"},
-	{HospitalName: "拉萨市人民医院", HospitalPhoneNumber: "0891-6322202", Address: "西藏自治区拉萨市城关区北京中路"},
-	{HospitalName: "海西州人民医院", HospitalPhoneNumber: "0977-8223120", Address: "青海省海西蒙古族藏族自治州德令哈市"},
-	{HospitalName: "安多县人民医院", HospitalPhoneNumber: "0896-3612120", Address: "西藏自治区那曲市安多县"},
+	// 西宁 / 海东
+	{HospitalName: "青海省交通医院西宁院区", HospitalPhoneNumber: "0971-6268120", Address: "青海省西宁市城东区互助中路12号", Latitude: 36.6175, Longitude: 101.8234},
+	{HospitalName: "青海大学附属医院", HospitalPhoneNumber: "0971-6231557", Address: "青海省西宁市城西区同仁路29号", Latitude: 36.6170, Longitude: 101.7658},
+	{HospitalName: "青海省人民医院", HospitalPhoneNumber: "0971-8066186", Address: "青海省西宁市城东区共和路2号", Latitude: 36.6212, Longitude: 101.7986},
+	{HospitalName: "西宁市第一人民医院", HospitalPhoneNumber: "0971-8239173", Address: "青海省西宁市城中区南大街", Latitude: 36.6178, Longitude: 101.7783},
+	{HospitalName: "青海红十字医院", HospitalPhoneNumber: "0971-8247738", Address: "青海省西宁市城中区南大街55号", Latitude: 36.6165, Longitude: 101.7801},
+	{HospitalName: "海东市人民医院", HospitalPhoneNumber: "0972-8612120", Address: "青海省海东市乐都区滨河中路", Latitude: 36.4821, Longitude: 102.4015},
+	// 格尔木 / 海西沿线
+	{HospitalName: "格尔木市人民医院", HospitalPhoneNumber: "0979-8412120", Address: "青海省格尔木市昆仑路88号", Latitude: 36.4020, Longitude: 94.9030},
+	{HospitalName: "格尔木市第三人民医院", HospitalPhoneNumber: "0979-8422880", Address: "青海省格尔木市黄河路", Latitude: 36.4068, Longitude: 94.9152},
+	{HospitalName: "青藏铁路疾病预防控制站（格尔木）", HospitalPhoneNumber: "0979-8458000", Address: "青海省格尔木市青藏路", Latitude: 36.4155, Longitude: 94.9088},
+	{HospitalName: "格尔木市中蒙医医院", HospitalPhoneNumber: "0979-8413668", Address: "青海省格尔木市柴达木中路", Latitude: 36.3985, Longitude: 94.9011},
+	{HospitalName: "海西州人民医院", HospitalPhoneNumber: "0977-8223120", Address: "青海省海西蒙古族藏族自治州德令哈市", Latitude: 37.3697, Longitude: 97.3701},
+	{HospitalName: "德令哈市蒙藏医院", HospitalPhoneNumber: "0977-8225600", Address: "青海省德令哈市黄河路", Latitude: 37.3742, Longitude: 97.3608},
+	{HospitalName: "乌兰县人民医院", HospitalPhoneNumber: "0977-8242120", Address: "青海省海西州乌兰县希里沟镇", Latitude: 36.9305, Longitude: 98.4796},
+	{HospitalName: "都兰县人民医院", HospitalPhoneNumber: "0977-8452120", Address: "青海省海西州都兰县察汗乌苏镇", Latitude: 36.2984, Longitude: 98.0892},
+	// 那曲 / 藏北
+	{HospitalName: "那曲市人民医院", HospitalPhoneNumber: "0896-3822120", Address: "西藏自治区那曲市色尼区浙江中路", Latitude: 31.4762, Longitude: 92.0512},
+	{HospitalName: "那曲市藏医院", HospitalPhoneNumber: "0896-3823456", Address: "西藏自治区那曲市色尼区山东路", Latitude: 31.4801, Longitude: 92.0488},
+	{HospitalName: "安多县人民医院", HospitalPhoneNumber: "0896-3612120", Address: "西藏自治区那曲市安多县", Latitude: 32.2642, Longitude: 91.6815},
+	{HospitalName: "聂荣县人民医院", HospitalPhoneNumber: "0896-3662120", Address: "西藏自治区那曲市聂荣县", Latitude: 32.1078, Longitude: 92.3035},
+	{HospitalName: "比如县人民医院", HospitalPhoneNumber: "0896-3642120", Address: "西藏自治区那曲市比如县", Latitude: 31.4796, Longitude: 93.6802},
+	{HospitalName: "班戈县人民医院", HospitalPhoneNumber: "0896-3632120", Address: "西藏自治区那曲市班戈县", Latitude: 31.3920, Longitude: 90.0186},
+	// 拉萨 / 日喀则 / 山南
+	{HospitalName: "西藏自治区人民医院", HospitalPhoneNumber: "0891-6332462", Address: "西藏自治区拉萨市城关区林廓北路", Latitude: 29.6573, Longitude: 91.1325},
+	{HospitalName: "拉萨市人民医院", HospitalPhoneNumber: "0891-6322202", Address: "西藏自治区拉萨市城关区北京中路", Latitude: 29.6548, Longitude: 91.1142},
+	{HospitalName: "西藏自治区藏医院", HospitalPhoneNumber: "0891-6323115", Address: "西藏自治区拉萨市城关区娘热路", Latitude: 29.6685, Longitude: 91.1120},
+	{HospitalName: "西藏军区总医院", HospitalPhoneNumber: "0891-6255120", Address: "西藏自治区拉萨市城关区金珠西路", Latitude: 29.6502, Longitude: 91.0955},
+	{HospitalName: "日喀则市人民医院", HospitalPhoneNumber: "0892-8822120", Address: "西藏自治区日喀则市桑珠孜区青岛路", Latitude: 29.2672, Longitude: 88.8808},
+	{HospitalName: "山南市人民医院", HospitalPhoneNumber: "0893-7822120", Address: "西藏自治区山南市乃东区浙江大道", Latitude: 29.2370, Longitude: 91.7715},
+	{HospitalName: "林芝市人民医院", HospitalPhoneNumber: "0894-5822120", Address: "西藏自治区林芝市巴宜区广东路", Latitude: 29.6544, Longitude: 94.3615},
+	{HospitalName: "昌都市人民医院", HospitalPhoneNumber: "0895-4822120", Address: "西藏自治区昌都市卡若区四川中路", Latitude: 31.1405, Longitude: 97.1785},
+	// 甘肃 / 兰青线衔接
+	{HospitalName: "兰州大学第一医院", HospitalPhoneNumber: "0931-8356240", Address: "甘肃省兰州市城关区东岗西路1号", Latitude: 36.0512, Longitude: 103.8556},
+	{HospitalName: "甘肃省人民医院", HospitalPhoneNumber: "0931-8281635", Address: "甘肃省兰州市城关区东岗西路204号", Latitude: 36.0548, Longitude: 103.8662},
+	{HospitalName: "中国铁路兰州局集团有限公司兰州铁路卫生监督所", HospitalPhoneNumber: "0931-4922120", Address: "甘肃省兰州市城关区火车站东路", Latitude: 36.0345, Longitude: 103.8502},
+	{HospitalName: "天祝藏族自治县人民医院", HospitalPhoneNumber: "0935-3122120", Address: "甘肃省武威市天祝县华藏寺镇", Latitude: 36.9718, Longitude: 103.1420},
+	{HospitalName: "武威市凉州医院", HospitalPhoneNumber: "0935-2212120", Address: "甘肃省武威市凉州区东大街", Latitude: 37.9283, Longitude: 102.6380},
+	{HospitalName: "嘉峪关市第一人民医院", HospitalPhoneNumber: "0937-6222120", Address: "甘肃省嘉峪关市雄关东路", Latitude: 39.7865, Longitude: 98.2892},
+	{HospitalName: "敦煌市医院", HospitalPhoneNumber: "0937-8822120", Address: "甘肃省酒泉市敦煌市阳关中路", Latitude: 40.1415, Longitude: 94.6628},
+	// 四川 / 成昆及进藏通道
+	{HospitalName: "四川大学华西医院", HospitalPhoneNumber: "028-85422114", Address: "四川省成都市武侯区国学巷37号", Latitude: 30.6425, Longitude: 104.0658},
+	{HospitalName: "成都市第三人民医院", HospitalPhoneNumber: "028-61318682", Address: "四川省成都市青羊区青龙街82号", Latitude: 30.6702, Longitude: 104.0555},
+	{HospitalName: "中国铁路成都局集团有限公司疾病预防控制所", HospitalPhoneNumber: "028-86432200", Address: "四川省成都市金牛区一环路北二段", Latitude: 30.6915, Longitude: 104.0622},
+	{HospitalName: "雅安市人民医院", HospitalPhoneNumber: "0835-2222120", Address: "四川省雅安市雨城区正和路", Latitude: 30.0105, Longitude: 103.0412},
+	{HospitalName: "康定市人民医院", HospitalPhoneNumber: "0836-2832120", Address: "四川省甘孜州康定市炉城南路", Latitude: 30.0495, Longitude: 101.9648},
+	// 陕西 / 枢纽城市
+	{HospitalName: "西安交通大学第一附属医院", HospitalPhoneNumber: "029-85323112", Address: "陕西省西安市雁塔西路277号", Latitude: 34.2185, Longitude: 108.9422},
+	{HospitalName: "陕西省人民医院", HospitalPhoneNumber: "029-85251331", Address: "陕西省西安市碑林区友谊西路256号", Latitude: 34.2412, Longitude: 108.9285},
+	{HospitalName: "中国铁路西安局集团有限公司疾病预防控制所", HospitalPhoneNumber: "029-82322200", Address: "陕西省西安市新城区太华南路", Latitude: 34.2788, Longitude: 108.9735},
+	// 北京 / 铁路系统示范点（开发机定位常见）
+	{HospitalName: "中国铁路北京局集团有限公司疾病预防控制所", HospitalPhoneNumber: "010-51821200", Address: "北京市东城区毛家湾胡同甲13号", Latitude: 39.9042, Longitude: 116.4074},
+	{HospitalName: "北京佑安医院", HospitalPhoneNumber: "010-83997146", Address: "北京市丰台区右安门外西头条8号", Latitude: 39.8665, Longitude: 116.3612},
+	{HospitalName: "首都医科大学附属北京地坛医院", HospitalPhoneNumber: "010-84322000", Address: "北京市朝阳区京顺东街8号", Latitude: 40.0128, Longitude: 116.4185},
 }
 
 func seedClinicalDemo(db *gorm.DB) error {
-	if err := replaceHospitals(db); err != nil {
+	if err := ensureHospitalsUpsert(db); err != nil {
 		return err
 	}
 	if err := clearPropagandaMaterials(db); err != nil {
@@ -69,6 +116,38 @@ func replaceHospitals(db *gorm.DB) error {
 		}
 	}
 	fmt.Printf("hospitals replaced: %d\n", len(hospitalCatalog))
+	return nil
+}
+
+// ensureHospitalsUpsert inserts missing hospitals by name and refreshes coords/phone for known rows.
+func ensureHospitalsUpsert(db *gorm.DB) error {
+	added, updated := 0, 0
+	for _, h := range hospitalCatalog {
+		var existing models.Hospital
+		err := db.Where("hospital_name = ?", h.HospitalName).First(&existing).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			row := h
+			if err := db.Create(&row).Error; err != nil {
+				return err
+			}
+			added++
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		patch := map[string]interface{}{
+			"hospital_phone_number": h.HospitalPhoneNumber,
+			"address":               h.Address,
+			"latitude":              h.Latitude,
+			"longitude":             h.Longitude,
+		}
+		if err := db.Model(&existing).Updates(patch).Error; err != nil {
+			return err
+		}
+		updated++
+	}
+	fmt.Printf("hospitals upsert: added=%d updated=%d catalog=%d\n", added, updated, len(hospitalCatalog))
 	return nil
 }
 

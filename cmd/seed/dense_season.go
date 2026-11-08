@@ -12,11 +12,11 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// Dense season: 2026-11-08 … 2026-12-31 — every day high check-in volume.
+// Dense season: 2026-11-08 … 2027-07-31 — every day high check-in volume for the screen.
 func seedDenseSeason(db *gorm.DB) error {
 	rng := rand.New(rand.NewSource(20261108))
 	start := time.Date(2026, 11, 8, 0, 0, 0, 0, time.Local)
-	end := time.Date(2026, 12, 31, 0, 0, 0, 0, time.Local)
+	end := time.Date(2027, 7, 31, 0, 0, 0, 0, time.Local)
 
 	silent := db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Silent)})
 
@@ -68,12 +68,13 @@ func seedDenseSeason(db *gorm.DB) error {
 			have[id] = struct{}{}
 		}
 
-		rate := 0.90
+		// 拉满：工作日 ~96%，周末 ~88%，下限 85%
+		rate := 0.96
 		if day.Weekday() == time.Saturday || day.Weekday() == time.Sunday {
-			rate = 0.78
+			rate = 0.88
 		}
 		target := int(float64(len(workerIDs)) * rate)
-		minFloor := len(workerIDs) * 70 / 100
+		minFloor := len(workerIDs) * 85 / 100
 		if target < minFloor {
 			target = minFloor
 		}
@@ -93,23 +94,29 @@ func seedDenseSeason(db *gorm.DB) error {
 			if _, ok := have[uid]; ok {
 				continue
 			}
-			st := homes[wi]
-			roll := rng.Float64()
-			if roll < 0.14 {
-				st = nationwideStations[rng.Intn(len(nationwideStations))]
-			} else if roll < 0.22 {
-				st = qingzangStations[rng.Intn(len(qingzangStations))]
-			}
+			st := pickDenseCheckInStation(rng, homes[wi])
 
 			h := true
 			disease := ""
 			diag := ""
-			unhealthyP := 0.38
+			unhealthyP := 0.32
 			if st.Altitude > 4500 {
-				unhealthyP = 0.48
+				unhealthyP = 0.42
 			}
-			if day.Month() == time.November || day.Month() == time.December {
+			// 冬春季发病率更高，暑期略降
+			switch day.Month() {
+			case time.November, time.December, time.January, time.February:
+				unhealthyP += 0.12
+			case time.March, time.April:
 				unhealthyP += 0.06
+			case time.May, time.June, time.July:
+				unhealthyP -= 0.04
+			}
+			if unhealthyP < 0.18 {
+				unhealthyP = 0.18
+			}
+			if unhealthyP > 0.62 {
+				unhealthyP = 0.62
 			}
 			if rng.Float64() < unhealthyP {
 				h = false
@@ -119,18 +126,18 @@ func seedDenseSeason(db *gorm.DB) error {
 			hh := h
 			checkTime := time.Date(day.Year(), day.Month(), day.Day(), 6+rng.Intn(6), rng.Intn(60), rng.Intn(60), 0, time.Local)
 			batch = append(batch, models.DailyHealthStatus{
-				UserID:                       uid,
-				CheckInDate:                  dayStart,
-				CheckInTime:                  checkTime,
-				IsHealth:                     &hh,
-				DiseaseTypeName:              disease,
-				DiagnosisDiseaseTypeName:     diag,
-				Longitude:       round6(st.Longitude + (rng.Float64()-0.5)*0.06),
-				Latitude:        round6(st.Latitude + (rng.Float64()-0.5)*0.05),
-				Province:        st.Province,
-				City:            st.City,
-				County:          st.County,
-				LocationName:    st.Name,
+				UserID:                   uid,
+				CheckInDate:              dayStart,
+				CheckInTime:              checkTime,
+				IsHealth:                 &hh,
+				DiseaseTypeName:          disease,
+				DiagnosisDiseaseTypeName: diag,
+				Longitude:                round6(st.Longitude + (rng.Float64()-0.5)*0.06),
+				Latitude:                 round6(st.Latitude + (rng.Float64()-0.5)*0.05),
+				Province:                 st.Province,
+				City:                     st.City,
+				County:                   st.County,
+				LocationName:             st.Name,
 			})
 			have[uid] = struct{}{}
 			addedToday++
