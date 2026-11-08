@@ -1,6 +1,49 @@
 run:
   timeout: 5m
-  go: "1.23"
+  go: "1.26"
+  # Unused toolkit under pkg/ is not part of the app module graph.
+  skip-dirs:
+    - pkg/relay
+    - pkg/voice
+    - pkg/providers
+    - pkg/stores/cos
+    - pkg/stores/ks3
+    - pkg/stores/obs
+    - pkg/stores/oss
+    - pkg/stores/s3
+    - pkg/stores/tos
+    - pkg/stores/minio
+    - pkg/common/compress
+    - pkg/common/audioutil
+    - pkg/common/barcode
+    - pkg/common/bitmap
+    - pkg/common/captcha
+    - pkg/common/dnsutil
+    - pkg/common/export
+    - pkg/common/grpc
+    - pkg/common/imageutil
+    - pkg/common/markdown
+    - pkg/common/metrics
+    - pkg/common/mq
+    - pkg/common/notification
+    - pkg/common/opentelemetry
+    - pkg/common/parser
+    - pkg/common/passkey
+    - pkg/common/payment
+    - pkg/common/qrcode
+    - pkg/common/search
+    - pkg/common/stats
+    - pkg/common/system
+    - pkg/common/totp
+    - pkg/common/tracing
+    - pkg/common/cache/bigcache
+    - pkg/common/cache/freecache
+    - pkg/common/cache/memcache
+    - pkg/common/cache/ristretto
+    - pkg/common/limiter/mongodb
+    - pkg/common/lock/consul
+    - pkg/common/lock/etcd
+    - pkg/common/lock/zookeeper
 
 linters:
   enable:

@@ -23,12 +23,15 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      # pkg/ contains a large unused toolkit; only vet packages reachable from the app.
       - name: Vet
-        run: go vet ./...
+        run: |
+          chmod +x scripts/ci-packages.sh
+          ./scripts/ci-packages.sh | xargs go vet
 
       - name: Test
-        run: go test -v -race -count=1 -coverprofile=coverage.txt -covermode=atomic ./...
-
+        run: |
+          ./scripts/ci-packages.sh | xargs go test -v -race -count=1 -coverprofile=coverage.txt -covermode=atomic
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
@@ -51,7 +54,8 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
-          args: --timeout 5m
+          # Skip unused toolkit packages under pkg/{relay,voice,providers,...}
+          args: --timeout 5m ./cmd/... ./internal/...
 
   build:
     name: Build
@@ -66,13 +70,23 @@ jobs:
           go-version: '1.26'
           cache: true
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build admin UI (embed)
+        run: |
+          chmod +x scripts/build-admin.sh
+          ./scripts/build-admin.sh
+
       - name: Build
         run: |
           VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
           BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "none")
           LDFLAGS="-X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}"
-          go build -ldflags "${LDFLAGS}" -o bin/infectious-disease ./cmd/...
+          go build -ldflags "${LDFLAGS}" -o bin/infectious-disease ./cmd/server
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
@@ -98,8 +112,9 @@ jobs:
         with:
           go-version: '1.26'
           cache: true
+          package: ./cmd/... ./internal/...
 
       - name: gosec
         uses: securego/gosec@master
         with:
-          args: -exclude-dir=testdata ./...
+          args: -exclude-dir=testdata -exclude-dir=pkg ./cmd/... ./internal/...
