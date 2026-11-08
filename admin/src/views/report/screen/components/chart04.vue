@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      chartInstance: null,
+      // Do NOT put echarts instance in data — Vue Proxy breaks coordinateSystem.
       timeRange: "最近一周",
       themeStore: useThemeStore(),
     };
@@ -46,28 +46,47 @@ export default {
       this.updateChart();
     },
   },
+  created() {
+    this.chartInstance = null;
+    this.renderSeq = 0;
+    this.resizeTimer = null;
+  },
   async mounted() {
     await this.$nextTick();
-    if (!this.$refs.chartContainer) return;
     const el = this.$refs.chartContainer;
+    if (!el) return;
     if (el.clientWidth < 8 || el.clientHeight < 8) {
       el.style.minHeight = "140px";
     }
     this.chartInstance = echarts.init(el, undefined, {
       renderer: "canvas",
       useDirtyRect: false,
+      width: el.clientWidth || 200,
+      height: el.clientHeight || 140,
     });
-    this.chartInstance.resize();
     await this.updateChart();
     window.addEventListener("resize", this.handleResize);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.handleResize);
-    this.chartInstance?.dispose();
+    clearTimeout(this.resizeTimer);
+    this.renderSeq += 1;
+    if (this.chartInstance && !this.chartInstance.isDisposed?.()) {
+      this.chartInstance.dispose();
+    }
+    this.chartInstance = null;
   },
   methods: {
     handleResize() {
-      this.chartInstance?.resize();
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => {
+        if (!this.chartInstance || this.chartInstance.isDisposed?.()) return;
+        try {
+          this.chartInstance.resize();
+        } catch (err) {
+          console.warn("打卡图表 resize 跳过:", err);
+        }
+      }, 80);
     },
     async updateChart() {
       const end = this.queryDate ? dayjs(this.queryDate) : dayjs();
@@ -80,9 +99,11 @@ export default {
         start = end.subtract(1, "year");
       }
       const dateList = [start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD")];
+      const seq = ++this.renderSeq;
 
       try {
         const response = await getCheckInDailyNumber(dateList);
+        if (seq !== this.renderSeq) return;
         if (response.data.code !== 1) {
           console.error("获取数据失败:", response.data.msg);
           return;
@@ -94,20 +115,23 @@ export default {
         const xAxisData = rows.map((item) => item.date);
         const seriesData = rows.map((item) => Number(item.count) || 0);
 
-        if (!this.chartInstance) return;
+        if (!this.chartInstance || this.chartInstance.isDisposed?.()) return;
+        const el = this.$refs.chartContainer;
+        if (!el || el.clientWidth < 4 || el.clientHeight < 4) return;
+
         const tc = screenChartColors();
         const xs = xAxisData.length ? xAxisData : ["暂无数据"];
         const ys = seriesData.length ? seriesData : [0];
-        this.chartInstance.clear();
+
         this.chartInstance.setOption(
           {
             animation: false,
             color: ["#285AC8"],
             grid: {
-              top: "12%",
-              bottom: this.timeRange === "最近一年" ? "22%" : "16%",
-              left: "14%",
-              right: "4%",
+              top: 12,
+              bottom: this.timeRange === "最近一年" ? 36 : 28,
+              left: 36,
+              right: 8,
             },
             tooltip: {
               trigger: "axis",
@@ -139,7 +163,7 @@ export default {
             },
             yAxis: {
               type: "value",
-              axisLabel: { show: true, color: tc.muted },
+              axisLabel: { show: true, color: tc.muted, fontSize: 10 },
               axisLine: { show: false },
               axisTick: { show: false },
               splitLine: { show: false },
@@ -149,9 +173,13 @@ export default {
               {
                 name: "打卡人数",
                 type: "line",
+                coordinateSystem: "cartesian2d",
+                xAxisIndex: 0,
+                yAxisIndex: 0,
                 data: ys,
                 smooth: true,
                 progressive: 0,
+                animation: false,
                 showSymbol: this.timeRange !== "最近一年",
                 symbol: "circle",
                 symbolSize: this.timeRange === "最近一年" ? 3 : 6,
@@ -163,8 +191,8 @@ export default {
           },
           { notMerge: true, lazyUpdate: false }
         );
-        this.$nextTick(() => this.chartInstance?.resize());
       } catch (error) {
+        if (seq !== this.renderSeq) return;
         console.error("打卡时间分布图表失败:", error);
       }
     },

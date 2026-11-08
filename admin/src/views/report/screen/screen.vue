@@ -128,7 +128,7 @@ export default {
 .Map {
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 0;
+  min-height: 220px;
   display: flex;
 }
 </style>

@@ -22,9 +22,13 @@ import { screenChartColors } from '@/utils/screenTheme';
 const chart = ref(null);
 const diseaseStore = useDiseaseStore();
 const themeStore = useThemeStore();
+
+// Plain binding — never put ECharts instance in ref/reactive (breaks coordSys).
 let myChart = null;
 let pendingData = null;
 let lastData = [];
+let renderSeq = 0;
+let resizeTimer = null;
 
 const props = defineProps({
   queryDate: { type: String, default: '' },
@@ -55,29 +59,60 @@ function buildSeries(data) {
   return { countData, percentData };
 }
 
+function ensureSize(el) {
+  if (!el) return false;
+  if (el.clientWidth < 8 || el.clientHeight < 8) {
+    el.style.minHeight = '140px';
+  }
+  return el.clientWidth >= 8 && el.clientHeight >= 8;
+}
+
+function safeResize() {
+  if (!myChart || myChart.isDisposed?.()) return;
+  try {
+    myChart.resize();
+  } catch (err) {
+    console.warn('疾病图表 resize 跳过:', err);
+  }
+}
+
+function scheduleResize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(safeResize, 80);
+}
+
 function renderChart(data) {
-  if (!myChart) {
+  if (!myChart || myChart.isDisposed?.()) {
     pendingData = data;
     return;
   }
   lastData = data || [];
+  const el = chart.value;
+  if (!ensureSize(el)) {
+    pendingData = data;
+    return;
+  }
+
   const { countData, percentData } = buildSeries(data);
   const tc = screenChartColors();
+  const seq = ++renderSeq;
+
   try {
-    myChart.clear();
     myChart.setOption(
       {
         animation: false,
         color: ['#285AC8', '#D43030'],
         legend: {
           top: 28,
-          right: 4,
-          itemWidth: 10,
+          right: 2,
+          itemWidth: 8,
           itemHeight: 6,
           textStyle: { fontSize: 10, color: tc.text },
           data: ['人数', '占比%'],
         },
-        grid: { top: '38%', left: '12%', right: '12%', bottom: '18%' },
+        // Pixel grid — containLabel + dual Y on ~200px width can zero the rect
+        // and leave series.coordinateSystem undefined (LineView crash on .type).
+        grid: { top: 52, left: 32, right: 28, bottom: 36 },
         xAxis: {
           type: 'category',
           data: shortLabels,
@@ -89,8 +124,6 @@ function renderChart(data) {
         yAxis: [
           {
             type: 'value',
-            name: '人',
-            nameTextStyle: { fontSize: 10, color: tc.axis },
             axisLine: { show: false },
             axisTick: { show: false },
             splitLine: { show: false },
@@ -98,13 +131,11 @@ function renderChart(data) {
           },
           {
             type: 'value',
-            name: '%',
-            nameTextStyle: { fontSize: 10, color: tc.axis },
+            max: 100,
             axisLine: { show: false },
             axisTick: { show: false },
             splitLine: { show: false },
-            axisLabel: { fontSize: 9, color: tc.axis },
-            max: 100,
+            axisLabel: { fontSize: 9, color: tc.axis, formatter: '{value}%' },
           },
         ],
         tooltip: {
@@ -129,6 +160,8 @@ function renderChart(data) {
           {
             name: '人数',
             type: 'line',
+            coordinateSystem: 'cartesian2d',
+            xAxisIndex: 0,
             yAxisIndex: 0,
             data: countData,
             smooth: true,
@@ -136,6 +169,7 @@ function renderChart(data) {
             symbol: 'circle',
             symbolSize: 5,
             progressive: 0,
+            animation: false,
             lineStyle: { width: 2, color: '#285AC8' },
             itemStyle: { color: '#285AC8' },
             areaStyle: { color: 'rgba(40,90,200,0.08)' },
@@ -143,6 +177,8 @@ function renderChart(data) {
           {
             name: '占比%',
             type: 'line',
+            coordinateSystem: 'cartesian2d',
+            xAxisIndex: 0,
             yAxisIndex: 1,
             data: percentData,
             smooth: true,
@@ -150,6 +186,7 @@ function renderChart(data) {
             symbol: 'circle',
             symbolSize: 5,
             progressive: 0,
+            animation: false,
             lineStyle: { width: 2, type: 'dashed', color: '#D43030' },
             itemStyle: { color: '#D43030' },
           },
@@ -157,7 +194,7 @@ function renderChart(data) {
       },
       { notMerge: true, lazyUpdate: false }
     );
-    nextTick(() => myChart?.resize());
+    if (seq !== renderSeq) return;
   } catch (err) {
     console.error('疾病图表渲染失败:', err);
   }
@@ -165,8 +202,10 @@ function renderChart(data) {
 
 async function loadData(date) {
   if (!date) return;
+  const seq = ++renderSeq;
   try {
     const response = await getDiseaseDataToday(date);
+    if (seq !== renderSeq) return;
     if (response.data.code === 1) {
       const data = response.data.data || [];
       diseaseStore.setDiseaseData(data);
@@ -175,35 +214,39 @@ async function loadData(date) {
       renderChart([]);
     }
   } catch (e) {
+    if (seq !== renderSeq) return;
     console.error(e);
     renderChart([]);
   }
 }
 
-const onResize = () => myChart?.resize();
-
 onMounted(async () => {
   await nextTick();
-  if (!chart.value) return;
-  // Avoid progressive-render crashes when the panel is still 0×0.
   const el = chart.value;
-  if (el.clientWidth < 8 || el.clientHeight < 8) {
-    el.style.minHeight = '140px';
-  }
-  myChart = echarts.init(el, undefined, { renderer: 'canvas', useDirtyRect: false });
-  myChart.resize();
+  if (!el) return;
+  ensureSize(el);
+  myChart = echarts.init(el, undefined, {
+    renderer: 'canvas',
+    useDirtyRect: false,
+    width: el.clientWidth || 200,
+    height: el.clientHeight || 140,
+  });
   if (pendingData != null) {
     renderChart(pendingData);
     pendingData = null;
   }
   watch(() => props.queryDate, (d) => loadData(d), { immediate: true });
   watch(() => themeStore.mode, () => renderChart(lastData));
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', scheduleResize);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', onResize);
-  myChart?.dispose();
+  window.removeEventListener('resize', scheduleResize);
+  clearTimeout(resizeTimer);
+  renderSeq += 1;
+  if (myChart && !myChart.isDisposed?.()) {
+    myChart.dispose();
+  }
   myChart = null;
 });
 </script>
