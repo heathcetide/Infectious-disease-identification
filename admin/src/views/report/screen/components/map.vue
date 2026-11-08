@@ -74,6 +74,22 @@ let AMapRef = null;
 let lastBounds = null;
 let loadSeq = 0;
 let focusMarker = null;
+let resizeObserver = null;
+let resizeTimer = null;
+
+function safeMapResize() {
+  if (disposed || !map) return;
+  try {
+    map.resize();
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function scheduleMapResize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(safeMapResize, 60);
+}
 
 const criticalCount = computed(
   () => regionAlerts.value.filter((a) => a.level === 'critical').length
@@ -112,9 +128,11 @@ function resetMapView() {
   activeKey.value = '';
   clearFocusMarker();
   if (lastBounds) {
-    map.setBounds(lastBounds);
+    map.setBounds(lastBounds, false, [48, 48, 48, 48]);
+    const z = map.getZoom?.() ?? 0;
+    if (z < 7.2) map.setZoom(7.2);
   } else {
-    map.setZoomAndCenter(5.2, [94.5, 33.8]);
+    map.setZoomAndCenter(7.4, [104.07, 30.67]);
   }
 }
 
@@ -200,9 +218,13 @@ async function loadHeatmap(newDate) {
     const heatmapData = aggregateHeatPoints(raw);
     const maxCount = Math.max(3, ...heatmapData.map((p) => p.count), 3);
 
+    // Cap points — huge sets thrash heatmap canvas and can blank the layer.
+    const capped =
+      heatmapData.length > 2500 ? heatmapData.slice(0, 2500) : heatmapData;
+
     try {
       heatmap.setDataSet({
-        data: heatmapData,
+        data: capped,
         max: maxCount,
       });
     } catch (e) {
@@ -210,16 +232,32 @@ async function loadHeatmap(newDate) {
       return;
     }
 
-    if (heatmapData.length > 0 && map && AMapRef) {
-      const lngs = heatmapData.map((p) => p.lng);
-      const lats = heatmapData.map((p) => p.lat);
-      const padLng = Math.max(1.2, (Math.max(...lngs) - Math.min(...lngs)) * 0.12);
-      const padLat = Math.max(0.9, (Math.max(...lats) - Math.min(...lats)) * 0.12);
+    safeMapResize();
+
+    if (capped.length > 0 && map && AMapRef) {
+      const lngs = capped.map((p) => p.lng);
+      const lats = capped.map((p) => p.lat);
+      // Tight fit — previous ≥1° padding made Sichuan look continent-scale.
+      const spanLng = Math.max(...lngs) - Math.min(...lngs);
+      const spanLat = Math.max(...lats) - Math.min(...lats);
+      const padLng = Math.max(0.15, spanLng * 0.08);
+      const padLat = Math.max(0.12, spanLat * 0.08);
       const sw = [Math.min(...lngs) - padLng, Math.min(...lats) - padLat];
       const ne = [Math.max(...lngs) + padLng, Math.max(...lats) + padLat];
       lastBounds = new AMapRef.Bounds(sw, ne);
-      map.setBounds(lastBounds);
-    } else if (!heatmapData.length) {
+      map.setBounds(lastBounds, false, [48, 48, 48, 48]);
+      const z = map.getZoom?.() ?? 0;
+      if (z < 7.2) map.setZoom(7.2);
+      if (z > 12) map.setZoom(12);
+      requestAnimationFrame(() => {
+        safeMapResize();
+        try {
+          heatmap?.show?.();
+        } catch (_) {
+          /* ignore */
+        }
+      });
+    } else if (!capped.length) {
       statusText.value = '当日暂无打卡坐标';
     }
   } catch (error) {
@@ -236,11 +274,21 @@ onMounted(async () => {
     AMapRef = await loadAMap();
     if (disposed) return;
 
-    map = new AMapRef.Map(mapEl.value, {
-      zoom: 5.2,
-      center: [94.5, 33.8],
+    const el = mapEl.value;
+    if (!el) return;
+    // Flex parents often finish layout after first paint — observe and resize.
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => scheduleMapResize());
+      resizeObserver.observe(el);
+    }
+    window.addEventListener('resize', scheduleMapResize);
+
+    map = new AMapRef.Map(el, {
+      zoom: 7.4,
+      center: [104.07, 30.67],
       viewMode: '2D',
       mapStyle: 'amap://styles/normal',
+      resizeEnable: true,
     });
 
     await new Promise((resolve, reject) => {
@@ -266,9 +314,13 @@ onMounted(async () => {
     });
     mapReady = true;
     statusText.value = '';
+    safeMapResize();
     if (props.queryDate) {
       await loadHeatmap(props.queryDate);
     }
+    // Late layout (cards / eval strip) often shifts the flex height after data arrives.
+    setTimeout(safeMapResize, 200);
+    setTimeout(safeMapResize, 800);
   } catch (error) {
     console.error('地图初始化失败:', error);
     if (!disposed) {
@@ -282,6 +334,14 @@ onBeforeUnmount(() => {
   disposed = true;
   mapReady = false;
   loadSeq += 1;
+  clearTimeout(resizeTimer);
+  window.removeEventListener('resize', scheduleMapResize);
+  try {
+    resizeObserver?.disconnect?.();
+  } catch (_) {
+    /* ignore */
+  }
+  resizeObserver = null;
   clearFocusMarker();
   try {
     heatmap?.setMap?.(null);
