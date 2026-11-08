@@ -68,6 +68,7 @@ export default {
 	    ]    // 血液检查报告文件数组
 	  },
       showCalendar: false,
+      calendarEnter: false,
       info: {
         lunar: true,
         range: true,
@@ -339,9 +340,11 @@ export default {
   onReady() {
     this.$nextTick(() => {
       this.showCalendar = true;
+      setTimeout(() => {
+        this.calendarEnter = true;
+      }, 40);
     });
 
-    // 模拟请求异步同步数据
     setTimeout(() => {
       this.info.date = getDate(new Date(), -30).fullDate;
       this.info.startDate = getDate(new Date(), -60).fullDate;
@@ -358,9 +361,9 @@ export default {
 	  this.initMonthSwitch()
 	  clockRecordService(this.yearMonth)
 			.then(res => {
-				console.log(res.data)
-				this.tempRecords = res.data; // 保存所有的记录数据
-		        res.data.forEach(item => {
+				const rows = Array.isArray(res.data) ? res.data : []
+				this.tempRecords = rows
+		        rows.forEach(item => {
 		          this.updateRecords(item);
 		        });
 			})
@@ -751,8 +754,8 @@ export default {
 <view class="allPages">
   <view class="container1" v-show="calendarPages">
     <image src="../../static/other-background.png" mode="widthFix" class="background-image1"></image>
-    <view class="content1" v-if="showCalendar">
-      <view>
+    <view class="content1" :class="{ 'calendar-enter': calendarEnter }" v-if="showCalendar">
+      <view class="calendar-card">
         <uni-calendar 
           class="uni-calendar--hook" 
           :selected="info.selected" 
@@ -761,6 +764,12 @@ export default {
           @monthSwitch="monthSwitch" 
           @tapDay="navigateToDay" 
         />
+        <view class="calendar-legend">
+          <view class="legend-item"><view class="legend-ring ring-health"></view><text>健康</text></view>
+          <view class="legend-item"><view class="legend-ring ring-risk"></view><text>不适</text></view>
+          <view class="legend-item"><view class="legend-ring ring-diagnose"></view><text>诊断</text></view>
+          <view class="legend-item"><view class="legend-ring ring-examine"></view><text>检测</text></view>
+        </view>
       </view>
     </view>
     <uni-custom-tabbar class="tabbar"></uni-custom-tabbar>
@@ -840,42 +849,105 @@ export default {
 
 .content1 {
   position: relative;
-  padding-top: 14vh;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-  padding-bottom: 13vh;
-  margin: 0 16px;
-  border-radius: 5px;
+  /* custom navigationStyle: clear status bar + title row, then sit the card */
+  padding-top: calc(env(safe-area-inset-top) + 96px);
+  padding-bottom: calc(132rpx + env(safe-area-inset-bottom));
+  margin: 0 24rpx;
+  opacity: 0;
+  transform: translateY(40rpx) scale(0.985);
+  transition: opacity 0.45s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.uni-calendar--hook .uni-calendar-item__text {
-  border: 3px solid transparent; /* 默认无边框颜色 */
+.content1.calendar-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
-.uni-calendar--hook .uni-calendar-item__text[data-state='normal'] {
-  border-color: #4caf50; /* 绿色边框 */
+.calendar-card {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 28rpx;
+  padding: 4rpx 6rpx 18rpx;
+  box-shadow: 0 14rpx 36rpx rgba(40, 90, 200, 0.12);
+  overflow: hidden;
 }
 
-.uni-calendar--hook .uni-calendar-item__text[data-state='missed'] {
-  border-color: #ffeb3b; /* 黄色边框 */
+/* neutralize leftover square selection styles from uni-calendar */
+.uni-calendar--hook .uni-calendar-item--isDay,
+.uni-calendar--hook .uni-calendar-item--checked,
+.uni-calendar--hook .uni-calendar-item__weeks-box-text.uni-calendar-item--isDay,
+.uni-calendar--hook .uni-calendar-item__weeks-box-text.uni-calendar-item--checked {
+  background-color: transparent !important;
+  opacity: 1 !important;
+  color: inherit !important;
+  border-radius: 0 !important;
 }
 
-.uni-calendar--hook .uni-calendar-item__text[data-state='problem'] {
-  border-image: linear-gradient(to right, #ffeb3b 50%, #f44336 50%);
-  border-image-slice: 1;
-  border-radius: 50%; /* 圆形边框 */
+.uni-calendar--hook .uni-calendar__content {
+  background: transparent !important;
 }
 
-.uni-calendar--hook .uni-calendar-item__text[data-state='severe'] {
-  border-image: linear-gradient(to right, #ffeb3b 33%, #f44336 33%, #9c27b0 34%);
-  border-image-slice: 1;
-  border-radius: 50%; /* 圆形边框 */
+.uni-calendar--hook .uni-calendar__header {
+  border-bottom-color: rgba(40, 90, 200, 0.08) !important;
 }
 
-.uni-calendar--hook .uni-calendar-item__text.today {
-  background-color: #285AC8; /* 当日背景颜色 */
-  color: #ffffff;
+.uni-calendar--hook .uni-calendar__weeks-day {
+  border-bottom-color: rgba(15, 23, 42, 0.04) !important;
+  height: 40px !important;
 }
+
+.uni-calendar--hook .uni-calendar__weeks-day-text {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.uni-calendar--hook .uni-calendar__backtoday {
+  color: #285ac8 !important;
+  background: rgba(40, 90, 200, 0.1) !important;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16rpx 26rpx;
+  margin: 2rpx 8rpx 0;
+  padding: 14rpx 8rpx 2rpx;
+  border-top: 1rpx solid rgba(15, 23, 42, 0.05);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: #667085;
+}
+
+.legend-ring {
+  width: 22rpx;
+  height: 22rpx;
+  border-radius: 50%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.legend-ring::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56%;
+  height: 56%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.ring-health { background: #22c55e; }
+.ring-risk { background: #ef4444; }
+.ring-diagnose { background: #f97316; }
+.ring-examine { background: #8b5cf6; }
 
 .container {
   width: 100%;

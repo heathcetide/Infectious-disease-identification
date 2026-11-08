@@ -104,20 +104,24 @@ export default {
         .then((res) => this.submitSuccess(res))
         .catch((error) => this.submitError(error))
         .finally(() => {
-          tip.hide()
           this.submitting = false
         })
     },
     submitError(error) {
-      console.error('反馈提交失败', error)
-      tip.fail((error && (error.msg || error.message)) || '反馈提交失败')
+      tip.hide()
+      console.error('评价提交失败', error)
+      tip.fail((error && (error.msg || error.message)) || '评价提交失败')
     },
     submitSuccess(response) {
-      if (response && response.code == 200) {
-        tip.success('反馈提交成功')
+      const ok = response && (response.code === 200 || response.code === 1)
+      if (!ok) {
+        tip.hide()
+        tip.fail((response && response.msg) || '评价提交失败')
         return
       }
-      tip.fail((response && response.msg) || '反馈提交失败')
+      tip.successThen('评价提交成功', () => {
+        uni.reLaunch({ url: '/pages/healthProtection/healthProtection' })
+      })
     },
   },
 }

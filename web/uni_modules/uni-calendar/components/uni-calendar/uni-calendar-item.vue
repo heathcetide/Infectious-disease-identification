@@ -1,200 +1,112 @@
 <template>
-	<view class="uni-calendar-item__weeks-box" :class="{
-		'uni-calendar-item--disable':weeks.disable,
-		'uni-calendar-item--isDay':calendar.fullDate === weeks.fullDate && weeks.isDay,
-		'uni-calendar-item--checked':(calendar.fullDate === weeks.fullDate && !weeks.isDay) ,
-		'uni-calendar-item--before-checked':weeks.beforeMultiple,
-		'uni-calendar-item--multiple': weeks.multiple,
-		'uni-calendar-item--after-checked':weeks.afterMultiple,
+	<view
+		class="uni-calendar-item__weeks-box"
+		:class="{
+			'is-disable': weeks.disable,
+			'is-today': weeks.isDay,
+			'is-selected': isSelected,
 		}"
-	 @click="choiceDate(weeks)">
-		<view class="uni-calendar-item__weeks-box-item">
-			<text v-if="selected&&weeks.extraInfo" class="uni-calendar-item__weeks-box-circle"></text>
-			<text class="uni-calendar-item__weeks-box-text" :class="{
-				'uni-calendar-item--isDay-text': weeks.isDay,
-				'uni-calendar-item--isDay':calendar.fullDate === weeks.fullDate && weeks.isDay,
-				'uni-calendar-item--checked':calendar.fullDate === weeks.fullDate && !weeks.isDay,
-				'uni-calendar-item--before-checked':weeks.beforeMultiple,
-				'uni-calendar-item--multiple': weeks.multiple,
-				'uni-calendar-item--after-checked':weeks.afterMultiple,
-				'uni-calendar-item--disable':weeks.disable,
-				}">{{weeks.date}}</text>
-			<text v-if="!lunar&&!weeks.extraInfo && weeks.isDay" class="uni-calendar-item__weeks-lunar-text" :class="{
-				'uni-calendar-item--isDay-text':weeks.isDay,
-				'uni-calendar-item--isDay':calendar.fullDate === weeks.fullDate && weeks.isDay,
-				'uni-calendar-item--checked':calendar.fullDate === weeks.fullDate && !weeks.isDay,
-				'uni-calendar-item--before-checked':weeks.beforeMultiple,
-				'uni-calendar-item--multiple': weeks.multiple,
-				'uni-calendar-item--after-checked':weeks.afterMultiple,
-				}">{{todayText}}</text>
-			<text v-if="lunar&&!weeks.extraInfo" class="uni-calendar-item__weeks-lunar-text" :class="{
-				'uni-calendar-item--isDay-text':weeks.isDay,
-				'uni-calendar-item--isDay':calendar.fullDate === weeks.fullDate && weeks.isDay,
-				'uni-calendar-item--checked':calendar.fullDate === weeks.fullDate && !weeks.isDay,
-				'uni-calendar-item--before-checked':weeks.beforeMultiple,
-				'uni-calendar-item--multiple': weeks.multiple,
-				'uni-calendar-item--after-checked':weeks.afterMultiple,
-				'uni-calendar-item--disable':weeks.disable,
-				}">{{weeks.isDay ? todayText : (weeks.lunar.IDayCn === '初一'?weeks.lunar.IMonthCn:weeks.lunar.IDayCn)}}</text>
-			<text v-if="weeks.extraInfo&&weeks.extraInfo.info" class="uni-calendar-item__weeks-lunar-text" :class="{
-				'uni-calendar-item--extra':weeks.extraInfo.info,
-				'uni-calendar-item--isDay-text':weeks.isDay,
-				'uni-calendar-item--isDay':calendar.fullDate === weeks.fullDate && weeks.isDay,
-				'uni-calendar-item--checked':calendar.fullDate === weeks.fullDate && !weeks.isDay,
-				'uni-calendar-item--before-checked':weeks.beforeMultiple,
-				'uni-calendar-item--multiple': weeks.multiple,
-				'uni-calendar-item--after-checked':weeks.afterMultiple,
-				'uni-calendar-item--disable':weeks.disable,
-				'has-unhealth-examine-diagnose-status':shouldUnhealthExamineDiagnoseStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-health-status': shouldHealthStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-unhealth-diagnose-status': shouldUnhealthDiagnoseStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-unhealth-status': shouldUnhealthStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-unhealth-examine-status': shouldUnhealthExamineStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-health-diagnose-status': shouldHealthDiagnoseStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-health-examine-status': shouldHealthExamineStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				'has-health-examine-diagnose-status': shouldHealthExamineDiagnoseStatusBorder(weeks.extraInfo&&weeks.extraInfo.info&&weeks.fullDate),
-				}">
-				<!-- {{weeks.extraInfo.info}} -->
-<!-- 				<text style="display:inline-block; width:20rpx; height:20rpx;border-radius: 20rpx;" v-for="(item, index) in weeks.extraInfo.info"
-				:style="{background:returnColor(item)}"></text>
-				<view style="display:inline-block; width:20rpx; height:20rpx; background-color: aqua;"></view> -->
-				</text>
+		@click="choiceDate(weeks)"
+	>
+		<view class="day-cell">
+			<!-- conic status ring: health / risk / diagnose / examine -->
+			<view
+				v-if="ringClass"
+				class="day-ring"
+				:class="[ringClass, { 'ring-lift': isSelected || weeks.isDay }]"
+			/>
+			<view
+				v-if="weeks.isDay && !isSelected"
+				class="day-today-ring"
+			/>
+			<text
+				class="day-num"
+				:class="{
+					'num-mute': weeks.disable,
+					'num-today': weeks.isDay,
+					'num-selected': isSelected,
+					'num-marked': !!ringClass,
+				}"
+			>{{ weeks.date }}</text>
 		</view>
 	</view>
 </template>
 
 <script>
-	import { initVueI18n } from '@dcloudio/uni-i18n'
-	import i18nMessages from './i18n/index.js'
-	const {	t	} = initVueI18n(i18nMessages)
-
 	export default {
-		emits:['change'],
+		emits: ['change'],
 		props: {
 			weeks: {
 				type: Object,
-				default () {
+				default() {
 					return {}
-				}
+				},
 			},
 			calendar: {
 				type: Object,
-				default: () => {
-					return {}
-				}
+				default: () => ({}),
 			},
 			selected: {
 				type: Array,
-				default: () => {
-					return []
-				}
+				default: () => [],
 			},
 			lunar: {
 				type: Boolean,
-				default: false
-			}
+				default: false,
+			},
 		},
 		computed: {
-			todayText() {
-				return t("uni-calender.today")
+			isSelected() {
+				return this.calendar && this.calendar.fullDate === this.weeks.fullDate
+			},
+			statusInfo() {
+				const info = this.weeks && this.weeks.extraInfo && this.weeks.extraInfo.info
+				return Array.isArray(info) && info.length >= 3 ? info : null
+			},
+			/**
+			 * info = [health, diagnose, examine]
+			 * 健康 → 全绿
+			 * 不适 → 全红
+			 * 不适+诊断 → 红/橙 各半
+			 * 再加检测 → 紫/红/橙 三等分
+			 * 健康+诊断/检测 同样按段数拆开，底色用绿
+			 */
+			ringClass() {
+				const info = this.statusInfo
+				if (!info) return ''
+				const healthy = Number(info[0]) === 1
+				const diagnose = Number(info[1]) === 1
+				const examine = Number(info[2]) === 1
+				const flags = (diagnose ? 1 : 0) + (examine ? 1 : 0)
+
+				if (healthy) {
+					if (flags === 0) return 'ring-health'
+					if (diagnose && examine) return 'ring-health-diagnose-examine'
+					if (diagnose) return 'ring-health-diagnose'
+					return 'ring-health-examine'
+				}
+				// 不适
+				if (flags === 0) return 'ring-risk'
+				if (diagnose && examine) return 'ring-risk-diagnose-examine'
+				if (diagnose) return 'ring-risk-diagnose'
+				return 'ring-risk-examine'
 			},
 		},
 		methods: {
-			shouldHealthExamineDiagnoseStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==1&&this.weeks.extraInfo.info[1]==1&&this.weeks.extraInfo.info[2]==1){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldHealthExamineStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==1&&this.weeks.extraInfo.info[1]==0&&this.weeks.extraInfo.info[2]==1){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldHealthDiagnoseStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==1&&this.weeks.extraInfo.info[1]==1&&this.weeks.extraInfo.info[2]==0){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldUnhealthExamineStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==0&&this.weeks.extraInfo.info[1]==0&&this.weeks.extraInfo.info[2]==1){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldUnhealthStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==0&&this.weeks.extraInfo.info[1]==0&&this.weeks.extraInfo.info[2]==0){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldUnhealthDiagnoseStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==0&&this.weeks.extraInfo.info[1]==1&&this.weeks.extraInfo.info[2]==0){
-					return weeks;
-				}
-			    return false;
-			},
-			shouldHealthStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==1&&this.weeks.extraInfo.info[1]==0&&this.weeks.extraInfo.info[2]==0){
-					return weeks;
-				}
-			    return false;
-			},
-			
-			shouldUnhealthExamineDiagnoseStatusBorder(weeks) {
-				if(this.weeks.extraInfo.info[0]==0&&this.weeks.extraInfo.info[1]==1&&this.weeks.extraInfo.info[2]==1){
-					return weeks;
-				}
-			    return false;
-			},
 			choiceDate(weeks) {
 				this.$emit('change', weeks)
 			},
-			returnColor(type){
-				let typeColor = null
-				switch (type) {
-					case 1:
-						typeColor = '#1677FF';
-						break;
-					case 2:
-						typeColor = '#57BE2D';
-						break;
-					case 3:
-						typeColor = '#FA6400';
-						break;
-					case 4:
-						typeColor = '#F7B500';
-						break;
-					case 5:
-						typeColor = '#E02020';
-						break;
-					case 6:
-						typeColor = '#53D1F0';
-						break;
-					case 7:
-					case 8:
-						typeColor = '#1677FF';
-						break;
-					default:
-						typeColor = '#000000'; // 默认颜色
-						break;
-				}
-				return typeColor
-			}
-		}
+		},
 	}
 </script>
 
 <style lang="scss" scoped>
-	$uni-font-size-base:14px;
-	$uni-text-color:#333;
-	$uni-font-size-sm:12px;
-	$uni-color-error: #e43d33;
-	$uni-opacity-disabled: 0.3;
-	$uni-text-color-disable:#c0c0c0;
-	$uni-primary: #2979ff !default;
+	$c-health: #22c55e;
+	$c-risk: #ef4444;
+	$c-diagnose: #f97316;
+	$c-examine: #8b5cf6;
+	$c-primary: #285ac8;
+
 	.uni-calendar-item__weeks-box {
 		flex: 1;
 		/* #ifndef APP-NVUE */
@@ -203,284 +115,135 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		background: transparent !important;
 	}
 
-	.uni-calendar-item__weeks-box-text {
-		font-size: $uni-font-size-base;
-		color: $uni-text-color;
-	}
-
-	.uni-calendar-item__weeks-lunar-text {
-		font-size: $uni-font-size-sm;
-		color: $uni-text-color;
-	}
-
-	.uni-calendar-item__weeks-box-item {
+	.day-cell {
 		position: relative;
+		width: 78rpx;
+		height: 78rpx;
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
-		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 100rpx;
-		height: 100rpx;
 	}
 
-	.uni-calendar-item__weeks-box-circle {
+	.day-ring {
 		position: absolute;
-		top: 5px;
-		right: 5px;
-		width: 8px;
-		height: 8px;
-		border-radius: 8px;
-		// background-color: $uni-color-error;
+		left: 50%;
+		top: 50%;
+		width: 64rpx;
+		height: 64rpx;
+		margin-left: -32rpx;
+		margin-top: -32rpx;
+		border-radius: 50%;
+		z-index: 1;
+		transition: transform 0.2s ease;
 	}
 
-	.uni-calendar-item--disable {
-		background-color: rgba(249, 249, 249, $uni-opacity-disabled);
-		color: $uni-text-color-disable;
+	.day-ring::before {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 72%;
+		height: 72%;
+		transform: translate(-50%, -50%);
+		border-radius: 50%;
+		background: #ffffff;
+		z-index: 1;
 	}
 
-	.uni-calendar-item--isDay-text {
-		color: $uni-primary;
+	.ring-lift {
+		transform: scale(1.05);
 	}
 
-	.uni-calendar-item--isDay {
-		background-color: $uni-primary;
-		opacity: 0.8;
-		color: #fff;
+	.ring-health {
+		background: $c-health;
+	}
+	.ring-risk {
+		background: $c-risk;
+	}
+	.ring-health-diagnose {
+		background: conic-gradient(from -90deg, $c-diagnose 0 180deg, $c-health 180deg 360deg);
+	}
+	.ring-health-examine {
+		background: conic-gradient(from -90deg, $c-examine 0 180deg, $c-health 180deg 360deg);
+	}
+	.ring-health-diagnose-examine {
+		background: conic-gradient(
+			from -90deg,
+			$c-examine 0 120deg,
+			$c-health 120deg 240deg,
+			$c-diagnose 240deg 360deg
+		);
+	}
+	.ring-risk-diagnose {
+		background: conic-gradient(from -90deg, $c-diagnose 0 180deg, $c-risk 180deg 360deg);
+	}
+	.ring-risk-examine {
+		background: conic-gradient(from -90deg, $c-examine 0 180deg, $c-risk 180deg 360deg);
+	}
+	.ring-risk-diagnose-examine {
+		background: conic-gradient(
+			from -90deg,
+			$c-examine 0 120deg,
+			$c-risk 120deg 240deg,
+			$c-diagnose 240deg 360deg
+		);
 	}
 
-	.uni-calendar-item--extra {
-		color: $uni-color-error;
-		opacity: 0.8;
+	.day-today-ring {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 44rpx;
+		height: 44rpx;
+		margin-left: -22rpx;
+		margin-top: -22rpx;
+		border-radius: 50%;
+		z-index: 2;
+		box-shadow: inset 0 0 0 2rpx rgba(40, 90, 200, 0.55);
+		background: transparent;
 	}
 
-	.uni-calendar-item--checked {
-		background-color: $uni-primary;
-		color: #fff;
-		opacity: 0.8;
+	.day-num {
+		position: relative;
+		z-index: 3;
+		font-size: 28rpx;
+		color: #1f2937;
+		line-height: 1;
+		font-weight: 500;
 	}
 
-	.uni-calendar-item--multiple {
-		background-color: $uni-primary;
-		color: #fff;
-		opacity: 0.8;
+	.num-mute {
+		color: #c0c4cc;
+		font-weight: 400;
 	}
-	.uni-calendar-item--before-checked {
-		background-color: #ff5a5f;
-		color: #fff;
+
+	.num-marked {
+		font-weight: 600;
 	}
-	.uni-calendar-item--after-checked {
-		background-color: #ff5a5f;
-		color: #fff;
+
+	.num-today {
+		color: $c-primary;
+		font-weight: 700;
 	}
-.has-red-border {
-	position: absolute;
-    width: 60%;
-    height: 60%;
-    border-radius: 50%;
-    background: conic-gradient(
-        red 0deg 120deg,    /* 左上角红色 */
-        blue 120deg 240deg, /* 右上角蓝色 */
-        green 240deg 360deg /* 底部绿色 */
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.has-red-border::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
-.has-health-status {
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    green 0deg 120deg,    /* 左上角红色 */
-	    green 120deg 240deg, /* 右上角蓝色 */
-	    green 240deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-health-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
-.has-unhealth-status{
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    yellow 0deg 120deg,    /* 左上角红色 */
-	    yellow 120deg 240deg, /* 右上角蓝色 */
-	    yellow 240deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-unhealth-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
-.has-unhealth-diagnose-status{
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    red 0deg 180deg,    /* 左上角红色 */
-	    yellow 180deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-unhealth-diagnose-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
-.has-unhealth-examine-status{
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    purple 0deg 180deg,    /* 左上角红色 */
-	    yellow 180deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-unhealth-examine-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
 
-.has-unhealth-examine-diagnose-status {
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    purple 0deg 120deg,    /* 左上角红色 */
-	    yellow 120deg 240deg, /* 右上角蓝色 */
-	    red 240deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-unhealth-examine-diagnose-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
+	.num-selected {
+		color: $c-primary !important;
+		font-weight: 700;
+	}
 
-.has-health-diagnose-status{
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    red 0deg 180deg,    /* 左上角红色 */
-	    white 180deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-health-diagnose-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
+	.is-disable .day-ring,
+	.is-disable .day-today-ring {
+		opacity: 0.35;
+	}
 
-.has-health-examine-status{
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    purple 0deg 180deg,    /* 左上角红色 */
-	    white 180deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-health-examine-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
-
-.has-health-examine-diagnose-status {
-	position: absolute;
-	width: 60%;
-	height: 60%;
-	border-radius: 50%;
-	background: conic-gradient(
-	    purple 0deg 120deg,    /* 左上角红色 */
-	    white 120deg 240deg, /* 右上角蓝色 */
-	    red 240deg 360deg /* 底部绿色 */
-	);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.has-health-examine-diagnose-status::before{
-	content: '';
-	position: absolute;
-            width: 80%;  /* 调小内圆的大小 */
-            height: 80%; /* 调小内圆的大小 */
-	background-color: white; /* 圆形内部颜色 */
-	border-radius: 50%;
-	z-index: 1;
-}
+	.is-today,
+	.is-selected {
+		background-color: transparent !important;
+		opacity: 1 !important;
+	}
 </style>

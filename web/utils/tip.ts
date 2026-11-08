@@ -13,8 +13,8 @@ function toast(title: string, icon: ToastIcon = 'none', duration = 2000) {
 }
 
 export const tip = {
-  success(title = '操作成功') {
-    toast(title, 'success')
+  success(title = '操作成功', duration = 2000) {
+    toast(title, 'success', duration)
   },
   fail(title = '操作失败') {
     toast(title, 'none')
@@ -24,6 +24,23 @@ export const tip = {
   },
   hide() {
     uni.hideToast()
+  },
+  /**
+   * End a loading toast, show success, optionally navigate after delay.
+   * Avoid calling hide() in the same tick as success (it cancels the toast).
+   */
+  successThen(title: string, navigate?: () => void, delayMs = 1200) {
+    try {
+      uni.hideToast()
+    } catch {
+      /* ignore */
+    }
+    setTimeout(() => {
+      toast(title || '操作成功', 'success', Math.max(delayMs, 1500))
+      if (navigate) {
+        setTimeout(navigate, delayMs)
+      }
+    }, 40)
   },
   /** Confirm dialog; resolves true if user confirms. */
   confirm(content: string, title = '提示'): Promise<boolean> {

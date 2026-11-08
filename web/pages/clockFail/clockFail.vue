@@ -1,18 +1,28 @@
 <script>
 import store from '../../store/index.ts'
+import { tip } from '../../utils/tip'
 import { clockSituationService } from '../../services/clock'
+
+const HIGH_RISK = 80
 
 export default {
   data() {
     return {
       dateForm: { date: '' },
       diseases: [],
+      hybrid: null,
       loading: false,
+      highRisk: false,
+      highRiskDisease: '',
+      nearestHospital: '',
+      alertShown: false,
     }
   },
   mounted() {
     const diseasescoring = store.state.diseasescoring || []
     this.diseases = this.formatScores(diseasescoring)
+    this.hybrid = store.state.scoringHybrid || null
+    this.applyHighRiskFromList(this.diseases, store.state.scoringHybrid)
 
     const now = new Date()
     this.dateForm.date = this.formatDate(now)
@@ -22,6 +32,7 @@ export default {
       .catch((error) => this.checkError(error))
       .finally(() => {
         this.loading = false
+        this.maybePromptHighRisk()
       })
   },
   methods: {
@@ -36,21 +47,67 @@ export default {
         .map((item) => ({
           diseaseTypeName: item.diseaseTypeName,
           score: Math.round(Number(item.score) || 0),
+          reason: item.reason || '',
+          evidence: item.evidence || [],
           link:
             '/pages/publicityMaterial/publicityMaterial?diseaseTypeName=' +
             encodeURIComponent(item.diseaseTypeName || ''),
         }))
         .sort((a, b) => b.score - a.score)
     },
+    applyHighRiskFromList(list, hybrid) {
+      const top = (list || [])[0]
+      const fromFlag = !!(hybrid && hybrid.highRisk)
+      const fromScore = !!(top && top.score >= HIGH_RISK)
+      this.highRisk = fromFlag || fromScore
+      this.highRiskDisease = top ? top.diseaseTypeName : ''
+      this.nearestHospital = (hybrid && hybrid.nearestHospital) || ''
+    },
+    maybePromptHighRisk() {
+      if (!this.highRisk || this.alertShown) return
+      this.alertShown = true
+      const name = this.highRiskDisease || '相关疾病'
+      const hosp = this.nearestHospital ? `建议优先前往：${this.nearestHospital}。` : ''
+      uni.showModal({
+        title: '高风险预警',
+        content: `「${name}」可能性已超过 ${HIGH_RISK}%，系统已上报后台预警。${hosp}是否查看就近医院？`,
+        confirmText: '查看医院',
+        cancelText: '稍后',
+        success: (res) => {
+          if (res.confirm) this.goNearbyHospital()
+        },
+      })
+    },
+    goNearbyHospital() {
+      uni.navigateTo({
+        url:
+          '/pages/nearbyHospital/nearbyHospital?disease=' +
+          encodeURIComponent(this.highRiskDisease || ''),
+      })
+    },
     checkSuccess(response) {
-      const list =
-        (response && response.data && response.data.diseasescoringList) || []
+      const data = (response && response.data) || {}
+      const list = data.diseasescoringList || []
       if (list.length) {
         this.diseases = this.formatScores(list)
+        store.dispatch('setDiseasescoring', list)
       }
+      if (data.hybrid) {
+        this.hybrid = data.hybrid
+        store.dispatch('setScoringHybrid', data.hybrid)
+      }
+      if (data.highRisk || data.nearestHospital) {
+        this.highRisk = !!data.highRisk || this.highRisk
+        this.nearestHospital = data.nearestHospital || this.nearestHospital
+      }
+      this.applyHighRiskFromList(this.diseases, {
+        highRisk: this.highRisk,
+        nearestHospital: this.nearestHospital,
+      })
     },
     checkError(response) {
       console.log(response)
+      tip.fail('加载打卡结果失败')
     },
     openProtection(item) {
       uni.navigateTo({ url: item.link })
@@ -79,6 +136,14 @@ export default {
         <image class="hero-art" src="/static/virus.png" mode="aspectFit" />
       </view>
 
+      <view v-if="highRisk" class="risk-banner" @tap="goNearbyHospital">
+        <text class="risk-title">高风险预警（≥{{ 80 }}%）</text>
+        <text class="risk-desc">
+          「{{ highRiskDisease }}」已上报后台。
+          {{ nearestHospital ? '就近医院：' + nearestHospital + '。' : '' }}点击查看医院列表 ›
+        </text>
+      </view>
+
       <view class="panel">
         <scroll-view scroll-y class="list-scroll" :show-scrollbar="false">
           <view v-if="diseases.length" class="list">
@@ -91,6 +156,7 @@ export default {
               <text class="index">{{ index + 1 }}</text>
               <view class="main">
                 <text class="disease-name">{{ item.diseaseTypeName }}</text>
+                <text v-if="item.reason" class="reason">{{ item.reason }}</text>
                 <text class="protect-link">健康防护 ›</text>
               </view>
               <view class="rate-box">
@@ -120,150 +186,138 @@ export default {
 }
 .bg {
   position: absolute;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100%;
-  height: 38vh;
+  height: 100%;
   z-index: 0;
 }
 .body {
   position: relative;
   z-index: 1;
-  height: calc(100vh - 11vh);
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10vh 16px 72px;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  padding: 9vh 0 0;
 }
 .hero {
-  flex-shrink: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 0 20px 10px;
-}
-.hero-text {
-  flex: 1;
-  min-width: 0;
-  padding-right: 8px;
-  padding-bottom: 8px;
-}
-.hero-title-row {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 .hero-title {
   font-size: 22px;
   font-weight: 700;
-  color: #2a3348;
+  color: #0f172a;
+}
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .status-icon {
-  width: 22px;
-  height: 22px;
-  margin-left: 8px;
+  width: 28px;
+  height: 28px;
 }
 .hero-desc {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
   display: block;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #4a5568;
-  font-weight: 600;
 }
 .hero-art {
-  width: 118px;
-  height: 118px;
-  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+}
+.risk-banner {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff1f0;
+  border: 1px solid #fca5a5;
+}
+.risk-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b91c1c;
+}
+.risk-desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #7f1d1d;
+  line-height: 1.45;
 }
 .panel {
   flex: 1;
   min-height: 0;
-  background: #fff;
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 -6px 24px rgba(40, 90, 200, 0.08);
-  padding: 18px 16px 8px;
-  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
+  padding: 8px 4px;
 }
 .list-scroll {
   height: 100%;
 }
-.list {
-  padding-bottom: 12px;
-}
 .list-item {
   display: flex;
-  align-items: center;
-  padding: 14px 10px;
-  margin-bottom: 6px;
-  border-radius: 12px;
-  background: #f7f9fc;
+  align-items: flex-start;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e2e8f0;
 }
 .index {
-  width: 28px;
-  flex-shrink: 0;
-  text-align: center;
-  font-size: 18px;
+  width: 22px;
+  color: #285ac8;
   font-weight: 700;
-  color: #c5cedb;
+  margin-top: 2px;
 }
 .main {
   flex: 1;
   min-width: 0;
-  padding: 0 10px;
+  padding-right: 8px;
 }
 .disease-name {
+  display: block;
   font-size: 15px;
   font-weight: 600;
-  color: #1f2a44;
-  line-height: 1.35;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  white-space: normal;
+  color: #0f172a;
+}
+.reason {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
 }
 .protect-link {
   display: block;
   margin-top: 4px;
-  font-size: 13px;
+  font-size: 12px;
   color: #285ac8;
 }
 .rate-box {
-  flex-shrink: 0;
-  width: 64px;
-  min-height: 52px;
-  padding: 8px 4px;
-  box-sizing: border-box;
-  border-radius: 10px;
-  background: #285ac8;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  text-align: right;
+  min-width: 64px;
 }
 .rate {
-  font-size: 16px;
+  display: block;
+  font-size: 18px;
   font-weight: 700;
-  color: #fff;
-  line-height: 1.2;
-  white-space: nowrap;
+  color: #dc2626;
 }
 .rate-label {
-  margin-top: 2px;
+  display: block;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.92);
-  line-height: 1.2;
-  white-space: nowrap;
+  color: #94a3b8;
 }
 .empty {
-  padding: 48px 12px;
+  padding: 40px 16px;
   text-align: center;
   color: #94a3b8;
-  font-size: 14px;
 }
 .tabbar {
   position: relative;
-  z-index: 10;
+  z-index: 2;
 }
 </style>

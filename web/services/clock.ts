@@ -19,6 +19,15 @@ export const getPageLearningMaterials = (data: learningMaterials) =>{
 	})
 }
 
+/** Record one study click so admin「学习总次数」increments. */
+export const recordMaterialStudy = (materialId: number | string) => {
+	return http({
+		method: 'POST',
+		url: `/api/v1/learning/materials/${materialId}/study`,
+		data: {},
+	})
+}
+
 type clockFormParams = {
 	city: string,
 	county: string,
@@ -315,13 +324,43 @@ type AllCheckInfo = {
     statusId: number,
     tickBite: string,
     wildActivityHistory: string
-  }
+  },
+  symptomPhotoIds?: number[]
 }
 export const submitAllCheckService = (data: AllCheckInfo) =>{
 	return http({
 		method:'POST',
 		url: '/api/v1/checkin/symptoms',
 		data,
+	})
+}
+
+/** Upload skin/rash photo for P4 vision assist (YOLO / multimodal). */
+export const uploadSymptomPhotoService = (filePath: string) => {
+	return new Promise((resolve, reject) => {
+		uni.uploadFile({
+			url: '/api/v1/checkin/symptom-photo',
+			filePath,
+			name: 'file',
+			success: (res) => {
+				try {
+					const body = typeof res.data === 'string' ? JSON.parse(res.data) : res.data
+					resolve(body)
+				} catch (e) {
+					reject(e)
+				}
+			},
+			fail: reject,
+		})
+	})
+}
+
+/** Confirm hybrid AI/expert disagreement for today's scoring. */
+export const confirmScoringService = () => {
+	return http({
+		method: 'POST',
+		url: '/api/v1/checkin/scoring/confirm',
+		data: {},
 	})
 }
 

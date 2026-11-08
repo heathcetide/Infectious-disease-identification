@@ -30,6 +30,15 @@ export default {
       const userName =
         data.userName || (data.user && data.user.name) || ''
       store.dispatch('setUserName', userName)
+      try {
+        const phone =
+          data.phoneNumber ||
+          (data.user && data.user.phoneNumber) ||
+          (this.loginForm.phoneNumber || '').trim()
+        if (phone) uni.setStorageSync('phoneNumber', phone)
+      } catch (e) {
+        /* ignore */
+      }
       tip.success('登录成功')
       setTimeout(async () => {
         if (data.informationComplete === false) {
@@ -93,7 +102,7 @@ export default {
     <view class="shade" />
 
     <view class="hero">
-      <image class="hero-logo" src="/static/logo.svg" mode="aspectFit" />
+      <image class="hero-logo" src="/static/logo.png" mode="aspectFit" />
       <text class="hero-title">突发传染病症状筛查与预警系统</text>
       <text class="hero-sub">每日打卡 · 风险预警 · 防护宣教</text>
     </view>

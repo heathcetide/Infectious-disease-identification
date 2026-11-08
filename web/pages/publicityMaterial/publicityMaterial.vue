@@ -1,6 +1,6 @@
 <script>
 import { tip } from '../../utils/tip'
-import { getPageLearningMaterials } from '../../services/clock';
+import { getPageLearningMaterials, recordMaterialStudy } from '../../services/clock';
 
 export default {
   data() {
@@ -34,6 +34,13 @@ export default {
       }
       return url
     },
+    markStudied(item) {
+      const id = item && item.materialId;
+      if (!id) return;
+      recordMaterialStudy(id).catch(() => {
+        /* ignore — count is best-effort */
+      });
+    },
     fetchLearningMaterials() {
       this.loading = true;
       getPageLearningMaterials({
@@ -60,6 +67,7 @@ export default {
       }
       const records = (response.data && (response.data.list || response.data.records)) || [];
       const mapped = records.map((item) => ({
+        materialId: item.materialId,
         title: item.title,
         url: this.mediaUrl(item),
         disease: item.diseaseTypeName,
@@ -107,6 +115,7 @@ export default {
         content: '是否打开该文档？',
         success: (result) => {
           if (result.confirm) {
+            this.markStudied(item);
             uni.navigateTo({
               url: `/pages/webview/webview?url=${encodeURIComponent(item.url)}`,
             });
@@ -118,6 +127,7 @@ export default {
       const index = Number(e.currentTarget.dataset.index);
       const item = this.links[index];
       if (!item || !item.url) return;
+      this.markStudied(item);
       uni.navigateTo({
         url: `/pages/webview/webview?url=${encodeURIComponent(item.url)}`,
       });
@@ -126,7 +136,13 @@ export default {
       const index = Number(e.currentTarget.dataset.index);
       const item = this.images[index];
       if (!item || !item.url) return;
+      this.markStudied(item);
       uni.previewImage({ urls: [item.url], current: item.url });
+    },
+    onVideoPlay(e) {
+      const index = Number(e.currentTarget.dataset.index);
+      const item = this.videos[index];
+      if (item) this.markStudied(item);
     },
     videoErrorCallback() {
       tip.fail('视频播放失败');
@@ -221,6 +237,8 @@ export default {
             :src="video.url"
             controls
             object-fit="contain"
+            :data-index="index"
+            @play="onVideoPlay"
             @error="videoErrorCallback"
           />
         </view>

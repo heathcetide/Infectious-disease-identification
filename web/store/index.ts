@@ -67,6 +67,7 @@ interface State {
     province: string;
   };
   diseasescoring: Diseasescoring[];
+  scoringHybrid: ScoringHybrid | null;
 }
 interface Diseasescoring {
   diseaseTypeId: number;
@@ -75,6 +76,19 @@ interface Diseasescoring {
   scoringId: number;
   statusId: number;
   symptomTime: number[];
+  reason?: string;
+  evidence?: string[];
+  expertScore?: number;
+}
+interface ScoringHybrid {
+  isAI?: boolean;
+  disagreement?: boolean;
+  needsHumanConfirm?: boolean;
+  confirmed?: boolean;
+  llmDegraded?: boolean;
+  expertTop?: string[];
+  aiTop?: string[];
+  message?: string;
 }
 
 // 定义 mutations 类型
@@ -83,6 +97,7 @@ interface Mutations {
   setUserName(state: State, userName: string): void;
   setClockFormParams(state: State, clockFormParams: State['clockFormParams']): void;
   setDiseasescoring(state: State, diseascoring: Diseasescoring[]): void;
+  setScoringHybrid(state: State, hybrid: ScoringHybrid | null): void;
 }
 
 // 定义 actions 类型
@@ -91,6 +106,7 @@ interface Actions {
   setUserName({ commit }: { commit: (type: keyof Mutations, payload: string) => void }, userName: string): void;
   setClockFormParams({ commit }: { commit: (type: keyof Mutations, payload: State['clockFormParams']) => void }, clockFormParams: State['clockFormParams']): void;
   setDiseasescoring({ commit }: { commit: (type: keyof Mutations, payload: { diseascoring: Diseasescoring[] }) => void }, diseascoring: Diseasescoring[]): void;
+  setScoringHybrid({ commit }: { commit: (type: keyof Mutations, payload: ScoringHybrid | null) => void }, hybrid: ScoringHybrid | null): void;
 }
 
 function readStoredUserName(): string {
@@ -116,6 +132,7 @@ const store = new Vuex.Store<State>({
       province: ''
     },
     diseasescoring: [],
+    scoringHybrid: null,
   },
   mutations: {
     setJwt(state, jwt: string) {
@@ -138,7 +155,10 @@ const store = new Vuex.Store<State>({
     },
     setDiseasescoring(state, diseascoring: Diseasescoring[]) {
       state.diseasescoring = diseascoring;
-    }
+    },
+    setScoringHybrid(state, hybrid: ScoringHybrid | null) {
+      state.scoringHybrid = hybrid;
+    },
   },
   actions: {
     setJwt({ commit }, jwt: string) {
@@ -152,7 +172,10 @@ const store = new Vuex.Store<State>({
     },
     setDiseasescoring({ commit }, diseascoring: Diseasescoring[]) {
       commit('setDiseasescoring', diseascoring);
-    }
+    },
+    setScoringHybrid({ commit }, hybrid: ScoringHybrid | null) {
+      commit('setScoringHybrid', hybrid);
+    },
   },
 });
 

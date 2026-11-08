@@ -10,15 +10,27 @@ const PRESSURE_OPTIONS = [
   { label: '100 kPa 以上', value: 105 },
 ]
 
-const TEMP_OPTIONS = [
-  { label: '0℃ 以下', value: -5 },
-  { label: '0–10℃', value: 5 },
-  { label: '11–20℃', value: 15 },
+// 环境气温（非体温）：覆盖高原冬季极寒到夏季暖热
+const MAX_TEMP_OPTIONS = [
+  { label: '0℃ 以下', value: -2 },
+  { label: '0–5℃', value: 3 },
+  { label: '6–10℃', value: 8 },
+  { label: '11–15℃', value: 13 },
+  { label: '16–20℃', value: 18 },
   { label: '21–25℃', value: 23 },
   { label: '26–30℃', value: 28 },
-  { label: '31–35℃', value: 33 },
-  { label: '36–40℃', value: 38 },
-  { label: '40℃ 以上', value: 42 },
+  { label: '30℃ 以上', value: 33 },
+]
+
+const MIN_TEMP_OPTIONS = [
+  { label: '-30℃ 以下', value: -35 },
+  { label: '-30～-20℃', value: -25 },
+  { label: '-20～-10℃', value: -15 },
+  { label: '-10～0℃', value: -5 },
+  { label: '0–5℃', value: 3 },
+  { label: '6–10℃', value: 8 },
+  { label: '11–15℃', value: 13 },
+  { label: '15℃ 以上', value: 18 },
 ]
 
 function nearestOptionIndex(options, raw) {
@@ -62,7 +74,8 @@ export default {
         submissionTime: '',
       },
       pressureOptions: PRESSURE_OPTIONS,
-      tempOptions: TEMP_OPTIONS,
+      maxTempOptions: MAX_TEMP_OPTIONS,
+      minTempOptions: MIN_TEMP_OPTIONS,
       pressureIndex: -1,
       maxTempIndex: -1,
       minTempIndex: -1,
@@ -78,12 +91,12 @@ export default {
     },
     maxTempLabel() {
       return this.maxTempIndex >= 0
-        ? this.tempOptions[this.maxTempIndex].label
+        ? this.maxTempOptions[this.maxTempIndex].label
         : '请选择最高气温'
     },
     minTempLabel() {
       return this.minTempIndex >= 0
-        ? this.tempOptions[this.minTempIndex].label
+        ? this.minTempOptions[this.minTempIndex].label
         : '请选择最低气温'
     },
   },
@@ -115,11 +128,11 @@ export default {
         this.clockEnvironmentForm.avgMonthlyPressure
       )
       this.maxTempIndex = nearestOptionIndex(
-        this.tempOptions,
+        this.maxTempOptions,
         this.clockEnvironmentForm.maxTemperature
       )
       this.minTempIndex = nearestOptionIndex(
-        this.tempOptions,
+        this.minTempOptions,
         this.clockEnvironmentForm.minTemperature
       )
     },
@@ -131,12 +144,12 @@ export default {
     onMaxTempPick(e) {
       const idx = Number(e.detail.value)
       this.maxTempIndex = idx
-      this.clockEnvironmentForm.maxTemperature = this.tempOptions[idx].value
+      this.clockEnvironmentForm.maxTemperature = this.maxTempOptions[idx].value
     },
     onMinTempPick(e) {
       const idx = Number(e.detail.value)
       this.minTempIndex = idx
-      this.clockEnvironmentForm.minTemperature = this.tempOptions[idx].value
+      this.clockEnvironmentForm.minTemperature = this.minTempOptions[idx].value
     },
     getSuccess(response) {
       if (response && response.data != null) {
@@ -163,7 +176,7 @@ export default {
       if (
         this.maxTempIndex >= 0 &&
         this.minTempIndex >= 0 &&
-        this.tempOptions[this.maxTempIndex].value < this.tempOptions[this.minTempIndex].value
+        this.maxTempOptions[this.maxTempIndex].value < this.minTempOptions[this.minTempIndex].value
       ) {
         tip.fail('最高气温不能低于最低气温')
         return
@@ -323,7 +336,7 @@ export default {
           <text class="field-label">当月最高气温</text>
           <picker
             mode="selector"
-            :range="tempOptions"
+            :range="maxTempOptions"
             range-key="label"
             :value="maxTempIndex < 0 ? 0 : maxTempIndex"
             @change="onMaxTempPick"
@@ -337,7 +350,7 @@ export default {
           <text class="field-label">当月最低气温</text>
           <picker
             mode="selector"
-            :range="tempOptions"
+            :range="minTempOptions"
             range-key="label"
             :value="minTempIndex < 0 ? 0 : minTempIndex"
             @change="onMinTempPick"

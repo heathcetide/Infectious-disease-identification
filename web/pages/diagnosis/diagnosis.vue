@@ -1,11 +1,13 @@
 <script>
 import { diagnosisSubmitService,getReportService } from '../../services/clock'
+import { tip } from '../../utils/tip'
 import { baseURL } from '../../utils/http'
 import ReportUpload from '../../components/report-upload/report-upload.vue'
 export default {
   components: { ReportUpload },
   data() {
     return {
+		submitting: false,
 		formData: {
 		  stoolReport: [],   // 粪便检查报告文件数组
 		  bloodReport: [],   // 血液检查报告文件数组
@@ -268,37 +270,35 @@ export default {
 	async getDiagnosisData(date) {
 		getReportService(date)
 				.then(res => {
-					console.log(res.data)
-					console.log(res.data.diagnosiscirculatorysymptoms)
-					this.AllCheckInfo = res.data
-					this.AllCheckInfo.files.forEach(file => {
-					    const field = file.reportId; // 假设fileId是你想用的字段
-						console.log('id为',field);
-					    const fileUrl = `${baseURL}/api/v1/infect-files/diagnosis/${field}`;
+					const data = (res && res.data) || {}
+					this.AllCheckInfo = data
+					const files = Array.isArray(data.files) ? data.files : []
+					files.forEach(file => {
+					    const field = file.reportId
+					    if (!field) return
+					    const fileUrl = `${baseURL}/api/v1/infect-files/diagnosis/${field}`
 					    const newFile = {
-					        name: `${file.reportType}_report_${field}.pdf`,
+					        name: `${file.reportType || 'report'}_${field}.pdf`,
 					        extname: "pdf",
 					        url: fileUrl,
 					        path: fileUrl,
-					    };
-									
-					    if (file.reportType === "粪便常规检查报告") {
-					        this.formData.stoolReport.push(newFile);
-					    } else if (file.reportType === "血液检查报告") {
-					        this.formData.bloodReport.push(newFile);
-					    } else if (file.reportType === "影像学检查报告") {
-					        this.formData.imageReport.push(newFile);
-					    } else if (file.reportType === "B超报告") {
-					        this.formData.ultrasoundReport.push(newFile);
-					    } else if (file.reportType === "尿常规检查报告") {
-					        this.formData.urineReport.push(newFile);
-					    } else if (file.reportType === "病案首页") {
-					        this.formData.medicalRecord.push(newFile);
 					    }
-					});
+					    if (file.reportType === "粪便常规检查报告") {
+					        this.formData.stoolReport.push(newFile)
+					    } else if (file.reportType === "血液检查报告") {
+					        this.formData.bloodReport.push(newFile)
+					    } else if (file.reportType === "影像学检查报告") {
+					        this.formData.imageReport.push(newFile)
+					    } else if (file.reportType === "B超报告") {
+					        this.formData.ultrasoundReport.push(newFile)
+					    } else if (file.reportType === "尿常规检查报告") {
+					        this.formData.urineReport.push(newFile)
+					    } else if (file.reportType === "病案首页") {
+					        this.formData.medicalRecord.push(newFile)
+					    }
+					})
 				})
-				.catch(error => this.submitError(error));
-				console.log(this.AllCheckInfo.files);
+				.catch(error => this.submitError(error))
 	},
 	handleSubmit() {
 	    if (this.pages == 1 && this.sonpages < 2) {
@@ -340,7 +340,7 @@ export default {
 	},
 	
 	handleSubmits() {
-	  if (this.isViewMode) return; 
+	  if (this.isViewMode || this.submitting) return;
 	  if (this.AllCheckInfo.diagnosisResultsEmpDTO.diseaseType == null || this.AllCheckInfo.diagnosisResultsEmpDTO.discoveryMethod == null
 		|| this.AllCheckInfo.diagnosisResultsEmpDTO.diseaseOutcome == null || this.AllCheckInfo.diagnosisResultsEmpDTO.diagnosisDate == '') {
 	    uni.showToast({
@@ -348,7 +348,7 @@ export default {
 	      icon: 'none',
 	      duration: 2000,
 	    });
-	    return; // Stop the submission process
+	    return;
 	  }
 	  wx.showModal({
 	    content: '提交后不可修改，是否确认提交？',
@@ -356,9 +356,9 @@ export default {
 	    confirmText: '确认提交',
 	    success: async (res) => {
 	      if (res.confirm) {
-	        // 上传所有报告的文件
+	        this.submitting = true;
+	        tip.loading('正在提交…');
 	        const uploadPromises = [];
-	        // 上传粪便检查报告
 	        const enqueue = (list, type) => {
 	          list.forEach((file, index) => {
 	            if (file.path && !String(file.path).startsWith('http')) {
@@ -374,56 +374,41 @@ export default {
 	        enqueue(this.formData.urineReport, '尿常规检查报告');
 	        enqueue(this.formData.medicalRecord, '病案首页');
 	        try {
-	          // 等待所有文件上传完成
+	          if (uploadPromises.length) {
+	            tip.loading('正在上传报告…');
+	          }
 	          await Promise.all(uploadPromises);
-	          console.log('所有文件上传完成');
-	          // 提交表单
-	          diagnosisSubmitService(this.AllCheckInfo)
-	            .then((res) => this.submitSuccess(res))
-	            .catch((error) => this.submitError(error));
-	
-	          wx.showToast({
-	            title: '提交成功',
-	            icon: 'success',
-	            duration: 2000
-	          });
+	          tip.loading('正在提交诊断…');
+	          const result = await diagnosisSubmitService(this.AllCheckInfo);
+	          this.submitSuccess(result);
 	        } catch (error) {
-	          console.error('上传过程出现错误: ', error);
-	          wx.showToast({
-	            title: '提交失败',
-	            icon: 'none',
-	            duration: 2000
-	          });
+	          console.error('上传/提交出现错误: ', error);
+	          this.submitError(error);
+	        } finally {
+	          this.submitting = false;
+	          tip.hide();
 	        }
-	      } else if (res.cancel) {
-	        console.log('用户点击取消');
 	      }
 	    }
 	  });
 	},
 	submitError(error) {
 	  console.log('报错了',error)
-	  uni.showToast({
-	    title: '提交失败',
-	    icon: 'none',
-	    duration: 1500
-	  });
+	  this.submitting = false;
+	  tip.hide();
+	  tip.fail('提交失败');
 	},
 	submitSuccess(response) {
 	  console.log("注意注意",response)
-	  if (response.code == 200) {
-	    uni.showToast({
-	      title: '信息提交成功',
-	      icon: 'success',
-	      duration: 1800
-	    });
+	  const ok = response?.code === 200 || response?.code === 1 || response?.data;
+	  if (ok) {
+	    tip.success('信息提交成功');
 	  } else {
 	    uni.showModal({
 	      title: '信息提交失败',
-	      content: response.msg,
+	      content: response.msg || '信息提交失败',
 	      showCancel: false,
 	      confirmText: '确定',
-	      success: function (res) {}
 	    });
 	  }
 	},
@@ -1228,9 +1213,63 @@ export default {
     </scroll-view>
   </view>
     <uni-custom-tabbar class="tabbar" />
+    <view class="submit-loading-mask" v-if="submitting">
+      <view class="submit-loading-card">
+        <view class="submit-loading-spinner"></view>
+        <text class="submit-loading-title">正在提交</text>
+        <text class="submit-loading-desc">报告上传与诊断信息提交中，请稍候…</text>
+      </view>
+    </view>
   </view>
 </template>
 <style>
+.submit-loading-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.submit-loading-card {
+  width: 72%;
+  max-width: 280px;
+  padding: 28px 20px 24px;
+  border-radius: 14px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+}
+.submit-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #dbe4f5;
+  border-top-color: #285AC8;
+  animation: submit-spin 0.8s linear infinite;
+  margin-bottom: 14px;
+}
+.submit-loading-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.submit-loading-desc {
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.45;
+}
+@keyframes submit-spin {
+  to { transform: rotate(360deg); }
+}
 .page {
   position: relative;
   width: 100%;

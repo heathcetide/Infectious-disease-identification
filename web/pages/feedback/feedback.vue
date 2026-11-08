@@ -15,7 +15,20 @@ export default {
       },
     }
   },
+  onShow() {
+    this.hydrateProfile()
+  },
   methods: {
+    hydrateProfile() {
+      try {
+        const name = this.$store?.state?.userName || uni.getStorageSync('userName') || ''
+        const phone = uni.getStorageSync('phoneNumber') || ''
+        if (name && !this.feedBackForm.name) this.feedBackForm.name = name
+        if (phone && !this.feedBackForm.phoneNumber) this.feedBackForm.phoneNumber = phone
+      } catch (e) {
+        /* ignore */
+      }
+    },
     formatDate(date) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -42,22 +55,26 @@ export default {
         .then((res) => this.submitSuccess(res))
         .catch((error) => this.submitError(error))
         .finally(() => {
-          tip.hide()
           this.submitting = false
         })
     },
     submitError(error) {
+      tip.hide()
       console.error('反馈提交失败', error)
       tip.fail((error && (error.msg || error.message)) || '反馈提交失败')
     },
     submitSuccess(response) {
-      if (response && response.code == 200) {
-        tip.success('反馈提交成功')
-        this.feedBackForm.feedbackTitle = ''
-        this.feedBackForm.feedbackText = ''
+      const ok = response && (response.code === 200 || response.code === 1)
+      if (!ok) {
+        tip.hide()
+        tip.fail((response && response.msg) || '反馈提交失败')
         return
       }
-      tip.fail((response && response.msg) || '反馈提交失败')
+      this.feedBackForm.feedbackTitle = ''
+      this.feedBackForm.feedbackText = ''
+      tip.successThen('反馈提交成功', () => {
+        uni.reLaunch({ url: '/pages/healthProtection/healthProtection' })
+      })
     },
   },
 }
@@ -74,6 +91,26 @@ export default {
           <text class="hero-desc">问题、体验或改进想法都可以写在这里</text>
         </view>
         <image class="hero-art" src="/static/feedback.png" mode="aspectFit" />
+      </view>
+
+      <view class="card">
+        <text class="card-title">联系人</text>
+        <input
+          class="input"
+          type="text"
+          maxlength="40"
+          placeholder="姓名（默认取登录账号）"
+          placeholder-class="ph"
+          v-model="feedBackForm.name"
+        />
+        <input
+          class="input phone"
+          type="number"
+          maxlength="20"
+          placeholder="联系电话（默认取登录手机号）"
+          placeholder-class="ph"
+          v-model="feedBackForm.phoneNumber"
+        />
       </view>
 
       <view class="card">
@@ -169,6 +206,9 @@ export default {
   padding: 16px 14px;
   margin-bottom: 12px;
   box-shadow: 0 4px 16px rgba(40, 90, 200, 0.06);
+}
+.input.phone {
+  margin-top: 10px;
 }
 .card-title {
   display: block;

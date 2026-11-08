@@ -2,10 +2,11 @@
 <script>
 import { tip } from '../../utils/tip'
 import store from '../../store/index.ts'
-import { clockSubmitService, submitAllCheckService, getDailyReportService } from '../../services/clock'
+import { clockSubmitService, submitAllCheckService, getDailyReportService, uploadSymptomPhotoService } from '../../services/clock'
 export default {
   data() {
     return {
+	  submitting: false,
 	  AllCheckInfos: {
 		  
 	  },
@@ -211,7 +212,8 @@ export default {
 		    statusId: 0,
 		    tickBite: '否',
 		    wildActivityHistory: '其他'
-		}
+		},
+		symptomPhotoIds: []
 	  },
 	  formData: {
 		option: '' // 用于存储选中的选项
@@ -223,6 +225,8 @@ export default {
 	  isViewMode: false, 
 	  pages: 1,
 	  sonPage: 1,
+	  symptomPhotos: [],
+	  photoUploading: false,
     };
   },
   onLoad(options) {
@@ -235,7 +239,57 @@ export default {
       this.getDiagnosisData(date);
     }
   },
-  methods: {
+	methods: {
+	applyVisionLabels(labels) {
+		const g = this.AllCheckInfo.generalsymptoms || {}
+		;(labels || []).forEach((l) => {
+			if (!l || (l.confidence != null && l.confidence < 0.55)) return
+			const f = l.symptomField
+			if (f === 'HasPainfulRedRash') g.hasPainfulRedRash = true
+			if (f === 'HasSkinUlcer') g.hasSkinUlcer = true
+			if (f === 'HasItchyRash') g.hasItchyRash = true
+			if (f === 'HasCongestiveOrPetechialRash') g.hasCongestiveOrPetechialRash = true
+			if (f === 'HasBloodBlisters') g.hasBloodBlisters = true
+			if (f === 'HasCyanosis') g.hasCyanosis = true
+		})
+		this.AllCheckInfo.generalsymptoms = g
+	},
+	pickSymptomPhoto() {
+		if (this.photoUploading || this.isViewMode) return
+		uni.chooseImage({
+			count: 1,
+			sizeType: ['compressed'],
+			sourceType: ['album', 'camera'],
+			success: async (res) => {
+				const path = (res.tempFilePaths || [])[0]
+				if (!path) return
+				this.photoUploading = true
+				tip.loading('识别皮肤症状…')
+				try {
+					const body = await uploadSymptomPhotoService(path)
+					const data = body?.data || body
+					const photo = data?.photo || {}
+					const labels = data?.labels || []
+					const id = photo.photoId || photo.PhotoID
+					if (id) {
+						this.AllCheckInfo.symptomPhotoIds = [...(this.AllCheckInfo.symptomPhotoIds || []), id]
+					}
+					this.symptomPhotos.push({
+						path,
+						topLabel: photo.topLabel || (labels[0] && labels[0].label) || '已上传',
+					})
+					this.applyVisionLabels(labels)
+					tip.success('已辅助勾选相关症状')
+				} catch (e) {
+					console.error(e)
+					tip.fail('上传/识别失败')
+				} finally {
+					this.photoUploading = false
+					tip.hide()
+				}
+			},
+		})
+	},
     async getDiagnosisData(date) {
       try {
         const response = await getDailyReportService(date);
@@ -294,7 +348,15 @@ export default {
 	submitSuccess1(response) {
 		console.log(response)
 	},
+	normalizeNumericInput(v) {
+		if (v == null || v === '') return v
+		return String(v)
+			.replace(/[，、．。]/g, '.')
+			.replace(/[０-９]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 65248))
+			.replace(/[℃°\s]/g, '')
+	},
 	handleFinallySubmit(){
+		if (this.submitting) return;
 		uni.showModal({
             title: '提示',
             content: '您确定要提交吗？',
@@ -302,14 +364,21 @@ export default {
             cancelText: '取消',
             success: (res) => {
                 if (res.confirm) {
-                    const that = this; // 保存当前的 `this` 上下文
+                    const that = this;
                     const clockForm = store.state.clockFormParams;
-                    // 使用顺序执行的方式确保顺序执行
+					// 兼容中文逗号体温输入，如 38，5 → 38.5
+					if (that.AllCheckInfo?.generalsymptoms) {
+						that.AllCheckInfo.generalsymptoms.highestTemperature =
+							that.normalizeNumericInput(that.AllCheckInfo.generalsymptoms.highestTemperature)
+						that.AllCheckInfo.generalsymptoms.feverDuration =
+							that.normalizeNumericInput(that.AllCheckInfo.generalsymptoms.feverDuration)
+					}
+					that.submitting = true;
+					tip.loading('正在提交…');
                     clockSubmitService(clockForm)
                         .then((res) => {
                             this.submitSuccess1(res);
-            
-                            // 在 `clockSubmitService` 完成后再执行 `submitAllCheckService`
+                            tip.loading('正在分析风险…');
                             return submitAllCheckService(that.AllCheckInfo);
                         })
                         .then((res) => {
@@ -317,35 +386,47 @@ export default {
                         })
                         .catch((error) => {
                             that.submitError(error);
-                        });
+                        })
+						.finally(() => {
+							that.submitting = false;
+						});
                 }
             }
         });
 	},
 	submitError(error) {
+		this.submitting = false;
+		tip.hide();
 		tip.fail('信息提交失败');
 	},
 	submitSuccess(response) {
 		console.log(response);
-		console.log(response.data);
-		const scores = response.data.diseasescoringList || response.data;
+		const payload = response && response.data !== undefined ? response.data : response;
+		const scores = (payload && payload.diseasescoringList) || payload;
+		const hybrid = (payload && payload.hybrid) || null;
 		store.dispatch('setDiseasescoring', scores);
-	    if (response.code == 200) {
-	        tip.success('信息提交成功');
-			setTimeout(() => {
-				// 进行页面跳转
-				uni.navigateTo({
-					url: '/pages/clockFail/clockFail'
-				});
-        }, 50);
+		store.dispatch('setScoringHybrid', {
+			...(hybrid || {}),
+			highRisk: !!(payload && payload.highRisk),
+			nearestHospital: (payload && payload.nearestHospital) || '',
+		});
+		const ok =
+			response?.code === 200 ||
+			response?.code === 1 ||
+			payload?.code === 1 ||
+			Array.isArray(scores) ||
+			(payload && payload.diseasescoringList);
+		if (ok) {
+			tip.successThen('信息提交成功', () => {
+				uni.navigateTo({ url: '/pages/clockFail/clockFail' })
+			}, 800)
 	    } else {
+			tip.hide();
 	        uni.showModal({
 	            title: '信息提交失败',
 	            content: '信息提交失败。',
 	            showCancel: false,
 	            confirmText: '确定',
-	            success: function (res) {
-	            }
 	        });
 	    }
 	},
@@ -595,6 +676,23 @@ export default {
 			</view>
 	      </view>
 	  
+			<!-- 皮肤症状照片（P4 视觉辅助：分类结果并入症状再交给 LLM） -->
+			<view class="section" v-if="!isViewMode">
+				<view class="section-title">
+					<text class="label">皮肤症状照片（可选）</text>
+				</view>
+				<text class="field-hint">上传皮疹/溃疡等照片，系统辅助识别后勾选相关症状，并与打卡症状一并参与 AI 排序（不做独立诊断）。</text>
+				<view class="photo-row">
+					<view class="photo-thumb" v-for="(p, i) in symptomPhotos" :key="i">
+						<image :src="p.path" mode="aspectFill" class="photo-img" />
+						<text class="photo-label">{{ p.topLabel || '识别中' }}</text>
+					</view>
+					<view class="photo-add" @tap="pickSymptomPhoto" v-if="symptomPhotos.length < 3">
+						<text>{{ photoUploading ? '…' : '+' }}</text>
+					</view>
+				</view>
+			</view>
+
 			<!-- 第三个 -->
 			<view class="section">
 						<view class="sections1">
@@ -1872,9 +1970,64 @@ export default {
 		  </view>
 		<uni-custom-tabbar></uni-custom-tabbar>
 	</view>
+	<!-- 最终提交全屏 loading，避免 AI 诊断等待时误以为未提交 -->
+	<view class="submit-loading-mask" v-if="submitting">
+		<view class="submit-loading-card">
+			<view class="submit-loading-spinner"></view>
+			<text class="submit-loading-title">正在提交</text>
+			<text class="submit-loading-desc">健康数据上传与风险分析中，请稍候…</text>
+		</view>
+	</view>
 	</view>
 </template>
 <style>
+.submit-loading-mask {
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9999;
+	background: rgba(15, 23, 42, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.submit-loading-card {
+	width: 72%;
+	max-width: 280px;
+	padding: 28px 20px 24px;
+	border-radius: 14px;
+	background: #ffffff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+}
+.submit-loading-spinner {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	border: 3px solid #dbe4f5;
+	border-top-color: #285AC8;
+	animation: submit-spin 0.8s linear infinite;
+	margin-bottom: 14px;
+}
+.submit-loading-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: #0f172a;
+	margin-bottom: 6px;
+}
+.submit-loading-desc {
+	font-size: 13px;
+	color: #64748b;
+	text-align: center;
+	line-height: 1.45;
+}
+@keyframes submit-spin {
+	to { transform: rotate(360deg); }
+}
 .container {
 	width: 100%;
 	height: 100vh;
@@ -2090,5 +2243,48 @@ export default {
 }
 input{
 	opacity: 1;
+}
+.field-hint{
+	display: block;
+	font-size: 12px;
+	color: #64748b;
+	line-height: 1.4;
+	margin: 4px 0 10px;
+}
+.photo-row{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: flex-start;
+}
+.photo-thumb{
+	width: 72px;
+}
+.photo-img{
+	width: 72px;
+	height: 72px;
+	border-radius: 8px;
+	background: #e2e8f0;
+}
+.photo-label{
+	display: block;
+	font-size: 10px;
+	color: #64748b;
+	margin-top: 4px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.photo-add{
+	width: 72px;
+	height: 72px;
+	border-radius: 8px;
+	border: 1px dashed #94a3b8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 28px;
+	color: #64748b;
+	background: #f8fafc;
 }
 </style>
