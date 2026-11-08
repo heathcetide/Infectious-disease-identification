@@ -1,0 +1,1 @@
+import{_ as r,c as e,w as a,r as s,o,K as c,a as p}from"./index-Dky1mAGQ.js";const _={name:"ReportLayout"};function i(l,u,m,d,f,x){const t=s("router-view");return o(),e(t,null,{default:a(({Component:n})=>[(o(),e(c,{max:8,exclude:["Screen"]},[(o(),e(p(n)))],1024))]),_:1})}const w=r(_,[["render",i]]);export{w as default};

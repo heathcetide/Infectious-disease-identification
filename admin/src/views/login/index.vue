@@ -1,10 +1,5 @@
 <template>
   <div class="login-page">
-    <header class="top-bar">
-      <img class="logo" src="@/assets/banner.svg" alt="" />
-      <span class="system-name">突发传染病症状筛查与预警系统</span>
-    </header>
-
     <main class="login-main">
       <div class="login-card">
         <div class="card-head">
@@ -233,28 +228,6 @@ export default {
     url("../images/background_login.jpg") center / cover no-repeat;
   font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: var(--ink);
-}
-
-.top-bar {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0 28px;
-  background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid rgba(26, 35, 50, 0.08);
-  backdrop-filter: blur(8px);
-}
-
-.logo {
-  height: 36px;
-  width: auto;
-}
-
-.system-name {
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: 0.02em;
 }
 
 .login-main {
