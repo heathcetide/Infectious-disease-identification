@@ -1,0 +1,1 @@
+import{_ as a,c as e,w as s,r,o,K as c,a as _}from"./index-Dbq5loXR.js";const p={name:"SystemLayout"};function i(m,l,u,f,d,x){const t=r("router-view");return o(),e(t,null,{default:s(({Component:n})=>[(o(),e(c,{max:8},[(o(),e(_(n)))],1024))]),_:1})}const w=a(p,[["render",i]]);export{w as default};
