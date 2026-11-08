@@ -5,29 +5,18 @@ const AMAP_SECURITY =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_SECURITY_CODE) ||
   ''
 
-// Prefer same-origin proxy when Vite DEV or when explicitly enabled for
-// embedded admin (VITE_AMAP_PROXY=1). Otherwise hit the official CDN.
-const useAmapProxy =
-  (typeof import.meta !== 'undefined' && !!import.meta.env?.DEV) ||
+// Proxy only in Vite DEV (browser often cannot reach amap.com) or when explicitly forced.
+// Embedded admin on :8080 should prefer the official CDN — Go proxy can 502/503 under load.
+const forceProxy =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AMAP_PROXY === '1') ||
-  (typeof window !== 'undefined' && window.location?.port === '8080')
+  (typeof import.meta !== 'undefined' && !!import.meta.env?.DEV)
 
-/** Same-origin proxy when needed; else official CDN. */
-function mapsScriptUrl(cacheBust = 0) {
-  const qs = `v=2.0&key=${AMAP_KEY}${cacheBust ? `&_r=${cacheBust}` : ''}`
-  if (useAmapProxy) {
-    return `/_AMapProxy/https/webapi.amap.com/maps?${qs}`
-  }
-  return `https://webapi.amap.com/maps?${qs}`
-}
-
-let loadingPromise = null
+let preferProxy = forceProxy
 let rewriteInstalled = false
+let loadingPromise = null
 
 function applySecurityConfig() {
   if (typeof window === 'undefined') return
-  // Always set the object so AMap 2.0 does not fall back to brittle Referer checks alone.
-  // Prefer VITE_AMAP_SECURITY_CODE from admin/.env.local when available.
   window._AMapSecurityConfig = {
     securityJsCode: AMAP_SECURITY || '',
   }
@@ -35,10 +24,9 @@ function applySecurityConfig() {
 
 export function rewriteAmapUrl(url) {
   if (typeof url !== 'string' || !url) return url
-  if (!useAmapProxy) return url
+  if (!preferProxy) return url
   if (url.startsWith('/_AMapProxy/')) return url
 
-  // protocol-relative
   if (url.startsWith('//') && /(?:amap\.com|autonavi\.com)/i.test(url)) {
     return `/_AMapProxy/https/${url.slice(2)}`
   }
@@ -55,11 +43,10 @@ export function rewriteAmapUrl(url) {
 }
 
 /**
- * Browser → *.amap.com / *.autonavi.com often dies with ERR_CONNECTION_CLOSED.
- * In Vite DEV, rewrite script / image / XHR / fetch URLs through /_AMapProxy.
+ * Rewrite script / image / XHR / fetch through /_AMapProxy when proxy mode is on.
  */
 export function installAmapUrlRewrite() {
-  if (!useAmapProxy || rewriteInstalled || typeof window === 'undefined') return
+  if (!preferProxy || rewriteInstalled || typeof window === 'undefined') return
   rewriteInstalled = true
 
   const rewrite = rewriteAmapUrl
@@ -154,6 +141,14 @@ export function installAmapUrlRewrite() {
   }
 }
 
+function mapsScriptUrl(attempt = 0) {
+  const qs = `v=2.0&key=${AMAP_KEY}${attempt ? `&_r=${attempt}` : ''}`
+  if (preferProxy) {
+    return `/_AMapProxy/https/webapi.amap.com/maps?${qs}`
+  }
+  return `https://webapi.amap.com/maps?${qs}`
+}
+
 function waitForAMap(timeoutMs = 15000) {
   return new Promise((resolve, reject) => {
     if (window.AMap) {
@@ -178,7 +173,7 @@ function waitForAMap(timeoutMs = 15000) {
 function injectScript(attempt) {
   return new Promise((resolve, reject) => {
     applySecurityConfig()
-    installAmapUrlRewrite()
+    if (preferProxy) installAmapUrlRewrite()
 
     if (window.AMap) {
       resolve(window.AMap)
@@ -234,7 +229,7 @@ function injectScript(attempt) {
   })
 }
 
-/** Lazily load AMap JS API once (only when a map page needs it). */
+/** Lazily load AMap JS API once. Direct CDN first; fall back to same-origin proxy. */
 export function loadAMap(maxAttempts = 3) {
   if (typeof window !== 'undefined' && window.AMap) {
     return Promise.resolve(window.AMap)
@@ -244,13 +239,26 @@ export function loadAMap(maxAttempts = 3) {
   }
   loadingPromise = (async () => {
     let lastErr
+    // Pass 1: current mode (direct unless Vite DEV / VITE_AMAP_PROXY=1)
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       try {
-        const AMap = await injectScript(attempt)
-        return AMap
+        return await injectScript(attempt)
       } catch (err) {
         lastErr = err
-        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)))
+        await new Promise((r) => setTimeout(r, 300 * (attempt + 1)))
+      }
+    }
+    // Pass 2: if direct failed, try Go /_AMapProxy once
+    if (!preferProxy) {
+      preferProxy = true
+      rewriteInstalled = false
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          return await injectScript(100 + attempt)
+        } catch (err) {
+          lastErr = err
+          await new Promise((r) => setTimeout(r, 400))
+        }
       }
     }
     loadingPromise = null

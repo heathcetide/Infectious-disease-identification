@@ -272,7 +272,8 @@ onMounted(async () => {
   } catch (error) {
     console.error('地图初始化失败:', error);
     if (!disposed) {
-      statusText.value = '高德地图加载失败，请检查网络后刷新';
+      mapReady = false;
+      statusText.value = '高德地图加载失败，可刷新重试（不影响其它图表）';
     }
   }
 });
