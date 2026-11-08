@@ -234,7 +234,7 @@ export default {
   min-height: 100vh;
   height: 100vh;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(380px, 420px);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 420px);
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color: var(--ink);
   overflow: hidden;
@@ -419,26 +419,66 @@ export default {
   .login-page {
     grid-template-columns: 1fr;
     height: auto;
-    min-height: 100vh;
-    overflow: auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .visual {
-    min-height: 28vh;
-    max-height: 32vh;
+    min-height: 36vw;
+    max-height: none;
+    height: min(42vw, 220px);
   }
 
   .visual-caption {
     left: 16px;
-    bottom: 16px;
+    right: 16px;
+    bottom: 14px;
+    max-width: none;
     font-size: 13px;
   }
 
   .panel {
     min-height: auto;
     align-items: flex-start;
-    padding: 40px 0 56px;
+    padding: 28px 0 calc(40px + env(safe-area-inset-bottom, 0px));
     border-left: 0;
+  }
+
+  .panel-inner {
+    width: min(360px, calc(100% - 40px));
+  }
+
+  .card-head h1 {
+    font-size: 22px;
+  }
+
+  .form {
+    margin-top: 22px;
+  }
+
+  .field input,
+  .submit {
+    height: 44px;
+    font-size: 16px; /* avoid iOS zoom on focus */
+  }
+}
+
+@media (max-width: 480px) {
+  .visual {
+    height: 160px;
+  }
+
+  .panel {
+    padding-top: 22px;
+  }
+
+  .panel-inner {
+    width: calc(100% - 32px);
+  }
+
+  .visual-caption {
+    font-size: 12px;
   }
 }
 </style>
