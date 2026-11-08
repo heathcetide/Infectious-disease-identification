@@ -1,1 +1,0 @@
-import{_ as a,c as e,w as r,r as s,o,K as c,a as _}from"./index-C7XL7zgy.js";const p={name:"UserLayout"};function i(l,m,u,f,d,x){const t=s("router-view");return o(),e(t,null,{default:r(({Component:n})=>[(o(),e(c,{max:8},[(o(),e(_(n)))],1024))]),_:1})}const w=a(p,[["render",i]]);export{w as default};

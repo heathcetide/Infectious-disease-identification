@@ -64,8 +64,10 @@ function renderChart(data) {
   const { countData, percentData } = buildSeries(data);
   const tc = screenChartColors();
   try {
+    myChart.clear();
     myChart.setOption(
       {
+        animation: false,
         color: ['#285AC8', '#D43030'],
         legend: {
           top: 28,
@@ -107,7 +109,7 @@ function renderChart(data) {
         ],
         tooltip: {
           trigger: 'axis',
-          axisPointer: { type: 'shadow' },
+          axisPointer: { type: 'line' },
           formatter(params) {
             if (!params || !params.length) return '';
             const idx = params[0]?.dataIndex ?? 0;
@@ -130,10 +132,13 @@ function renderChart(data) {
             yAxisIndex: 0,
             data: countData,
             smooth: true,
+            showSymbol: true,
             symbol: 'circle',
             symbolSize: 5,
-            lineStyle: { width: 2 },
-            areaStyle: { opacity: 0.08 },
+            progressive: 0,
+            lineStyle: { width: 2, color: '#285AC8' },
+            itemStyle: { color: '#285AC8' },
+            areaStyle: { color: 'rgba(40,90,200,0.08)' },
           },
           {
             name: '占比%',
@@ -141,13 +146,16 @@ function renderChart(data) {
             yAxisIndex: 1,
             data: percentData,
             smooth: true,
+            showSymbol: true,
             symbol: 'circle',
             symbolSize: 5,
-            lineStyle: { width: 2, type: 'dashed' },
+            progressive: 0,
+            lineStyle: { width: 2, type: 'dashed', color: '#D43030' },
+            itemStyle: { color: '#D43030' },
           },
         ],
       },
-      { notMerge: true }
+      { notMerge: true, lazyUpdate: false }
     );
     nextTick(() => myChart?.resize());
   } catch (err) {
@@ -177,7 +185,12 @@ const onResize = () => myChart?.resize();
 onMounted(async () => {
   await nextTick();
   if (!chart.value) return;
-  myChart = echarts.init(chart.value);
+  // Avoid progressive-render crashes when the panel is still 0×0.
+  const el = chart.value;
+  if (el.clientWidth < 8 || el.clientHeight < 8) {
+    el.style.minHeight = '140px';
+  }
+  myChart = echarts.init(el, undefined, { renderer: 'canvas', useDirtyRect: false });
   myChart.resize();
   if (pendingData != null) {
     renderChart(pendingData);

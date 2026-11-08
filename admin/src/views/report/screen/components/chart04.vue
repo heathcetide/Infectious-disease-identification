@@ -49,7 +49,14 @@ export default {
   async mounted() {
     await this.$nextTick();
     if (!this.$refs.chartContainer) return;
-    this.chartInstance = echarts.init(this.$refs.chartContainer);
+    const el = this.$refs.chartContainer;
+    if (el.clientWidth < 8 || el.clientHeight < 8) {
+      el.style.minHeight = "140px";
+    }
+    this.chartInstance = echarts.init(el, undefined, {
+      renderer: "canvas",
+      useDirtyRect: false,
+    });
     this.chartInstance.resize();
     await this.updateChart();
     window.addEventListener("resize", this.handleResize);
@@ -89,78 +96,76 @@ export default {
 
         if (!this.chartInstance) return;
         const tc = screenChartColors();
-        this.chartInstance.setOption({
-          color: ["#285AC8"],
-          grid: {
-            top: "12%",
-            bottom: this.timeRange === "最近一年" ? "22%" : "16%",
-            left: "14%",
-            right: "4%",
-          },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: { type: "shadow" },
-            formatter(params) {
-              const p = Array.isArray(params) ? params[0] : null;
-              if (!p) return "";
-              return `${p.axisValue}<br/>打卡人数：${p.value}`;
+        const xs = xAxisData.length ? xAxisData : ["暂无数据"];
+        const ys = seriesData.length ? seriesData : [0];
+        this.chartInstance.clear();
+        this.chartInstance.setOption(
+          {
+            animation: false,
+            color: ["#285AC8"],
+            grid: {
+              top: "12%",
+              bottom: this.timeRange === "最近一年" ? "22%" : "16%",
+              left: "14%",
+              right: "4%",
             },
-            backgroundColor: tc.tooltipBg,
-            borderColor: tc.border,
-            textStyle: { color: tc.tooltipText },
-          },
-          xAxis: {
-            type: "category",
-            data: xAxisData.length ? xAxisData : ["暂无数据"],
-            axisLabel: {
-              show: true,
-              rotate: this.timeRange === "最近一年" ? 45 : 0,
-              formatter(v) {
-                return String(v).slice(5);
+            tooltip: {
+              trigger: "axis",
+              axisPointer: { type: "line" },
+              formatter(params) {
+                const p = Array.isArray(params) ? params[0] : null;
+                if (!p) return "";
+                return `${p.axisValue}<br/>打卡人数：${p.value}`;
               },
-              color: tc.muted,
-              fontSize: 10,
+              backgroundColor: tc.tooltipBg,
+              borderColor: tc.border,
+              textStyle: { color: tc.tooltipText },
             },
-            axisLine: { show: false },
-            axisTick: { show: false },
-            splitLine: { show: false },
-          },
-          yAxis: {
-            type: "value",
-            axisLabel: { show: true, color: tc.muted },
-            axisLine: { show: false },
-            axisTick: { show: false },
-            splitLine: { show: false },
-            minInterval: 1,
-          },
-          series: [
-            {
-              name: "打卡人数",
-              data: seriesData.length ? seriesData : [0],
-              type: "line",
-              smooth: true,
-              symbolSize: this.timeRange === "最近一年" ? 4 : 8,
-              itemStyle: { color: "#285AC8" },
-              lineStyle: { width: 3 },
-              areaStyle: {
-                color: {
-                  type: "linear",
-                  x: 0,
-                  y: 0,
-                  x2: 0,
-                  y2: 1,
-                  colorStops: [
-                    { offset: 0, color: "rgba(40,90,200,0.28)" },
-                    { offset: 1, color: "rgba(40,90,200,0.02)" },
-                  ],
+            xAxis: {
+              type: "category",
+              data: xs,
+              axisLabel: {
+                show: true,
+                rotate: this.timeRange === "最近一年" ? 45 : 0,
+                formatter(v) {
+                  return String(v).slice(5);
                 },
+                color: tc.muted,
+                fontSize: 10,
               },
+              axisLine: { show: false },
+              axisTick: { show: false },
+              splitLine: { show: false },
             },
-          ],
-        }, { notMerge: true });
+            yAxis: {
+              type: "value",
+              axisLabel: { show: true, color: tc.muted },
+              axisLine: { show: false },
+              axisTick: { show: false },
+              splitLine: { show: false },
+              minInterval: 1,
+            },
+            series: [
+              {
+                name: "打卡人数",
+                type: "line",
+                data: ys,
+                smooth: true,
+                progressive: 0,
+                showSymbol: this.timeRange !== "最近一年",
+                symbol: "circle",
+                symbolSize: this.timeRange === "最近一年" ? 3 : 6,
+                itemStyle: { color: "#285AC8" },
+                lineStyle: { width: 2, color: "#285AC8" },
+                areaStyle: { color: "rgba(40,90,200,0.16)" },
+              },
+            ],
+          },
+          { notMerge: true, lazyUpdate: false }
+        );
         this.$nextTick(() => this.chartInstance?.resize());
       } catch (error) {
-        console.error("请求出错:", error);
+        console.error("打卡时间分布图表失败:", error);
       }
     },
   },
