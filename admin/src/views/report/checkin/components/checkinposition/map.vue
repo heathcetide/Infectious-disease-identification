@@ -62,19 +62,30 @@ export default {
       if (fallbackAddress) {
         this.address = fallbackAddress;
       }
+      const applyFallback = () => {
+        if (!this.address) {
+          this.address = fallbackAddress || `${latlng[1]}, ${latlng[0]}`;
+        }
+      };
       try {
-        const geocoder = new AMap.Geocoder();
-        geocoder.getAddress(latlng, (status, result) => {
-          if (status === 'complete' && result.info === 'OK') {
-            this.address = result.regeocode.formattedAddress;
-          } else if (!this.address) {
-            this.address = fallbackAddress || '无法获取地点信息';
+        // AMap JSAPI 2.0 requires plugin load; bare `new AMap.Geocoder()` often
+        // surfaces "please check the key and referer".
+        AMap.plugin('AMap.Geocoder', () => {
+          try {
+            const geocoder = new AMap.Geocoder();
+            geocoder.getAddress(latlng, (status, result) => {
+              if (status === 'complete' && result?.regeocode?.formattedAddress) {
+                this.address = result.regeocode.formattedAddress;
+              } else {
+                applyFallback();
+              }
+            });
+          } catch (e) {
+            applyFallback();
           }
         });
       } catch (e) {
-        if (!this.address) {
-          this.address = fallbackAddress || '无法获取地点信息';
-        }
+        applyFallback();
       }
     },
 

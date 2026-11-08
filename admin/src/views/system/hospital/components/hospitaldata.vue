@@ -41,13 +41,19 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="医院地址" prop="Address">
+        <el-form-item label="医院地址" prop="address">
           <el-input
-            v-model="form.Address"
-            style="width: 200px"
+            v-model="form.address"
+            style="width: 360px"
             placeholder="请输入医院地址"
-            @blur="$refs.form.validateField('Address')"
+            @blur="$refs.form.validateField('address')"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="纬度" prop="latitude">
+          <el-input-number v-model="form.latitude" :step="0.0001" :precision="6" style="width: 200px" />
+        </el-form-item>
+        <el-form-item label="经度" prop="longitude">
+          <el-input-number v-model="form.longitude" :step="0.0001" :precision="6" style="width: 200px" />
         </el-form-item>
       </el-form>
     </div>
@@ -68,13 +74,15 @@ export default {
       form: {
         hospitalName: '',
         hospitalPhoneNumber: '',
-        Address: '',
+        address: '',
+        latitude: 0,
+        longitude: 0,
       },
 
       rules: {
         hospitalName: [{ required: true, message: '请输入医院名称', trigger: 'blur' }],
         hospitalPhoneNumber: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
-        Address: [{ required: true, message: '请输入医院地址', trigger: 'blur' }],
+        address: [{ required: true, message: '请输入医院地址', trigger: 'blur' }],
       },
     };
   },
@@ -89,7 +97,9 @@ export default {
           this.form = {
             hospitalName: response.data.data.hospitalName,
             hospitalPhoneNumber: response.data.data.hospitalPhoneNumber,
-            Address: response.data.data.address,
+            address: response.data.data.address || '',
+            latitude: Number(response.data.data.latitude) || 0,
+            longitude: Number(response.data.data.longitude) || 0,
           };
         } else {
           console.error("获取医院信息失败:", response.data.msg);
@@ -125,8 +135,10 @@ export default {
             const params = {
                hospitalId: this.currentHospitalId,
                hospitalName: this.form.hospitalName,
-               hospitalPhoneNumber:this.form.hospitalPhoneNumber,
-               address:this.form.Address,
+               hospitalPhoneNumber: this.form.hospitalPhoneNumber,
+               address: this.form.address,
+               latitude: this.form.latitude || 0,
+               longitude: this.form.longitude || 0,
             };
 
             const response = await editHospitalDataById(params); 
@@ -170,7 +182,9 @@ export default {
       return {
         hospitalName: '',
         hospitalPhoneNumber: '',
-        Address: '',
+        address: '',
+        latitude: 0,
+        longitude: 0,
       };
     },
   },
@@ -190,10 +204,11 @@ export default {
   top: 0;
   right: 0;
   width: 700px;
-  background: #ffffff;
+  background: var(--el-bg-color, #ffffff);
   padding: 3px;
   z-index: 100;
-  border: 3px solid #fafafa;
+  border: 1px solid var(--el-border-color-lighter, #fafafa);
+  box-sizing: border-box;
 }
 
 .footer {
@@ -206,7 +221,7 @@ export default {
 h3 {
   margin-top: 20px;
   font-size: 16px;
-  color: #333333;
+  color: var(--el-text-color-primary, #333333);
   margin-left: 30px;
 }
 .custom-input {

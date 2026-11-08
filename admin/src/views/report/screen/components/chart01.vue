@@ -16,11 +16,15 @@ import * as echarts from 'echarts';
 import { ref, onMounted, watch, onBeforeUnmount, nextTick } from 'vue';
 import { getDiseaseDataToday } from '@/api/report/screen.js';
 import { useDiseaseStore } from '@/store/diseaseStore';
+import { useThemeStore } from '@/store/theme';
+import { screenChartColors } from '@/utils/screenTheme';
 
 const chart = ref(null);
 const diseaseStore = useDiseaseStore();
+const themeStore = useThemeStore();
 let myChart = null;
 let pendingData = null;
+let lastData = [];
 
 const props = defineProps({
   queryDate: { type: String, default: '' },
@@ -56,7 +60,9 @@ function renderChart(data) {
     pendingData = data;
     return;
   }
+  lastData = data || [];
   const { countData, percentData } = buildSeries(data);
+  const tc = screenChartColors();
   try {
     myChart.setOption(
       {
@@ -66,14 +72,14 @@ function renderChart(data) {
           right: 4,
           itemWidth: 10,
           itemHeight: 6,
-          textStyle: { fontSize: 10, color: '#666' },
+          textStyle: { fontSize: 10, color: tc.text },
           data: ['人数', '占比%'],
         },
         grid: { top: '38%', left: '12%', right: '12%', bottom: '18%' },
         xAxis: {
           type: 'category',
           data: shortLabels,
-          axisLabel: { show: true, fontSize: 9, color: '#888', rotate: 35, interval: 0 },
+          axisLabel: { show: true, fontSize: 9, color: tc.muted, rotate: 35, interval: 0 },
           axisLine: { show: false },
           axisTick: { show: false },
           splitLine: { show: false },
@@ -82,20 +88,20 @@ function renderChart(data) {
           {
             type: 'value',
             name: '人',
-            nameTextStyle: { fontSize: 10, color: '#999' },
+            nameTextStyle: { fontSize: 10, color: tc.axis },
             axisLine: { show: false },
             axisTick: { show: false },
             splitLine: { show: false },
-            axisLabel: { fontSize: 9, color: '#999' },
+            axisLabel: { fontSize: 9, color: tc.axis },
           },
           {
             type: 'value',
             name: '%',
-            nameTextStyle: { fontSize: 10, color: '#999' },
+            nameTextStyle: { fontSize: 10, color: tc.axis },
             axisLine: { show: false },
             axisTick: { show: false },
             splitLine: { show: false },
-            axisLabel: { fontSize: 9, color: '#999' },
+            axisLabel: { fontSize: 9, color: tc.axis },
             max: 100,
           },
         ],
@@ -110,11 +116,11 @@ function renderChart(data) {
             const pct = percentData[idx] || 0;
             return `${name}<br/>人数：${count}人<br/>占比：${pct}%`;
           },
-          backgroundColor: '#FFFFFF',
-          borderColor: '#FFFFFF',
+          backgroundColor: tc.tooltipBg,
+          borderColor: tc.border,
           borderWidth: 1,
           padding: [10, 10],
-          textStyle: { color: '#333333', fontSize: 13 },
+          textStyle: { color: tc.tooltipText, fontSize: 13 },
           extraCssText: 'border-radius: 4px;',
         },
         series: [
@@ -178,6 +184,7 @@ onMounted(async () => {
     pendingData = null;
   }
   watch(() => props.queryDate, (d) => loadData(d), { immediate: true });
+  watch(() => themeStore.mode, () => renderChart(lastData));
   window.addEventListener('resize', onResize);
 });
 
@@ -213,14 +220,15 @@ onBeforeUnmount(() => {
 .title-text {
   font-size: 12px;
   font-weight: bold;
-  color: #4a4a4a;
+  color: var(--el-text-color-primary, #4a4a4a);
 }
 .chart-container {
   width: 100%;
   max-width: 240px;
   flex: 1 1 0;
   min-height: 140px;
-  background-color: #fafafa;
+  background-color: var(--admin-card-bg, #fafafa);
+  border: 1px solid var(--el-border-color-lighter, transparent);
   border-radius: 5px;
   margin-left: 0;
   margin-top: 0;
@@ -235,8 +243,8 @@ onBeforeUnmount(() => {
   left: 10px;
   font-size: 13px;
   font-weight: bold;
-  color: #4a4a4a;
-  background-color: #fafafa;
+  color: var(--el-text-color-primary, #4a4a4a);
+  background-color: var(--admin-card-bg, #fafafa);
   padding: 2px 5px;
   border-radius: 3px;
   z-index: 10;

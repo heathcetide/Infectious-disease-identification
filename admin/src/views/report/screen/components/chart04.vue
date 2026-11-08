@@ -21,6 +21,8 @@
 import * as echarts from "echarts";
 import dayjs from "dayjs";
 import { getCheckInDailyNumber } from "@/api/report/screen.js";
+import { useThemeStore } from "@/store/theme";
+import { screenChartColors } from "@/utils/screenTheme";
 
 export default {
   props: {
@@ -33,10 +35,14 @@ export default {
     return {
       chartInstance: null,
       timeRange: "最近一周",
+      themeStore: useThemeStore(),
     };
   },
   watch: {
     queryDate() {
+      this.updateChart();
+    },
+    "themeStore.mode"() {
       this.updateChart();
     },
   },
@@ -82,6 +88,7 @@ export default {
         const seriesData = rows.map((item) => Number(item.count) || 0);
 
         if (!this.chartInstance) return;
+        const tc = screenChartColors();
         this.chartInstance.setOption({
           color: ["#285AC8"],
           grid: {
@@ -98,9 +105,9 @@ export default {
               if (!p) return "";
               return `${p.axisValue}<br/>打卡人数：${p.value}`;
             },
-            backgroundColor: "#FFFFFF",
-            borderColor: "#FFFFFF",
-            textStyle: { color: "#333333" },
+            backgroundColor: tc.tooltipBg,
+            borderColor: tc.border,
+            textStyle: { color: tc.tooltipText },
           },
           xAxis: {
             type: "category",
@@ -111,7 +118,7 @@ export default {
               formatter(v) {
                 return String(v).slice(5);
               },
-              color: "#8A8A8A",
+              color: tc.muted,
               fontSize: 10,
             },
             axisLine: { show: false },
@@ -120,7 +127,7 @@ export default {
           },
           yAxis: {
             type: "value",
-            axisLabel: { show: true, color: "#8A8A8A" },
+            axisLabel: { show: true, color: tc.muted },
             axisLine: { show: false },
             axisTick: { show: false },
             splitLine: { show: false },
@@ -173,7 +180,8 @@ export default {
 
 .chart-container {
   padding: 8px;
-  background-color: #fafafa;
+  background-color: var(--admin-card-bg, #fafafa);
+  border: 1px solid var(--el-border-color-lighter, transparent);
   border-radius: 5px;
   width: 100%;
   max-width: 240px;
@@ -188,7 +196,7 @@ export default {
 h3 {
   font-size: 14px;
   font-weight: bold;
-  color: #4a4a4a;
+  color: var(--el-text-color-primary, #4a4a4a);
   margin-bottom: 10px;
 }
 

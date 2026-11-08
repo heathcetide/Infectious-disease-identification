@@ -21,6 +21,7 @@
         </el-form>
       </template>
     </Card>
+    <ChartEval />
     <div class="elsedata">
       <div class="chartspartone">
         <Chart01 :queryDate="queryDate" />
@@ -38,6 +39,7 @@ import Card from './components/card.vue';
 import Chart01 from './components/chart01.vue';
 import Map from './components/map.vue';
 import Chart04 from './components/chart04.vue';
+import ChartEval from './components/chartEval.vue';
 
 export default {
   name: 'Screen',
@@ -46,6 +48,7 @@ export default {
     Chart01,
     Map,
     Chart04,
+    ChartEval,
   },
   data() {
     return {
@@ -107,15 +110,15 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
-  gap: 8px;
+  gap: 10px;
   padding: 0 10px 6px;
   box-sizing: border-box;
 }
 
 .chartspartone {
-  flex: 0 0 220px;
-  min-width: 200px;
-  max-width: 240px;
+  flex: 0 0 200px;
+  min-width: 180px;
+  max-width: 220px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -126,5 +129,6 @@ export default {
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
+  display: flex;
 }
 </style>

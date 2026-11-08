@@ -30,6 +30,13 @@ function forward(req, res, targetUrl) {
   headers.host = parsed.host
   // Avoid compressing so Vite/browser get predictable payloads
   delete headers['accept-encoding']
+  // Dev proxy: browser Referer is localhost:5173, which often fails AMap key
+  // whitelist checks ("please check the key and referer"). Use the upstream host.
+  delete headers.referer
+  delete headers.Referer
+  delete headers.origin
+  delete headers.Origin
+  headers.referer = `${parsed.protocol}//${parsed.host}/`
 
   const upstream = lib.request(
     {

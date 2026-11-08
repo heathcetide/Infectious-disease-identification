@@ -22,10 +22,10 @@ let rewriteInstalled = false
 
 function applySecurityConfig() {
   if (typeof window === 'undefined') return
-  if (AMAP_SECURITY) {
-    window._AMapSecurityConfig = {
-      securityJsCode: AMAP_SECURITY,
-    }
+  // Always set the object so AMap 2.0 does not fall back to brittle Referer checks alone.
+  // Prefer VITE_AMAP_SECURITY_CODE from admin/.env.local when available.
+  window._AMapSecurityConfig = {
+    securityJsCode: AMAP_SECURITY || '',
   }
 }
 

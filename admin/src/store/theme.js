@@ -46,6 +46,7 @@ export function applyThemeMode(mode) {
     root.style.setProperty('--el-text-color-placeholder', '#8d9095');
     root.style.setProperty('--el-border-color', '#4c4d4f');
     root.style.setProperty('--el-border-color-light', '#414243');
+    root.style.setProperty('--el-border-color-lighter', '#2f3032');
     root.style.setProperty('--el-fill-color-blank', '#1d1e1f');
     root.style.setProperty('--el-fill-color-light', '#262727');
     root.style.setProperty('--admin-page-bg', '#0a0a0a');
@@ -63,6 +64,7 @@ export function applyThemeMode(mode) {
     root.style.setProperty('--el-text-color-placeholder', '#a8abb2');
     root.style.setProperty('--el-border-color', '#dcdfe6');
     root.style.setProperty('--el-border-color-light', '#e4e7ed');
+    root.style.setProperty('--el-border-color-lighter', '#ebeef5');
     root.style.setProperty('--el-fill-color-blank', '#ffffff');
     root.style.setProperty('--el-fill-color-light', '#f5f7fa');
     root.style.setProperty('--admin-page-bg', '#ffffff');

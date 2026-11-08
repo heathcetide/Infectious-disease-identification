@@ -107,7 +107,50 @@ html[data-theme='dark'] .el-main .container {
   background-color: var(--el-bg-color) !important;
 }
 
+/* Drawer custom headers (with-header=false + fixed .title) were hard-coded white. */
+html.dark .el-drawer .title,
+html[data-theme='dark'] .el-drawer .title,
+html.dark .custom-drawer .title,
+html[data-theme='dark'] .custom-drawer .title {
+  background: var(--admin-card-bg, #1a1a1a) !important;
+  border-color: var(--el-border-color, #303030) !important;
+  color: var(--el-text-color-primary) !important;
+}
+
+html.dark .el-drawer .title h3,
+html[data-theme='dark'] .el-drawer .title h3,
+html.dark .custom-drawer .title h3,
+html[data-theme='dark'] .custom-drawer .title h3 {
+  color: var(--el-text-color-primary) !important;
+}
+
+html.dark .el-drawer .ai-score-box,
+html[data-theme='dark'] .el-drawer .ai-score-box {
+  background: var(--el-fill-color-light, #262727) !important;
+}
+
+html.dark .el-drawer .ai-name,
+html[data-theme='dark'] .el-drawer .ai-name {
+  color: var(--el-text-color-primary) !important;
+}
+
 html.dark .el-select__wrapper,
 html[data-theme='dark'] .el-select__wrapper {
   background-color: var(--el-fill-color-blank);
+}
+
+/* Dark sidebar: SVG icons are hard-coded #333 — force white (active stays brand blue via tint). */
+html.dark .aside-container .menu-icons,
+html[data-theme='dark'] .aside-container .menu-icons {
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+html.dark .aside-container .el-menu-item.is-active .menu-icons,
+html[data-theme='dark'] .aside-container .el-menu-item.is-active .menu-icons {
+  filter: invert(34%) sepia(86%) saturate(1800%) hue-rotate(204deg) brightness(0.95);
+  opacity: 1;
+}
+html.dark .aside-container .el-menu-item:not(.is-active):hover .menu-icons,
+html[data-theme='dark'] .aside-container .el-menu-item:not(.is-active):hover .menu-icons {
+  opacity: 1;
 }

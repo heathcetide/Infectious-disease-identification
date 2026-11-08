@@ -2,7 +2,7 @@
   <div class="profile-page">
     <aside class="profile-nav">
       <div class="nav-user">
-        <div class="avatar">{{ nameInitial }}</div>
+        <img class="avatar" src="/logo.png" alt="logo" />
         <div class="nav-user-meta">
           <div class="name">{{ displayName }}</div>
           <div class="role">{{ role || '—' }}</div>
@@ -219,10 +219,6 @@ export default {
     displayName() {
       return this.infoForm.name || this.name || '未命名用户';
     },
-    nameInitial() {
-      const n = this.displayName.trim();
-      return n ? n.slice(0, 1) : '管';
-    },
     currentNav() {
       return this.navItems.find((i) => i.key === this.activeTab) || this.navItems[0];
     },
@@ -374,17 +370,15 @@ export default {
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--el-color-primary, #285ac8);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #fff;
   flex-shrink: 0;
+  border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .nav-user-meta .name {

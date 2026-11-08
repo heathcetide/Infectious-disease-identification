@@ -76,7 +76,9 @@
           label="联系电话"
           width="200"
         />
-        <el-table-column prop="Address" label="地址" min-width="500" />
+        <el-table-column prop="address" label="地址" min-width="280" />
+        <el-table-column prop="latitude" label="纬度" width="110" />
+        <el-table-column prop="longitude" label="经度" width="110" />
         <el-table-column fixed="right" label="操作" min-width="260">
           <template #default="scope">
             <el-button
@@ -179,7 +181,9 @@ export default {
             HospitalID: item.hospitalId,
             hospitalName: item.hospitalName,
             hospitalPhoneNumber: item.hospitalPhoneNumber,
-            Address: item.address,
+            address: item.address || '',
+            latitude: item.latitude ?? '',
+            longitude: item.longitude ?? '',
           }));
 
           this.total = response.data.data.total;

@@ -135,7 +135,7 @@ export default {
 .title-text {
   font-size: 12px;
   font-weight: bold;
-  color: #4a4a4a;
+  color: var(--el-text-color-primary, #4a4a4a);
 }
 .card-container {
   display: flex;
@@ -146,7 +146,8 @@ export default {
 }
 
 .card {
-  background: #FAFAFA;
+  background: var(--admin-card-bg, #fafafa);
+  border: 1px solid var(--el-border-color-lighter, transparent);
   border-radius: 8px;
   height: 72px;
   flex: 1 1 0;
@@ -158,7 +159,7 @@ export default {
   margin: 8px 10px 2px;
   font-size: 11px;
   font-weight: 550;
-  color: #4A4A4A;
+  color: var(--el-text-color-regular, #4a4a4a);
 }
 
 .card-bottom {
@@ -182,6 +183,6 @@ img {
   margin-top: 2px;
   margin-left: 10px;
   font-weight: bold;
-  color: #333333;
+  color: var(--el-text-color-primary, #333333);
 }
 </style>

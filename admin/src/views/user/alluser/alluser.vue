@@ -292,7 +292,8 @@ export default {
             department: item.department,
             SpecificOccupation: item.specificOccupation,
             isActive: item.isActived,
-            userId: item.userId,
+            // Keep as string — snowflake IDs exceed JS Number.MAX_SAFE_INTEGER
+            userId: item.userId != null ? String(item.userId) : '',
           }));
           this.total = response.data.data.total;
         } else {
@@ -442,7 +443,15 @@ export default {
       try {
         const response = await initializeUserPassword(row.userId);
         if (response.data.code === 1) {
-          this.$message.success(`初始化密码成功，为身份证后六位`);
+          const pwd =
+            response.data.data?.initialPassword ||
+            response.data.data?.defaultPassword ||
+            "";
+          this.$message.success(
+            pwd
+              ? `初始化密码成功：${pwd}（身份证后六位）`
+              : "初始化密码成功，为身份证后六位"
+          );
         } else {
           this.$message.error("初始化密码失败：" + response.data.message);
         }

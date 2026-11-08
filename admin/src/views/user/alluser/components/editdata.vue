@@ -514,12 +514,12 @@ export default {
           this.form.department = data.department;
           this.form.SpecificOccupation = data.specificOccupation;
           this.form.MedicalPersonnelType = data.medicalPersonnelType;
-          this.form.OtherPositionname = data.otherPositionname;
+          this.form.OtherPositionname = data.otherPositionname ?? data.otherPositionName;
           this.form.phoneNumber = data.phoneNumber;
-          this.form.OtherphoneNumber = data.otherphoneNumber;
-          this.form.EmergencyContactname = data.emergencyContactname;
+          this.form.OtherphoneNumber = data.otherphoneNumber ?? data.otherPhoneNumber;
+          this.form.EmergencyContactname = data.emergencyContactname ?? data.emergencyContactName;
           this.form.EmergencyContactphoneNumber =
-            data.emergencyContactphoneNumber;
+            data.emergencyContactphoneNumber ?? data.emergencyContactPhoneNumber;
           this.form.EmergencyContactRelation = data.emergencyContactRelation;
           this.form.Height = data.height;
           this.form.Weight = data.weight;

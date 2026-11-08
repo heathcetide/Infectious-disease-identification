@@ -19,6 +19,26 @@
         :rules="rules"
         disabled
       >
+        <el-alert
+          v-if="hybridDisagreement"
+          type="warning"
+          show-icon
+          :closable="false"
+          class="hybrid-alert"
+          title="AI 与专家权重结论不一致"
+          :description="hybridMessage || '请疾控人员复核 AI 证据链与专家 Top 结果后再研判。'"
+        />
+        <div v-if="aiScorePreview.length" class="ai-score-box">
+          <div class="title-container">
+            <div class="blue-box"></div>
+            <span class="title-text">AI 风险摘要</span>
+          </div>
+          <div v-for="(row, idx) in aiScorePreview" :key="idx" class="ai-score-row">
+            <span class="ai-name">{{ idx + 1 }}. {{ row.diseaseTypeName }}</span>
+            <span class="ai-score">{{ Math.round(row.score || 0) }}</span>
+            <span v-if="row.reason" class="ai-reason">{{ row.reason }}</span>
+          </div>
+        </div>
         <div class="BaseInfo">
           <div class="title-container">
             <div class="blue-box"></div>
@@ -287,6 +307,9 @@ export default {
       neurologicalSymptomsData: null, // 神经系统症状数据
       localSymptomsData: null, // 局部症状数据
       otherSymptomsData: null, // 其他症状数据
+      hybridDisagreement: false,
+      hybridMessage: '',
+      aiScorePreview: [],
       riskFactorsData: null, // 危险因素与暴露史数据
 
       dailyHealthId: null,
@@ -342,17 +365,7 @@ export default {
 
           console.log("完整的后端响应：", data);
 
-          //  调试
-          // console.log("全身症状:", data.generalsymptoms);
-          // console.log("呼吸系统症状:", data.respiratorysymptoms);
-          // console.log("消化系统症状:", data.digestivesymptoms);
-          // console.log("循环系统症状:", data.circulatorysymptoms);
-          // console.log("神经系统症状:", data.neurologicalSymptoms);
-          // console.log("局部症状:", data.localSymptoms);
-          // console.log("其他症状:", data.otherSymptoms);
-          // console.log("风险因素和暴露史:", data.riskFactorsAndExposure);
-
-          // 分发数据到相应的属性
+          // 分发数据到相应的属性（兼容旧症状结构 + 新 CheckInDetailVO）
           this.generalSymptomsData = data.generalsymptoms || {};
           this.respiratorySymptomsData = data.respiratorysymptoms || {};
           this.digestiveSymptomsData = data.digestivesymptoms || {};
@@ -361,6 +374,19 @@ export default {
           this.localSymptomsData = data.localSymptoms || {};
           this.otherSymptomsData = data.otherSymptoms || {};
           this.riskFactorsData = data.riskFactorsAndExposure || {};
+
+          const hybrid = data.hybrid || {};
+          const status = data.status || {};
+          this.hybridDisagreement = !!(
+            hybrid.disagreement || status.scoringDisagreement
+          );
+          this.hybridMessage = hybrid.message || '';
+          const aiList = Array.isArray(data.aiDiseaseScoringList)
+            ? [...data.aiDiseaseScoringList]
+            : [];
+          this.aiScorePreview = aiList
+            .sort((a, b) => (b.score || 0) - (a.score || 0))
+            .slice(0, 5);
 
           console.log("分发后的循环系统数据:", this.circulatorySymptomsData);
         } else {
@@ -393,6 +419,40 @@ export default {
 .form-container {
   padding: 20px;
   margin-top: 70px;
+}
+.hybrid-alert {
+  margin-bottom: 14px;
+}
+.ai-score-box {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.ai-score-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+}
+.ai-score-row:last-child {
+  border-bottom: none;
+}
+.ai-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+.ai-score {
+  color: #dc2626;
+  font-weight: 700;
+}
+.ai-reason {
+  grid-column: 1 / -1;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
 }
 .title {
   position: fixed;

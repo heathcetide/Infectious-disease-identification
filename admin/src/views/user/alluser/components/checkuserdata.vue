@@ -505,13 +505,13 @@ export default {
           this.form.department = data.department; // 部门/工种
           this.form.SpecificOccupation = data.specificOccupation; // 具体职业
           this.form.MedicalPersonnelType = data.medicalPersonnelType; // 医务人员具体工作性质
-          this.form.OtherPositionname = data.otherPositionname;
+          this.form.OtherPositionname = data.otherPositionname ?? data.otherPositionName;
           this.form.phoneNumber = data.phoneNumber; // 手机号码
-          this.form.OtherphoneNumber = data.otherphoneNumber; // 其他电话号码
-          this.form.EmergencyContactname = data.emergencyContactname; // 紧急联系人姓名
+          this.form.OtherphoneNumber = data.otherphoneNumber ?? data.otherPhoneNumber;
+          this.form.EmergencyContactname = data.emergencyContactname ?? data.emergencyContactName;
           this.form.EmergencyContactphoneNumber =
-            data.emergencyContactphoneNumber; // 紧急联系人电话
-          this.form.EmergencyContactRelation = data.emergencyContactRelation; // 紧急联系人关系
+            data.emergencyContactphoneNumber ?? data.emergencyContactPhoneNumber;
+          this.form.EmergencyContactRelation = data.emergencyContactRelation;
           this.form.Height = data.height; // 身高
           this.form.Weight = data.weight; // 体重
 
@@ -542,7 +542,7 @@ export default {
           this.form.hasLungCancer = data.hasLungCancer;
           this.form.hasOtherCancer = data.hasOtherCancer;
           this.form.hasOtherDiseases = data.hasOtherDiseases;
-          this.form.OtherDiseasesname = data.otherDiseasesname; // 其他疾病名称
+          this.form.OtherDiseasesname = data.otherDiseasesname ?? data.otherDiseasesName;
 
           this.form.IsVaccinatedForCOVID = data.isVaccinatedForCOVID;
           this.form.IsVaccinatedForFlu = data.isVaccinatedForFlu;
