@@ -8,8 +8,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 const HighRiskScoreThreshold = 80.0
@@ -78,7 +79,7 @@ func RaiseHighRiskAlerts(db *gorm.DB, userID, statusID uint, items []ScoredDisea
 		alert := models.RiskAlert{
 			UserID: userID, StatusID: statusID,
 			DiseaseTypeName: it.DiseaseTypeName, Score: it.Score,
-			Threshold: HighRiskScoreThreshold,
+			Threshold:       HighRiskScoreThreshold,
 			NearestHospital: nearestName, HospitalID: nearestID,
 			Latitude: userLat, Longitude: userLng,
 			Message: msg, CreatedAt: time.Now(),

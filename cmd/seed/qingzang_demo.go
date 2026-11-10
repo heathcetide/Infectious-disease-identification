@@ -9,9 +9,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // Qinghai–Tibet Railway corridor stations (approx. WGS84).
@@ -130,11 +131,11 @@ func seedQingzangDemo(db *gorm.DB, passwordHash string) error {
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 
 	type worker struct {
-		user     models.User
-		station  railStation
-		dept     string
-		gender   string
-		age      int
+		user      models.User
+		station   railStation
+		dept      string
+		gender    string
+		age       int
 		ethnicity string
 	}
 
@@ -149,7 +150,7 @@ func seedQingzangDemo(db *gorm.DB, passwordHash string) error {
 			workers = append(workers, worker{user: exists, station: st})
 			continue
 		}
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return err
 		}
 
@@ -170,9 +171,6 @@ func seedQingzangDemo(db *gorm.DB, passwordHash string) error {
 		}
 		age := 22 + rng.Intn(28)
 		eth := ethnicities[rng.Intn(len(ethnicities))]
-		if eth == "藏族" && rng.Float64() < 0.55 {
-			// Prefer Tibetan-style given names already in list; keep surname mix.
-		}
 		dept := departments[rng.Intn(len(departments))]
 		edu := educationLevels[rng.Intn(len(educationLevels))]
 
@@ -199,23 +197,23 @@ func seedQingzangDemo(db *gorm.DB, passwordHash string) error {
 		}
 
 		profile := models.EmployeeProfile{
-			UserID:                 u.ID,
-			Gender:                 gender,
-			Age:                    age,
-			BirthDate:              &birth,
-			Ethnicity:              eth,
-			EducationLevel:         edu,
-			Department:             dept,
-			WorkOnPlateauStartDate: &plateauStart,
-			IDNumber:               idNumber,
-			SpecificOccupation:     "否",
-			EmergencyContactName:   surname + "家属",
-			EmergencyContactPhone:  fmt.Sprintf("138%08d", 20000000+i),
+			UserID:                   u.ID,
+			Gender:                   gender,
+			Age:                      age,
+			BirthDate:                &birth,
+			Ethnicity:                eth,
+			EducationLevel:           edu,
+			Department:               dept,
+			WorkOnPlateauStartDate:   &plateauStart,
+			IDNumber:                 idNumber,
+			SpecificOccupation:       "否",
+			EmergencyContactName:     surname + "家属",
+			EmergencyContactPhone:    fmt.Sprintf("138%08d", 20000000+i),
 			EmergencyContactRelation: "家属",
-			Height:                 160 + rng.Intn(25),
-			Weight:                 55 + rng.Intn(30),
-			SmokingStatus:          []string{"从不吸", "以前吸", "现在吸"}[rng.Intn(3)],
-			DrinkingStatus:         []string{"不喝酒", "偶尔喝酒（小于3次/周）", "经常喝酒（大于等于3次/周）"}[rng.Intn(3)],
+			Height:                   160 + rng.Intn(25),
+			Weight:                   55 + rng.Intn(30),
+			SmokingStatus:            []string{"从不吸", "以前吸", "现在吸"}[rng.Intn(3)],
+			DrinkingStatus:           []string{"不喝酒", "偶尔喝酒（小于3次/周）", "经常喝酒（大于等于3次/周）"}[rng.Intn(3)],
 		}
 		if gender == "女" {
 			profile.IsPregnant = false
@@ -264,36 +262,36 @@ func seedQingzangDemo(db *gorm.DB, passwordHash string) error {
 		if envCnt == 0 && wi%6 != 0 { // leave a few unsigned for realism
 			alt := w.station.Altitude + rng.Intn(80) - 20
 			env := models.WorkEnvironmentInfo{
-				UserID:                     w.user.ID,
-				YearMonth:                  yearMonth,
-				SubmissionTime:             today.Add(-time.Duration(rng.Intn(10)) * 24 * time.Hour),
-				WorkStationAltitude:        alt,
-				WorkStationName:            w.station.Name,
-				DormitoryBuildingNumber:    1 + rng.Intn(8),
-				DormitoryRoomNumber:        100 + rng.Intn(40),
-				DormitoryOccupants:         4 + rng.Intn(5),
-				DormitoryArea:              28 + float64(rng.Intn(20)),
-				WindowOpenArea:             1.2 + rng.Float64()*2,
-				VentilationCondition:       []string{"良好", "一般", "较差"}[rng.Intn(3)],
-				AvgWorkRoomPeople:          6 + rng.Intn(12),
-				AvgWorkFaceToFace:          2 + rng.Intn(6),
-				AvgWorkPhysicalContact:     rng.Intn(4),
-				AvgBreakfastRoomPeople:     8 + rng.Intn(20),
-				AvgBreakfastFaceToFace:     2 + rng.Intn(5),
+				UserID:                      w.user.ID,
+				YearMonth:                   yearMonth,
+				SubmissionTime:              today.Add(-time.Duration(rng.Intn(10)) * 24 * time.Hour),
+				WorkStationAltitude:         alt,
+				WorkStationName:             w.station.Name,
+				DormitoryBuildingNumber:     1 + rng.Intn(8),
+				DormitoryRoomNumber:         100 + rng.Intn(40),
+				DormitoryOccupants:          4 + rng.Intn(5),
+				DormitoryArea:               28 + float64(rng.Intn(20)),
+				WindowOpenArea:              1.2 + rng.Float64()*2,
+				VentilationCondition:        []string{"良好", "一般", "较差"}[rng.Intn(3)],
+				AvgWorkRoomPeople:           6 + rng.Intn(12),
+				AvgWorkFaceToFace:           2 + rng.Intn(6),
+				AvgWorkPhysicalContact:      rng.Intn(4),
+				AvgBreakfastRoomPeople:      8 + rng.Intn(20),
+				AvgBreakfastFaceToFace:      2 + rng.Intn(5),
 				AvgBreakfastPhysicalContact: rng.Intn(3),
-				AvgLunchRoomPeople:         10 + rng.Intn(25),
-				AvgLunchFaceToFace:         2 + rng.Intn(6),
-				AvgLunchPhysicalContact:    rng.Intn(3),
-				AvgDinnerRoomPeople:        8 + rng.Intn(20),
-				AvgDinnerFaceToFace:        2 + rng.Intn(5),
-				AvgDinnerPhysicalContact:   rng.Intn(3),
-				CollectiveActivitiesCount:  rng.Intn(6),
-				AvgActivityRoomPeople:      10 + rng.Intn(30),
-				AvgActivityFaceToFace:      rng.Intn(8),
-				AvgActivityPhysicalContact: rng.Intn(4),
-				AvgMonthlyPressure:         480 + float64(rng.Intn(120)), // hPa-ish at altitude
-				MaxTemperature:             8 + float64(rng.Intn(18)),
-				MinTemperature:             -18 + float64(rng.Intn(16)),
+				AvgLunchRoomPeople:          10 + rng.Intn(25),
+				AvgLunchFaceToFace:          2 + rng.Intn(6),
+				AvgLunchPhysicalContact:     rng.Intn(3),
+				AvgDinnerRoomPeople:         8 + rng.Intn(20),
+				AvgDinnerFaceToFace:         2 + rng.Intn(5),
+				AvgDinnerPhysicalContact:    rng.Intn(3),
+				CollectiveActivitiesCount:   rng.Intn(6),
+				AvgActivityRoomPeople:       10 + rng.Intn(30),
+				AvgActivityFaceToFace:       rng.Intn(8),
+				AvgActivityPhysicalContact:  rng.Intn(4),
+				AvgMonthlyPressure:          480 + float64(rng.Intn(120)), // hPa-ish at altitude
+				MaxTemperature:              8 + float64(rng.Intn(18)),
+				MinTemperature:              -18 + float64(rng.Intn(16)),
 			}
 			if err := db.Create(&env).Error; err != nil {
 				return err
@@ -494,7 +492,7 @@ func ensureDemoRailwayOnCorridor(db *gorm.DB) error {
 			SmokingStatus:            "从不吸",
 			DrinkingStatus:           "偶尔喝酒（小于3次/周）",
 		}
-		if err := db.Create(&profile).Error; err != nil {
+		if err = db.Create(&profile).Error; err != nil {
 			return err
 		}
 	} else if err != nil {

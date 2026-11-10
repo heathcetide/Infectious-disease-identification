@@ -3,8 +3,9 @@
 package services
 
 import (
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // ProfileService handles employee profile completeness and shared profile ops.

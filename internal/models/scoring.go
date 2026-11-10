@@ -25,11 +25,11 @@ func (DiseaseScoring) TableName() string { return constants.TableDiseaseScoring 
 type SymptomWeighting struct {
 	SymptomWeightingID uint `json:"symptomWeightingId" gorm:"primaryKey;autoIncrement"`
 
-	DiseaseTypeID   int     `json:"diseaseTypeId"`
-	DiseaseTypeName string  `json:"diseaseTypeName,omitempty" gorm:"size:100"`
-	SourceTable     string  `json:"tableName,omitempty" gorm:"column:table_name;size:100"`
-	SymptomFieldName string `json:"symptomFieldName,omitempty" gorm:"size:100"`
-	WeightScore     float64 `json:"weightScore"`
+	DiseaseTypeID    int     `json:"diseaseTypeId"`
+	DiseaseTypeName  string  `json:"diseaseTypeName,omitempty" gorm:"size:100"`
+	SourceTable      string  `json:"tableName,omitempty" gorm:"column:table_name;size:100"`
+	SymptomFieldName string  `json:"symptomFieldName,omitempty" gorm:"size:100"`
+	WeightScore      float64 `json:"weightScore"`
 }
 
 func (SymptomWeighting) TableName() string { return constants.TableSymptomWeighting }

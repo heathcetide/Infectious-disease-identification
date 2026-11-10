@@ -5,9 +5,10 @@ package middlewares
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/pkg/common/limiter/tokenbucket"
-	"github.com/gin-gonic/gin"
 )
 
 // RateLimit is a token bucket rate limiting middleware (ling-base/common/limiter/tokenbucket).

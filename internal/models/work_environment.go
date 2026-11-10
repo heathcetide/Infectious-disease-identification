@@ -16,14 +16,14 @@ type WorkEnvironmentInfo struct {
 	YearMonth      string    `json:"yearMonth" gorm:"size:7;index"`
 	SubmissionTime time.Time `json:"submissionTime"`
 
-	WorkStationAltitude      int     `json:"workStationAltitude"`
-	WorkStationName          string  `json:"workStationName" gorm:"size:200"`
-	DormitoryBuildingNumber  int     `json:"dormitoryBuildingNumber"`
-	DormitoryRoomNumber      int     `json:"dormitoryRoomNumber"`
-	DormitoryOccupants       int     `json:"dormitoryOccupants"`
-	DormitoryArea            float64 `json:"dormitoryArea"`
-	WindowOpenArea           float64 `json:"windowOpenArea"`
-	VentilationCondition     string  `json:"ventilationCondition" gorm:"size:200"`
+	WorkStationAltitude     int     `json:"workStationAltitude"`
+	WorkStationName         string  `json:"workStationName" gorm:"size:200"`
+	DormitoryBuildingNumber int     `json:"dormitoryBuildingNumber"`
+	DormitoryRoomNumber     int     `json:"dormitoryRoomNumber"`
+	DormitoryOccupants      int     `json:"dormitoryOccupants"`
+	DormitoryArea           float64 `json:"dormitoryArea"`
+	WindowOpenArea          float64 `json:"windowOpenArea"`
+	VentilationCondition    string  `json:"ventilationCondition" gorm:"size:200"`
 
 	AvgWorkRoomPeople           int `json:"avgWorkRoomPeople"`
 	AvgWorkFaceToFace           int `json:"avgWorkFaceToFace"`
@@ -38,10 +38,10 @@ type WorkEnvironmentInfo struct {
 	AvgDinnerFaceToFace         int `json:"avgDinnerFaceToFace"`
 	AvgDinnerPhysicalContact    int `json:"avgDinnerPhysicalContact"`
 
-	CollectiveActivitiesCount   int `json:"collectiveActivitiesCount"`
-	AvgActivityRoomPeople       int `json:"avgActivityRoomPeople"`
-	AvgActivityFaceToFace       int `json:"avgActivityFaceToFace"`
-	AvgActivityPhysicalContact  int `json:"avgActivityPhysicalContact"`
+	CollectiveActivitiesCount  int `json:"collectiveActivitiesCount"`
+	AvgActivityRoomPeople      int `json:"avgActivityRoomPeople"`
+	AvgActivityFaceToFace      int `json:"avgActivityFaceToFace"`
+	AvgActivityPhysicalContact int `json:"avgActivityPhysicalContact"`
 
 	AvgMonthlyPressure float64 `json:"avgMonthlyPressure"`
 	MaxTemperature     float64 `json:"maxTemperature"`

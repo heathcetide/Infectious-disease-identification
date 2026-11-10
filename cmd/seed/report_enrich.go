@@ -7,9 +7,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 var reportDiseases = []string{
@@ -148,19 +149,19 @@ func seedReportEnrichment(db *gorm.DB) error {
 		dis := day.AddDate(0, 0, 2+rng.Intn(10))
 		sub := day.Add(time.Duration(8+rng.Intn(10)) * time.Hour)
 		rec := models.DiagnosisResults{
-			UserID:                        u.ID,
-			SubmissionTime:                &sub,
-			SubmissionUserID:              medical.ID,
-			SubmissionUserName:            medical.Name,
-			SubmissionUserType:            "专职医护人员",
-			DiseaseType:                   disease,
-			DiscoveryMethod:               []string{"主动监测", "健康打卡预警", "门诊就诊"}[rng.Intn(3)],
-			DiseaseOutcome:                []string{"治愈", "好转", "未愈"}[rng.Intn(3)],
-			HospitalName:                  "示例铁路医院",
-			AdmissionDate:                 &admit,
-			DischargeDate:                 &dis,
-			AdmissionSymptomsAndSigns:     "发热、乏力",
-			RegistrationClassification:    "临床诊断病例",
+			UserID:                     u.ID,
+			SubmissionTime:             &sub,
+			SubmissionUserID:           medical.ID,
+			SubmissionUserName:         medical.Name,
+			SubmissionUserType:         "专职医护人员",
+			DiseaseType:                disease,
+			DiscoveryMethod:            []string{"主动监测", "健康打卡预警", "门诊就诊"}[rng.Intn(3)],
+			DiseaseOutcome:             []string{"治愈", "好转", "未愈"}[rng.Intn(3)],
+			HospitalName:               "示例铁路医院",
+			AdmissionDate:              &admit,
+			DischargeDate:              &dis,
+			AdmissionSymptomsAndSigns:  "发热、乏力",
+			RegistrationClassification: "临床诊断病例",
 		}
 		if err := silent.Create(&rec).Error; err != nil {
 			continue

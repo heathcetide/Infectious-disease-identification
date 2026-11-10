@@ -7,19 +7,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // symptomFieldAliases maps Go struct field names to SymptomWeighting.SymptomFieldName when they differ.
 var symptomFieldAliases = map[string]string{
 	"ArrheaFrequencyGEThreeTimesPerDay": "IsDiarrheaFrequencyGEThreeTimesPerDay",
-	"IsGroupDining":                       "IsGroupDining",
-	"IsDiningOut":                         "IsDiningOut",
-	"IsDiningUnclear":                     "IsDiningUnclear",
-	"IsHillyOrMountainous":                "IsHillyOrMountainous",
-	"IsPlain":                             "IsPlain",
-	"IsOtherResidenceType":                "IsOtherResidenceType",
+	"IsGroupDining":                     "IsGroupDining",
+	"IsDiningOut":                       "IsDiningOut",
+	"IsDiningUnclear":                   "IsDiningUnclear",
+	"IsHillyOrMountainous":              "IsHillyOrMountainous",
+	"IsPlain":                           "IsPlain",
+	"IsOtherResidenceType":              "IsOtherResidenceType",
 }
 
 var itchyRashLocationFields = []string{

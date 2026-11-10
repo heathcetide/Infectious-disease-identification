@@ -11,8 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // ScoringSnapshotPayload is the restorable body stored inside ScoringVersion.SnapshotJSON.
@@ -39,12 +40,12 @@ func CreateScoringVersion(db *gorm.DB, name, notes, promptText string) (*models.
 	var weights []models.SymptomWeighting
 	_ = db.Find(&weights).Error
 	for _, w := range weights {
-		weightBlob.WriteString(fmt.Sprintf("%s|%s|%.4f;", w.DiseaseTypeName, w.SymptomFieldName, w.WeightScore))
+		fmt.Fprintf(&weightBlob, "%s|%s|%.4f;", w.DiseaseTypeName, w.SymptomFieldName, w.WeightScore)
 	}
 	var aiWeights []models.AISymptomWeighting
 	_ = db.Find(&aiWeights).Error
 	for _, w := range aiWeights {
-		weightBlob.WriteString(fmt.Sprintf("ai|%s|%s|%.4f;", w.DiseaseTypeName, w.SymptomFieldName, w.WeightScore))
+		fmt.Fprintf(&weightBlob, "ai|%s|%s|%.4f;", w.DiseaseTypeName, w.SymptomFieldName, w.WeightScore)
 	}
 	wh := sha256.Sum256([]byte(weightBlob.String()))
 	payload := ScoringSnapshotPayload{
@@ -128,7 +129,7 @@ func RestoreScoringVersion(db *gorm.DB, id uint) (*models.ScoringVersion, error)
 	}
 	err = db.Transaction(func(tx *gorm.DB) error {
 		isAI := strings.EqualFold(payload.Mode, "ai") || strings.EqualFold(payload.Mode, "hybrid")
-		if _, err := SetSystemAIMode(tx, isAI); err != nil {
+		if _, err = SetSystemAIMode(tx, isAI); err != nil {
 			return err
 		}
 		for _, w := range payload.ExpertWeights {
@@ -138,7 +139,7 @@ func RestoreScoringVersion(db *gorm.DB, id uint) (*models.ScoringVersion, error)
 			} else {
 				q = q.Where("disease_type_name = ? AND symptom_field_name = ?", w.DiseaseTypeName, w.SymptomFieldName)
 			}
-			if err := q.Update("weight_score", w.WeightScore).Error; err != nil {
+			if err = q.Update("weight_score", w.WeightScore).Error; err != nil {
 				return err
 			}
 		}
@@ -149,11 +150,11 @@ func RestoreScoringVersion(db *gorm.DB, id uint) (*models.ScoringVersion, error)
 			} else {
 				q = q.Where("disease_type_name = ? AND symptom_field_name = ?", w.DiseaseTypeName, w.SymptomFieldName)
 			}
-			if err := q.Update("weight_score", w.WeightScore).Error; err != nil {
+			if err = q.Update("weight_score", w.WeightScore).Error; err != nil {
 				return err
 			}
 		}
-		if err := tx.Model(&models.ScoringVersion{}).Where("is_active = ?", true).Update("is_active", false).Error; err != nil {
+		if err = tx.Model(&models.ScoringVersion{}).Where("is_active = ?", true).Update("is_active", false).Error; err != nil {
 			return err
 		}
 		return tx.Model(&models.ScoringVersion{}).Where("version_id = ?", id).Update("is_active", true).Error
@@ -230,7 +231,7 @@ func RunTopKEval(db *gorm.DB, name string, k int, from, to *time.Time, versionID
 		}
 		c := models.EvalCase{
 			RunID: run.RunID, DiagnosisID: d.DiagnosisResultsID, UserID: d.UserID,
-			GoldDisease: gold,
+			GoldDisease:  gold,
 			ExpertHitAt1: hitAt(expertTop, gold, 1),
 			ExpertHitAtK: hitAt(expertTop, gold, k),
 			AIHitAt1:     hitAt(aiTop, gold, 1),

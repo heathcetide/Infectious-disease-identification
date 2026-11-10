@@ -5,14 +5,15 @@ package handlers
 import (
 	"time"
 
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/apidocs/humax"
 	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
-	"github.com/danielgtaylor/huma/v2"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // AppInfo holds application metadata.
@@ -21,7 +22,7 @@ type AppInfo struct {
 	Version   string
 	BuildTime string
 	GitCommit string
-	JWTAuth *jwtutil.Auth
+	JWTAuth   *jwtutil.Auth
 }
 
 // Handlers is the HTTP handler collection.

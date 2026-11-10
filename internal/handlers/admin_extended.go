@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func (h *Handlers) pathUint(c *gin.Context, key string) (uint, bool) {
@@ -73,12 +74,12 @@ func (h *Handlers) AdminCreateStaffUser(c *gin.Context) {
 	idNumber := strings.TrimSpace(dto.IDNumber)
 	plainPwd := services.InitialPasswordForDisplay(idNumber, strings.TrimSpace(dto.PhoneNumber))
 	respgin.Success(c, gin.H{
-		"userId":           strconv.FormatUint(uint64(user.ID), 10),
-		"name":             user.Name,
-		"phoneNumber":      user.PhoneNumber,
-		"role":             user.Role,
-		"initialPassword":  plainPwd,
-		"message":          "创建成功，初始密码为身份证号后六位：" + plainPwd,
+		"userId":          strconv.FormatUint(uint64(user.ID), 10),
+		"name":            user.Name,
+		"phoneNumber":     user.PhoneNumber,
+		"role":            user.Role,
+		"initialPassword": plainPwd,
+		"message":         "创建成功，初始密码为身份证号后六位：" + plainPwd,
 	})
 }
 
@@ -186,7 +187,7 @@ func (h *Handlers) AdminSetUserActive(c *gin.Context) {
 	}
 	_ = c.ShouldBindJSON(&body)
 
-	active := true
+	var active bool
 	switch {
 	case body.Active != nil:
 		active = *body.Active
@@ -223,10 +224,10 @@ func (h *Handlers) AdminResetUserPassword(c *gin.Context) {
 		return
 	}
 	respgin.Success(c, gin.H{
-		"message":          "password reset",
-		"defaultPassword":  plain,
-		"initialPassword":  plain,
-		"hint":             "已重置为身份证号后六位（无身份证则手机号后六位）",
+		"message":         "password reset",
+		"defaultPassword": plain,
+		"initialPassword": plain,
+		"hint":            "已重置为身份证号后六位（无身份证则手机号后六位）",
 	})
 }
 
@@ -284,7 +285,7 @@ func (h *Handlers) AdminImportUsers(c *gin.Context) {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	n, err := h.svc.Admin.ImportUsersCSV(f)
 	if err != nil {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
@@ -315,7 +316,7 @@ func (h *Handlers) AdminImportHospitals(c *gin.Context) {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	n, err := h.svc.Admin.ImportHospitalsCSV(f)
 	if err != nil {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))
@@ -361,7 +362,7 @@ func (h *Handlers) AdminImportWeights(c *gin.Context) {
 		respgin.WriteError(c, response.Err(response.CodeInternal))
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	n, err := h.svc.Admin.ImportWeightsCSV(f)
 	if err != nil {
 		respgin.WriteError(c, response.New(response.CodeBadRequest, err.Error()))

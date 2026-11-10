@@ -8,8 +8,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 var clinicalDiseaseNames = []string{
@@ -107,18 +108,6 @@ func seedClinicalDemo(db *gorm.DB) error {
 	return nil
 }
 
-func replaceHospitals(db *gorm.DB) error {
-	_ = db.Where("1 = 1").Delete(&models.Hospital{}).Error
-	for _, h := range hospitalCatalog {
-		row := h
-		if err := db.Create(&row).Error; err != nil {
-			return err
-		}
-	}
-	fmt.Printf("hospitals replaced: %d\n", len(hospitalCatalog))
-	return nil
-}
-
 // ensureHospitalsUpsert inserts missing hospitals by name and refreshes coords/phone for known rows.
 func ensureHospitalsUpsert(db *gorm.DB) error {
 	added, updated := 0, 0
@@ -127,7 +116,7 @@ func ensureHospitalsUpsert(db *gorm.DB) error {
 		err := db.Where("hospital_name = ?", h.HospitalName).First(&existing).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			row := h
-			if err := db.Create(&row).Error; err != nil {
+			if err = db.Create(&row).Error; err != nil {
 				return err
 			}
 			added++
@@ -306,18 +295,18 @@ func seedDiagnosesAndLabs(db *gorm.DB) error {
 			outcome = "未愈"
 		}
 		rec := models.DiagnosisResults{
-			UserID:             u.ID,
-			SubmissionTime:     &sub,
-			SubmissionUserID:   medical.ID,
-			SubmissionUserName: medical.Name,
-			SubmissionUserType: "专职医护人员",
-			DiseaseType:        disease,
-			DiscoveryMethod:    methods[rng.Intn(len(methods))],
-			DiseaseOutcome:     outcome,
-			HospitalName:       hosp,
-			AdmissionDate:      &admit,
-			DischargeDate:      &dis,
-			AdmissionSymptomsAndSigns: "发热、乏力、咳嗽",
+			UserID:                     u.ID,
+			SubmissionTime:             &sub,
+			SubmissionUserID:           medical.ID,
+			SubmissionUserName:         medical.Name,
+			SubmissionUserType:         "专职医护人员",
+			DiseaseType:                disease,
+			DiscoveryMethod:            methods[rng.Intn(len(methods))],
+			DiseaseOutcome:             outcome,
+			HospitalName:               hosp,
+			AdmissionDate:              &admit,
+			DischargeDate:              &dis,
+			AdmissionSymptomsAndSigns:  "发热、乏力、咳嗽",
 			RegistrationClassification: "临床诊断病例",
 		}
 		if disease == "鼠疫" {
@@ -348,7 +337,7 @@ func seedDiagnosesAndLabs(db *gorm.DB) error {
 			lab := models.LabTestReport{
 				UserID:                      u.ID,
 				UploadDate:                  &upload,
-				IsVirusAntigenTestDone:     &antigen,
+				IsVirusAntigenTestDone:      &antigen,
 				IsVirusNucleicAcidTestDone:  &na,
 				IsVirusCultureIsolationDone: &culture,
 				IsSerologicalTestDone:       &sero,

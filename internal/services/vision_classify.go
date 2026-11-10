@@ -16,10 +16,11 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
-	"gorm.io/gorm"
 )
 
 // VisionLabel is one predicted skin/symptom class (auxiliary feature only).
@@ -79,7 +80,7 @@ func calibrateVisionLabels(labels []VisionLabel) []VisionLabel {
 			out[i].Confidence *= 0.82
 		}
 	}
-	nsConf := 0.55
+	var nsConf float64
 	if top.Confidence < 0.35 {
 		nsConf = 0.64
 	} else {
@@ -110,7 +111,8 @@ func calibrateVisionLabels(labels []VisionLabel) []VisionLabel {
 // ClassifySymptomImage runs YOLO if model+bin configured, else multimodal LLM vision.
 func ClassifySymptomImage(ctx context.Context, chat *llm.Client, mime string, raw []byte) ([]VisionLabel, string, string, error) {
 	if path := os.Getenv("SYMPTOM_YOLO_MODEL"); path != "" {
-		if _, err := os.Stat(path); err == nil {
+		// path comes from operator-controlled env, not request input
+		if _, err := os.Stat(path); err == nil { // #nosec G703 -- trusted SYMPTOM_YOLO_MODEL env
 			labels, yoloRaw, err := classifyWithYOLO(ctx, path, raw)
 			if err == nil && len(labels) > 0 {
 				return calibrateVisionLabels(labels), "yolo", yoloRaw, nil
@@ -187,20 +189,21 @@ func classifyWithYOLO(ctx context.Context, modelPath string, raw []byte) ([]Visi
 		return nil, "", err
 	}
 	tmpPath := tmp.Name()
-	defer os.Remove(tmpPath)
+	defer func() { _ = os.Remove(tmpPath) }()
 	if _, err := tmp.Write(raw); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return nil, "", err
 	}
-	tmp.Close()
+	_ = tmp.Close()
 
+	// bin/script/modelPath come from operator-controlled env vars, not request input
 	var cmd *exec.Cmd
 	if strings.HasSuffix(bin, ".py") || strings.Contains(bin, "yolo_infer") {
-		cmd = exec.CommandContext(ctx, "python3", bin, "--model", modelPath, "--image", tmpPath)
+		cmd = exec.CommandContext(ctx, "python3", bin, "--model", modelPath, "--image", tmpPath) // #nosec G204 G702 -- trusted YOLO env
 	} else if strings.Contains(bin, "python") {
-		cmd = exec.CommandContext(ctx, bin, script, "--model", modelPath, "--image", tmpPath)
+		cmd = exec.CommandContext(ctx, bin, script, "--model", modelPath, "--image", tmpPath) // #nosec G204 G702 -- trusted YOLO env
 	} else {
-		cmd = exec.CommandContext(ctx, bin, "--model", modelPath, "--image", tmpPath)
+		cmd = exec.CommandContext(ctx, bin, "--model", modelPath, "--image", tmpPath) // #nosec G204 G702 -- trusted YOLO env
 	}
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -319,7 +322,7 @@ func SaveAndClassifySymptomPhoto(db *gorm.DB, chat *llm.Client, userID, statusID
 	if err != nil {
 		return nil, nil, err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	raw, err := io.ReadAll(io.LimitReader(r, 8<<20))
 	if err != nil {
 		return nil, nil, err

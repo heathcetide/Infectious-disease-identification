@@ -6,8 +6,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // SaveDiagnosis persists diagnosis aggregate and links report file IDs.

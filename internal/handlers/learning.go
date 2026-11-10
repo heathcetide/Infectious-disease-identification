@@ -11,12 +11,13 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/types"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
-	"github.com/gin-gonic/gin"
 )
 
 // LearningMaterialsPage POST /api/v1/learning/materials/page
@@ -81,7 +82,8 @@ func (h *Handlers) InfectLearningFile(c *gin.Context) {
 		filepath.Join("web", "static", "materials", name),
 	}
 	for _, p := range localPaths {
-		f, err := os.Open(p)
+		// name is filepath.Base + sanitizePath; joined only under fixed demo dirs
+		f, err := os.Open(p) // #nosec G304 -- sanitized basename under fixed dirs
 		if err != nil {
 			continue
 		}
@@ -110,7 +112,7 @@ func (h *Handlers) InfectLearningFile(c *gin.Context) {
 	for _, key := range candidates {
 		reader, size, err = pkgstorage.Read(key)
 		if err == nil {
-			defer reader.Close()
+			defer func() { _ = reader.Close() }()
 			c.Header("Content-Disposition", fmt.Sprintf(`inline; filename="%s"`, name))
 			c.Header("Content-Type", contentType)
 			c.DataFromReader(200, size, contentType, reader, nil)

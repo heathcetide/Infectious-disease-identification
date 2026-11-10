@@ -6,12 +6,13 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
-	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	jwtingin "github.com/heathcetide/infectious-disease/pkg/common/jwtutil/gin"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
+	jwtingin "github.com/heathcetide/infectious-disease/pkg/common/jwtutil/gin"
+	"github.com/heathcetide/infectious-disease/pkg/common/response"
+	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
 )
 
 // currentUserID resolves the authenticated user ID from JWT subject (numeric id or username).

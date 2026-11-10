@@ -5,8 +5,9 @@ package services
 import (
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // GetIsNeedRating returns whether the user should complete a satisfaction survey,

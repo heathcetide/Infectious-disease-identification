@@ -5,8 +5,9 @@ package services
 import (
 	"log"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // GetAutoAIWeightUpdaterEnabled reads the auto weight updater flag.

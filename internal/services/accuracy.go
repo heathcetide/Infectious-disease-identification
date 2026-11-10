@@ -5,22 +5,23 @@ package services
 import (
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // DiagnosticAccuracyStrikeVO matches admin accuracy.vue card + chart payload.
 type DiagnosticAccuracyStrikeVO struct {
-	ConfirmedNumber int64                        `json:"confirmedNumber"`
-	DiagnosedNumber int64                        `json:"diagnosedNumber"`
+	ConfirmedNumber int64                          `json:"confirmedNumber"`
+	DiagnosedNumber int64                          `json:"diagnosedNumber"`
 	List            []DiagnosticAccuracyDiseaseRow `json:"list"`
 }
 
 // DiagnosticAccuracyDiseaseRow is per-disease predict vs confirmed counts.
 type DiagnosticAccuracyDiseaseRow struct {
-	DiseaseTypeName           string `json:"diseaseTypeName"`
-	PredictDiagnoseNumber     int64  `json:"predictDiagnoseNumber"`
-	ActuallyDiagnoseNumber    int64  `json:"actuallyDiagnoseNumber"`
+	DiseaseTypeName        string `json:"diseaseTypeName"`
+	PredictDiagnoseNumber  int64  `json:"predictDiagnoseNumber"`
+	ActuallyDiagnoseNumber int64  `json:"actuallyDiagnoseNumber"`
 }
 
 // defaultAccuracyDiseaseNames matches admin chart labels.

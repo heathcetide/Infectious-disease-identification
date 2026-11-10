@@ -9,9 +9,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/pkg/apidocs"
-	"github.com/gin-gonic/gin"
 )
 
 func init() {

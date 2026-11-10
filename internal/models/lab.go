@@ -15,10 +15,10 @@ type LabTestReport struct {
 
 	UploadDate *time.Time `json:"uploadDate,omitempty" gorm:"type:date"`
 
-	IsVirusAntigenTestDone      *bool `json:"isVirusAntigenTestDone"`
-	IsVirusNucleicAcidTestDone  *bool `json:"isVirusNucleicAcidTestDone"`
-	IsVirusCultureIsolationDone *bool `json:"isVirusCultureIsolationDone"`
-	IsSerologicalTestDone       *bool `json:"isSerologicalTestDone"`
+	IsVirusAntigenTestDone      *bool  `json:"isVirusAntigenTestDone"`
+	IsVirusNucleicAcidTestDone  *bool  `json:"isVirusNucleicAcidTestDone"`
+	IsVirusCultureIsolationDone *bool  `json:"isVirusCultureIsolationDone"`
+	IsSerologicalTestDone       *bool  `json:"isSerologicalTestDone"`
 	PathogenicTestResults       string `json:"pathogenicTestResults,omitempty" gorm:"type:text"`
 }
 

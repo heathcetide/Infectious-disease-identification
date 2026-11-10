@@ -9,8 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // DiagnosisDetailVO wraps aggregate with result row.
@@ -90,17 +91,17 @@ func UpdateDiagnosisByID(db *gorm.DB, id uint, dto AllDiagnosisDTO) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		emp := dto.DiagnosisResultsEmpDTO
 		updates := map[string]any{
-			"disease_type":                  emp.DiseaseType,
-			"other_disease_name":            emp.OtherDiseaseName,
-			"plague_subtype":                emp.PlagueSubtype,
-			"anthrax_subtype":               emp.AnthraxSubtype,
-			"discovery_method":              emp.DiscoveryMethod,
-			"other_discovery_method_name":   emp.OtherDiscoveryMethodName,
-			"disease_outcome":               emp.DiseaseOutcome,
-			"hospital_name":                 emp.HospitalName,
-			"admission_symptoms_and_signs":  emp.AdmissionSymptomsAndSigns,
-			"registration_classification":   emp.RegistrationClassification,
-			"other_registration_details":    emp.OtherRegistrationDetails,
+			"disease_type":                 emp.DiseaseType,
+			"other_disease_name":           emp.OtherDiseaseName,
+			"plague_subtype":               emp.PlagueSubtype,
+			"anthrax_subtype":              emp.AnthraxSubtype,
+			"discovery_method":             emp.DiscoveryMethod,
+			"other_discovery_method_name":  emp.OtherDiscoveryMethodName,
+			"disease_outcome":              emp.DiseaseOutcome,
+			"hospital_name":                emp.HospitalName,
+			"admission_symptoms_and_signs": emp.AdmissionSymptomsAndSigns,
+			"registration_classification":  emp.RegistrationClassification,
+			"other_registration_details":   emp.OtherRegistrationDetails,
 		}
 		if t, err := ParseDate(emp.AdmissionDate); err == nil {
 			updates["admission_date"] = t
@@ -229,11 +230,11 @@ func GetLabReportByID(db *gorm.DB, id uint) (*LabReportWithFiles, error) {
 // UpdateLabReportByID updates lab report fields.
 func UpdateLabReportByID(db *gorm.DB, id uint, dto LabTestReportDTO) error {
 	updates := map[string]any{
-		"pathogenic_test_results":        dto.PathogenicTestResults,
-		"is_virus_antigen_test_done":       dto.IsVirusAntigenTestDone,
-		"is_virus_nucleic_acid_test_done":  dto.IsVirusNucleicAcidTestDone,
-		"is_virus_culture_isolation_done":  dto.IsVirusCultureIsolationDone,
-		"is_serological_test_done":         dto.IsSerologicalTestDone,
+		"pathogenic_test_results":         dto.PathogenicTestResults,
+		"is_virus_antigen_test_done":      dto.IsVirusAntigenTestDone,
+		"is_virus_nucleic_acid_test_done": dto.IsVirusNucleicAcidTestDone,
+		"is_virus_culture_isolation_done": dto.IsVirusCultureIsolationDone,
+		"is_serological_test_done":        dto.IsSerologicalTestDone,
 	}
 	res := db.Model(&models.LabTestReport{}).Where("lab_test_report_id = ?", id).Updates(updates)
 	if res.Error != nil {
@@ -276,10 +277,10 @@ func ExportLabCSV(db *gorm.DB) ([]byte, error) {
 
 // UserLookupDTO search body.
 type UserLookupDTO struct {
-	Name      string `json:"name"`
-	Phone     string `json:"phone"`
+	Name        string `json:"name"`
+	Phone       string `json:"phone"`
 	PhoneNumber string `json:"phoneNumber"`
-	IDNumber  string `json:"idNumber"`
+	IDNumber    string `json:"idNumber"`
 }
 
 // MedicalUserLookup searches users by identifiers.

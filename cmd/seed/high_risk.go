@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/utils"
-	"gorm.io/gorm"
 )
 
 // seedHighRiskCheckIns runs the real CheckIn → SaveSymptomsAndScore → RaiseHighRiskAlerts

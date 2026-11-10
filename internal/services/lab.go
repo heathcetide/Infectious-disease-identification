@@ -6,8 +6,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // LabReportWithFiles is a lab report plus attached files.

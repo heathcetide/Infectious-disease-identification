@@ -95,7 +95,7 @@ type CircuitBreakerConfig struct {
 type DocsConfig struct {
 	Enabled    bool   `yaml:"enabled"`
 	Path       string `yaml:"path"`
-	Theme      string `yaml:"theme"`      // scalar, swagger, redoc, stoplight
+	Theme      string `yaml:"theme"` // scalar, swagger, redoc, stoplight
 	DarkMode   bool   `yaml:"darkMode"`
 	CDNMode    string `yaml:"cdnMode"`    // public, selfhosted, custom
 	CDNBaseURL string `yaml:"cdnBaseUrl"` // base URL for selfhosted mode
@@ -290,7 +290,7 @@ func Default() *Config {
 func Load(path string) (*Config, error) {
 	cfg := Default()
 
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) // #nosec G304 -- path is process config path, not user input
 	if err != nil {
 		// Config file not found; use defaults + env overrides
 		applyEnvOverrides(cfg)
@@ -310,7 +310,8 @@ func Load(path string) (*Config, error) {
 		}
 		// Optional local override (gitignored), e.g. configs/config.local.yaml
 		localPath := filepath.Join(filepath.Dir(path), "config.local.yaml")
-		if localData, err := os.ReadFile(localPath); err == nil {
+		if localData, err := os.ReadFile(localPath); err == nil { // #nosec G304 -- fixed local override beside config
+
 			if err := yaml.Unmarshal(localData, cfg); err != nil {
 				return nil, fmt.Errorf("failed to parse local YAML config: %w", err)
 			}
@@ -409,7 +410,7 @@ func loadDotEnv(data []byte) error {
 		}
 		// Do not override existing env vars
 		if _, exists := os.LookupEnv(key); !exists {
-			os.Setenv(key, val)
+			_ = os.Setenv(key, val)
 		}
 	}
 	return scanner.Err()

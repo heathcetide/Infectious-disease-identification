@@ -7,32 +7,33 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // ScoringContext aggregates multi-source signals for P2/P3 fusion priors.
 type ScoringContext struct {
-	Month            time.Month
-	AltitudeM        int
-	Province         string
-	City             string
-	County           string
-	LocationName     string
-	AvgPressureKPa   float64
-	MaxTempC         float64
-	MinTempC         float64
-	HasEnv           bool
-	HasHypertension  bool
-	HasDiabetes      bool
-	HasCOPD          bool
-	HasAsthma        bool
-	HasStroke        bool
-	HasCoronary      bool
-	HasMedicalHist   bool
-	LabMetrics       []LabMetrics
-	VisionLabels     []VisionLabel // P4 skin/rash YOLO|VLM assist (not standalone diagnosis)
-	Notes            []string
+	Month           time.Month
+	AltitudeM       int
+	Province        string
+	City            string
+	County          string
+	LocationName    string
+	AvgPressureKPa  float64
+	MaxTempC        float64
+	MinTempC        float64
+	HasEnv          bool
+	HasHypertension bool
+	HasDiabetes     bool
+	HasCOPD         bool
+	HasAsthma       bool
+	HasStroke       bool
+	HasCoronary     bool
+	HasMedicalHist  bool
+	LabMetrics      []LabMetrics
+	VisionLabels    []VisionLabel // P4 skin/rash YOLO|VLM assist (not standalone diagnosis)
+	Notes           []string
 }
 
 func loadScoringContext(db *gorm.DB, userID, statusID uint) ScoringContext {
@@ -230,12 +231,12 @@ func applyContextFusion(scores []models.DiseaseScoring, ctx ScoringContext, acti
 
 func formatContextForLLM(ctx ScoringContext) string {
 	var b strings.Builder
-	b.WriteString(fmt.Sprintf("当前月份：%d 月\n", int(ctx.Month)))
-	b.WriteString(fmt.Sprintf("打卡驻地：%s %s %s %s\n", ctx.Province, ctx.City, ctx.County, ctx.LocationName))
-	b.WriteString(fmt.Sprintf("估算海拔：约 %d 米\n", ctx.AltitudeM))
+	fmt.Fprintf(&b, "当前月份：%d 月\n", int(ctx.Month))
+	fmt.Fprintf(&b, "打卡驻地：%s %s %s %s\n", ctx.Province, ctx.City, ctx.County, ctx.LocationName)
+	fmt.Fprintf(&b, "估算海拔：约 %d 米\n", ctx.AltitudeM)
 	if ctx.HasEnv {
-		b.WriteString(fmt.Sprintf("本月平均气压：%.1f kPa；最高温 %.1f℃；最低温 %.1f℃\n",
-			ctx.AvgPressureKPa, ctx.MaxTempC, ctx.MinTempC))
+		fmt.Fprintf(&b, "本月平均气压：%.1f kPa；最高温 %.1f℃；最低温 %.1f℃\n",
+			ctx.AvgPressureKPa, ctx.MaxTempC, ctx.MinTempC)
 	} else {
 		b.WriteString("本月气压气温：未登记\n")
 	}

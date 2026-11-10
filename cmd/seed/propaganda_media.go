@@ -11,10 +11,11 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
-	"gorm.io/gorm"
 )
 
 func seedPropagandaMediaToOSS(db *gorm.DB) error {
@@ -29,7 +30,7 @@ func seedPropagandaMediaToOSS(db *gorm.DB) error {
 		fmt.Println("skip OSS propaganda upload: empty storage keys")
 		return nil
 	}
-	if err := pkgstorage.InitWithOptions(
+	if err = pkgstorage.InitWithOptions(
 		cfg.Storage.Driver, cfg.Storage.Root, cfg.Storage.Region,
 		cfg.Storage.Endpoint, cfg.Storage.AccessKey, cfg.Storage.SecretKey,
 		cfg.Storage.PublicURLBase, cfg.Storage.MaxFileSize,
@@ -45,12 +46,12 @@ func seedPropagandaMediaToOSS(db *gorm.DB) error {
 	}
 	mediaDir := filepath.Join(root, "data", "seed_materials")
 	script := filepath.Join(root, "cmd", "seed", "gen_propaganda_media.py")
-	if _, err := os.Stat(filepath.Join(mediaDir, "manifest.tsv")); err != nil {
+	if _, err = os.Stat(filepath.Join(mediaDir, "manifest.tsv")); err != nil {
 		fmt.Println("generating propaganda posters/videos …")
 		cmd := exec.Command("python3", script)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		if err = cmd.Run(); err != nil {
 			fmt.Printf("generate media skipped: %v\n", err)
 			return nil
 		}
@@ -61,7 +62,7 @@ func seedPropagandaMediaToOSS(db *gorm.DB) error {
 	if err != nil {
 		return nil
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	uploaded := 0
 	sc := bufio.NewScanner(f)
@@ -103,12 +104,12 @@ func seedPropagandaMediaLocal(db *gorm.DB) error {
 	}
 	mediaDir := filepath.Join(root, "data", "seed_materials")
 	manifestPath := filepath.Join(mediaDir, "manifest.tsv")
-	if _, err := os.Stat(manifestPath); err != nil {
+	if _, err = os.Stat(manifestPath); err != nil {
 		script := filepath.Join(root, "cmd", "seed", "gen_propaganda_media.py")
 		cmd := exec.Command("python3", script)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("generate media: %w", err)
 		}
 	}
@@ -116,7 +117,7 @@ func seedPropagandaMediaLocal(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	typeIDByName := map[string]int{}
 	var dts []models.DiseaseType

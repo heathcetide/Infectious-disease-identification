@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // CDCCheckInStatsByID GET /api/v1/cdc/checkin/stats/:id

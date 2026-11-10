@@ -3,8 +3,9 @@
 package services
 
 import (
-	"github.com/heathcetide/infectious-disease/internal/llm"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/llm"
 )
 
 // Services holds domain service stubs for infect APIs.

@@ -12,9 +12,10 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	"gorm.io/gorm"
 )
 
 // CheckInDetailVO aggregates a check-in with scores for CDC review.
@@ -119,9 +120,10 @@ func PageCheckInsJoined(db *gorm.DB, q PageQuery) (*response.Page, error) {
 		Joins("LEFT JOIN users u ON u.id = d.user_id").
 		Joins("LEFT JOIN employee_profiles p ON p.user_id = d.user_id")
 
-	if q.IsHealth == "true" || q.IsHealth == "1" {
+	switch q.IsHealth {
+	case "true", "1":
 		query = query.Where("d.is_health = ?", true)
-	} else if q.IsHealth == "false" || q.IsHealth == "0" {
+	case "false", "0":
 		query = query.Where("d.is_health = ?", false)
 	}
 	if q.Name != "" {
@@ -296,10 +298,10 @@ func QueryCDCStatisticsData(db *gorm.DB, date string) (*CDCStatisticsData, error
 
 // DiseaseNameCount is a disease label with count/score sum.
 type DiseaseNameCount struct {
-	DiseaseTypeName            string  `json:"diseaseTypeName"`
-	DiagnosisDiseaseTypeName   string  `json:"diagnosisDiseaseTypeName"`
-	Count                      int64   `json:"count"`
-	TotalScore                 float64 `json:"totalScore"`
+	DiseaseTypeName          string  `json:"diseaseTypeName"`
+	DiagnosisDiseaseTypeName string  `json:"diagnosisDiseaseTypeName"`
+	Count                    int64   `json:"count"`
+	TotalScore               float64 `json:"totalScore"`
 }
 
 func normalizeScreenDiseaseName(name string) string {
@@ -583,7 +585,24 @@ func CDCUserStations(db *gorm.DB, date string) (*UserStationsMapDTO, error) {
 		}
 	}
 
-	userCache := map[uint]*models.User{}
+	userIDs := make([]uint, 0, len(statuses))
+	seenUser := map[uint]struct{}{}
+	for _, s := range statuses {
+		if _, ok := seenUser[s.UserID]; ok {
+			continue
+		}
+		seenUser[s.UserID] = struct{}{}
+		userIDs = append(userIDs, s.UserID)
+	}
+	userCache := map[uint]models.User{}
+	if len(userIDs) > 0 {
+		var users []models.User
+		if err := db.Where("id IN ?", userIDs).Find(&users).Error; err == nil {
+			for _, u := range users {
+				userCache[u.ID] = u
+			}
+		}
+	}
 	out := make([]UserStation, 0, len(statuses))
 	for _, s := range statuses {
 		if s.Longitude == 0 && s.Latitude == 0 {
@@ -593,7 +612,7 @@ func CDCUserStations(db *gorm.DB, date string) (*UserStationsMapDTO, error) {
 			UserID: s.UserID, StatusID: s.StatusID,
 			Longitude: s.Longitude, Latitude: s.Latitude,
 			Province: s.Province, City: s.City, County: s.County,
-			LocationName: s.LocationName,
+			LocationName:    s.LocationName,
 			DiseaseTypeName: normalizeScreenDiseaseName(s.DiseaseTypeName),
 			MaxScore:        maxScoreBy[s.StatusID],
 		}
@@ -601,16 +620,9 @@ func CDCUserStations(db *gorm.DB, date string) (*UserStationsMapDTO, error) {
 			st.DiseaseTypeName = diseaseBy[s.StatusID]
 		}
 		st.IsHighRisk = st.MaxScore >= regionHighRiskScore
-		u := userCache[s.UserID]
-		if u == nil {
-			if found, err := (models.User{}).FindByID(db, s.UserID); err == nil {
-				userCache[s.UserID] = found
-				u = found
-			}
-		}
-		if u != nil {
+		if u, ok := userCache[s.UserID]; ok {
 			st.Name = u.Name
-			st.PhoneNumber = userPhoneField(u)
+			st.PhoneNumber = userPhoneField(&u)
 		}
 		out = append(out, st)
 	}
@@ -629,16 +641,16 @@ func userPhoneField(u *models.User) string {
 
 // CheckInSearchItem is a search result row.
 type CheckInSearchItem struct {
-	StatusID                   uint      `json:"statusId"`
-	UserID                     uint      `json:"userId"`
-	Name                       string    `json:"name"`
-	PhoneNumber                string    `json:"phoneNumber"`
-	Gender                     string    `json:"gender"`
-	Department                 string    `json:"department"`
-	CheckInDate                time.Time `json:"checkInDate"`
-	IsHealth                   *bool     `json:"isHealth"`
-	DiagnosisDiseaseTypeName   string    `json:"diagnosisDiseaseTypeName"`
-	DiseaseTypeName            string    `json:"diseaseTypeName"`
+	StatusID                 uint      `json:"statusId"`
+	UserID                   uint      `json:"userId"`
+	Name                     string    `json:"name"`
+	PhoneNumber              string    `json:"phoneNumber"`
+	Gender                   string    `json:"gender"`
+	Department               string    `json:"department"`
+	CheckInDate              time.Time `json:"checkInDate"`
+	IsHealth                 *bool     `json:"isHealth"`
+	DiagnosisDiseaseTypeName string    `json:"diagnosisDiseaseTypeName"`
+	DiseaseTypeName          string    `json:"diseaseTypeName"`
 }
 
 // CDCCheckInSearch finds recent check-ins matching q (phone or name).
@@ -724,14 +736,14 @@ func CDCCheckInDailySeries(db *gorm.DB, req CheckInDailySeriesRequest) ([]CheckI
 
 // ImportantUserInfo highlights users with unhealthy check-in today.
 type ImportantUserInfo struct {
-	UserID                     uint   `json:"userId"`
-	Name                       string `json:"name"`
-	PhoneNumber                string `json:"phoneNumber"`
-	Gender                     string `json:"gender"`
-	Department                 string `json:"department"`
-	IsHealth                   *bool  `json:"isHealth"`
-	DiagnosisDiseaseTypeName   string `json:"diagnosisDiseaseTypeName"`
-	Reason                     string `json:"reason"`
+	UserID                   uint   `json:"userId"`
+	Name                     string `json:"name"`
+	PhoneNumber              string `json:"phoneNumber"`
+	Gender                   string `json:"gender"`
+	Department               string `json:"department"`
+	IsHealth                 *bool  `json:"isHealth"`
+	DiagnosisDiseaseTypeName string `json:"diagnosisDiseaseTypeName"`
+	Reason                   string `json:"reason"`
 }
 
 // CDCImportantUsers lists users flagged today.
@@ -741,6 +753,31 @@ func CDCImportantUsers(db *gorm.DB) ([]ImportantUserInfo, error) {
 	if err := db.Where("check_in_date >= ? AND check_in_date < ? AND is_health = ?",
 		todayStart, todayEnd, false).Find(&statuses).Error; err != nil {
 		return nil, err
+	}
+	userIDs := make([]uint, 0, len(statuses))
+	seenUser := map[uint]struct{}{}
+	for _, s := range statuses {
+		if _, ok := seenUser[s.UserID]; ok {
+			continue
+		}
+		seenUser[s.UserID] = struct{}{}
+		userIDs = append(userIDs, s.UserID)
+	}
+	userCache := map[uint]models.User{}
+	profileCache := map[uint]models.EmployeeProfile{}
+	if len(userIDs) > 0 {
+		var users []models.User
+		if err := db.Where("id IN ?", userIDs).Find(&users).Error; err == nil {
+			for _, u := range users {
+				userCache[u.ID] = u
+			}
+		}
+		var profiles []models.EmployeeProfile
+		if err := db.Where("user_id IN ?", userIDs).Find(&profiles).Error; err == nil {
+			for _, p := range profiles {
+				profileCache[p.UserID] = p
+			}
+		}
 	}
 	out := make([]ImportantUserInfo, 0, len(statuses))
 	for _, s := range statuses {
@@ -754,12 +791,11 @@ func CDCImportantUsers(db *gorm.DB) ([]ImportantUserInfo, error) {
 		if info.DiagnosisDiseaseTypeName == "健康" || info.DiagnosisDiseaseTypeName == "" {
 			info.DiagnosisDiseaseTypeName = "流感"
 		}
-		if u, err := (models.User{}).FindByID(db, s.UserID); err == nil {
+		if u, ok := userCache[s.UserID]; ok {
 			info.Name = u.Name
-			info.PhoneNumber = userPhoneField(u)
+			info.PhoneNumber = userPhoneField(&u)
 		}
-		var profile models.EmployeeProfile
-		if err := db.Where("user_id = ?", s.UserID).First(&profile).Error; err == nil {
+		if profile, ok := profileCache[s.UserID]; ok {
 			info.Gender = profile.Gender
 			info.Department = profile.Department
 		}
@@ -806,9 +842,9 @@ func CDCDiseaseStatistics(db *gorm.DB, q DiseaseStatisticsQuery) (map[string][]D
 	useHour := q.Granularity == "hour" || (q.Granularity == "" && sameDay)
 
 	type aggRow struct {
-		Name string
+		Name   string
 		Bucket string
-		Cnt  int64
+		Cnt    int64
 	}
 	var rows []aggRow
 	src := strings.TrimSpace(q.SourceType)
@@ -956,10 +992,7 @@ func PageWorkEnvironmentsJoined(db *gorm.DB, q PageQuery) (*response.Page, error
 	}
 	list := make([]WorkEnvironmentListItem, 0, len(rows))
 	for _, r := range rows {
-		list = append(list, WorkEnvironmentListItem{
-			WorkEnvironmentInfo: r.WorkEnvironmentInfo,
-			Name:                r.Name,
-		})
+		list = append(list, WorkEnvironmentListItem(r))
 	}
 	return response.NewPage(list, total, page, size), nil
 }

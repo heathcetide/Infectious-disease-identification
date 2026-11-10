@@ -11,14 +11,15 @@ import (
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/types"
 
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/pkg/common"
 	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
 	"github.com/heathcetide/infectious-disease/pkg/common/password"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
 	"github.com/heathcetide/infectious-disease/pkg/common/validate"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // Login authenticates a user and issues JWT access/refresh tokens.

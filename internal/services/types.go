@@ -55,14 +55,14 @@ type WorkEnvironmentDTO struct {
 
 // AllSymptoms matches frontend AllCheckInfo payload keys.
 type AllSymptoms struct {
-	Generalsymptoms        GeneralSymptomsDTO         `json:"generalsymptoms"`
-	Respiratorysymptoms    models.RespiratorySymptoms `json:"respiratorysymptoms"`
-	Digestivesymptoms      DigestiveSymptomsDTO       `json:"digestivesymptoms"`
-	Circulatorysymptoms    models.CirculatorySymptoms `json:"circulatorysymptoms"`
+	Generalsymptoms        GeneralSymptomsDTO          `json:"generalsymptoms"`
+	Respiratorysymptoms    models.RespiratorySymptoms  `json:"respiratorysymptoms"`
+	Digestivesymptoms      DigestiveSymptomsDTO        `json:"digestivesymptoms"`
+	Circulatorysymptoms    models.CirculatorySymptoms  `json:"circulatorysymptoms"`
 	NeurologicalSymptoms   models.NeurologicalSymptoms `json:"neurologicalSymptoms"`
-	LocalSymptoms          models.LocalSymptoms       `json:"localSymptoms"`
-	OtherSymptoms          models.OtherSymptoms       `json:"otherSymptoms"`
-	RiskFactorsAndExposure RiskFactorsDTO             `json:"riskFactorsAndExposure"`
+	LocalSymptoms          models.LocalSymptoms        `json:"localSymptoms"`
+	OtherSymptoms          models.OtherSymptoms        `json:"otherSymptoms"`
+	RiskFactorsAndExposure RiskFactorsDTO              `json:"riskFactorsAndExposure"`
 	// SymptomPhotoIDs: skin/rash photos classified by YOLO/VLM (P4 auxiliary).
 	SymptomPhotoIDs []uint `json:"symptomPhotoIds,omitempty"`
 }
@@ -271,18 +271,18 @@ func DiagnosisPersonalFromModel(m models.DiagnosisPersonalInfo) DiagnosisPersona
 
 // AllDiagnosisDTO is the full diagnosis submission payload from the frontend.
 type AllDiagnosisDTO struct {
-	DiagnosisResultsEmpDTO        DiagnosisResultsEmpDTO                 `json:"diagnosisResultsEmpDTO"`
-	Diagnosiscirculatorysymptoms  models.DiagnosisCirculatorySymptoms    `json:"diagnosiscirculatorysymptoms"`
-	Diagnosiscomplications        models.DiagnosisComplications          `json:"diagnosiscomplications"`
-	Diagnosisdigestivesymptoms    DiagnosisDigestiveDTO                  `json:"diagnosisdigestivesymptoms"`
-	Diagnosisexaminations         models.DiagnosisExaminations           `json:"diagnosisexaminations"`
-	Diagnosisgeneralsymptoms      DiagnosisGeneralDTO                    `json:"diagnosisgeneralsymptoms"`
-	Diagnosislocalsymptoms        models.DiagnosisLocalSymptoms          `json:"diagnosislocalsymptoms"`
-	Diagnosisneurologicalsymptoms models.DiagnosisNeurologicalSymptoms   `json:"diagnosisneurologicalsymptoms"`
-	Diagnosisothersymptoms        models.DiagnosisOtherSymptoms          `json:"diagnosisothersymptoms"`
-	Diagnosispersonalinfo         DiagnosisPersonalDTO                   `json:"diagnosispersonalinfo"`
-	Diagnosisrespiratorysymptoms  models.DiagnosisRespiratorySymptoms    `json:"diagnosisrespiratorysymptoms"`
-	FileIDList                    []uint                                 `json:"fileIdList"`
+	DiagnosisResultsEmpDTO        DiagnosisResultsEmpDTO               `json:"diagnosisResultsEmpDTO"`
+	Diagnosiscirculatorysymptoms  models.DiagnosisCirculatorySymptoms  `json:"diagnosiscirculatorysymptoms"`
+	Diagnosiscomplications        models.DiagnosisComplications        `json:"diagnosiscomplications"`
+	Diagnosisdigestivesymptoms    DiagnosisDigestiveDTO                `json:"diagnosisdigestivesymptoms"`
+	Diagnosisexaminations         models.DiagnosisExaminations         `json:"diagnosisexaminations"`
+	Diagnosisgeneralsymptoms      DiagnosisGeneralDTO                  `json:"diagnosisgeneralsymptoms"`
+	Diagnosislocalsymptoms        models.DiagnosisLocalSymptoms        `json:"diagnosislocalsymptoms"`
+	Diagnosisneurologicalsymptoms models.DiagnosisNeurologicalSymptoms `json:"diagnosisneurologicalsymptoms"`
+	Diagnosisothersymptoms        models.DiagnosisOtherSymptoms        `json:"diagnosisothersymptoms"`
+	Diagnosispersonalinfo         DiagnosisPersonalDTO                 `json:"diagnosispersonalinfo"`
+	Diagnosisrespiratorysymptoms  models.DiagnosisRespiratorySymptoms  `json:"diagnosisrespiratorysymptoms"`
+	FileIDList                    []uint                               `json:"fileIdList"`
 	// Files is populated on read so the mini-app can restore uploaded reports.
 	Files []models.DiagnosisReport `json:"files,omitempty"`
 }
@@ -473,27 +473,27 @@ type NeedRatingVO struct {
 
 // ScoredDiseaseItem is one disease row returned to the mini-app (AI or expert).
 type ScoredDiseaseItem struct {
-	ScoringID       uint     `json:"scoringId,omitempty"`
-	StatusID        uint     `json:"statusId,omitempty"`
+	ScoringID       uint       `json:"scoringId,omitempty"`
+	StatusID        uint       `json:"statusId,omitempty"`
 	SymptomTime     *time.Time `json:"symptomTime,omitempty"`
-	DiseaseTypeID   int      `json:"diseaseTypeId,omitempty"`
-	DiseaseTypeName string   `json:"diseaseTypeName"`
-	Score           float64  `json:"score"`
-	Reason          string   `json:"reason,omitempty"`
-	Evidence        []string `json:"evidence,omitempty"`
-	ExpertScore     float64  `json:"expertScore,omitempty"`
+	DiseaseTypeID   int        `json:"diseaseTypeId,omitempty"`
+	DiseaseTypeName string     `json:"diseaseTypeName"`
+	Score           float64    `json:"score"`
+	Reason          string     `json:"reason,omitempty"`
+	Evidence        []string   `json:"evidence,omitempty"`
+	ExpertScore     float64    `json:"expertScore,omitempty"`
 }
 
 // HybridMeta describes expert vs AI consistency for P1 hybrid reasoning.
 type HybridMeta struct {
-	IsAI               bool     `json:"isAI"`
-	Disagreement       bool     `json:"disagreement"`
-	NeedsHumanConfirm  bool     `json:"needsHumanConfirm"`
-	Confirmed          bool     `json:"confirmed"`
-	LLMDegraded        bool     `json:"llmDegraded"`
-	ExpertTop          []string `json:"expertTop,omitempty"`
-	AITop              []string `json:"aiTop,omitempty"`
-	Message            string   `json:"message,omitempty"`
+	IsAI              bool     `json:"isAI"`
+	Disagreement      bool     `json:"disagreement"`
+	NeedsHumanConfirm bool     `json:"needsHumanConfirm"`
+	Confirmed         bool     `json:"confirmed"`
+	LLMDegraded       bool     `json:"llmDegraded"`
+	ExpertTop         []string `json:"expertTop,omitempty"`
+	AITop             []string `json:"aiTop,omitempty"`
+	Message           string   `json:"message,omitempty"`
 }
 
 // HybridScoringResult is the symptoms-submit payload (backward-compatible list + hybrid).

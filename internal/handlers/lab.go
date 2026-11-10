@@ -6,13 +6,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/types"
-	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
+	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 )
 
 // LabSubmitReport POST /api/v1/lab/report

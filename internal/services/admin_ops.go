@@ -12,10 +12,11 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/password"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	"gorm.io/gorm"
 )
 
 const defaultResetPassword = "Passw0rd!"
@@ -78,14 +79,14 @@ func GetHospitalByID(db *gorm.DB, id uint) (*models.Hospital, error) {
 // EnsureHospitalCoordinates fills lat/lng for known corridor hospitals when missing.
 func EnsureHospitalCoordinates(db *gorm.DB) error {
 	coords := map[string][2]float64{
-		"青海省交通医院西宁院区":         {36.6175, 101.8234},
-		"格尔木市人民医院":            {36.4020, 94.9030},
+		"青海省交通医院西宁院区":      {36.6175, 101.8234},
+		"格尔木市人民医院":         {36.4020, 94.9030},
 		"青藏铁路疾病预防控制站（格尔木）": {36.4155, 94.9088},
-		"那曲市人民医院":             {31.4762, 92.0512},
-		"西藏自治区人民医院":          {29.6573, 91.1325},
-		"拉萨市人民医院":             {29.6548, 91.1142},
-		"海西州人民医院":             {37.3697, 97.3701},
-		"安多县人民医院":             {32.2642, 91.6815},
+		"那曲市人民医院":          {31.4762, 92.0512},
+		"西藏自治区人民医院":        {29.6573, 91.1325},
+		"拉萨市人民医院":          {29.6548, 91.1142},
+		"海西州人民医院":          {37.3697, 97.3701},
+		"安多县人民医院":          {32.2642, 91.6815},
 	}
 	for name, c := range coords {
 		_ = db.Model(&models.Hospital{}).
@@ -105,7 +106,6 @@ func CreateHospital(db *gorm.DB, h models.Hospital) (*models.Hospital, error) {
 
 // UpdateHospital updates a hospital by ID.
 func UpdateHospital(db *gorm.DB, id uint, h models.Hospital) (*models.Hospital, error) {
-	h.HospitalID = id
 	var existing models.Hospital
 	if err := db.First(&existing, id).Error; err != nil {
 		return nil, err
@@ -199,7 +199,7 @@ func GetSystemSettings(db *gorm.DB) (*models.SystemSettings, error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		off := false
 		s = models.SystemSettings{IsAI: &off}
-		if err := db.Create(&s).Error; err != nil {
+		if err = db.Create(&s).Error; err != nil {
 			return nil, err
 		}
 		return &s, nil
@@ -411,7 +411,7 @@ func ImportUsersCSV(db *gorm.DB, r io.Reader) (int, error) {
 					u.Role = r
 				}
 			}
-			if err := db.Create(&u).Error; err != nil {
+			if err = db.Create(&u).Error; err != nil {
 				return count, err
 			}
 			count++

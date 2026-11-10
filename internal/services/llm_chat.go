@@ -28,9 +28,9 @@ type AdminChatRequest struct {
 
 // AdminChatResponse returns model reply for the harness UI.
 type AdminChatResponse struct {
-	Reply   string `json:"reply"`
-	Model   string `json:"model,omitempty"`
-	UsedVision bool `json:"usedVision"`
+	Reply      string `json:"reply"`
+	Model      string `json:"model,omitempty"`
+	UsedVision bool   `json:"usedVision"`
 }
 
 // AdminLLMChat runs a single harness turn (text or multimodal).

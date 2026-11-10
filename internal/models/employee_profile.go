@@ -13,23 +13,23 @@ type EmployeeProfile struct {
 	ID     uint `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID uint `json:"userId" gorm:"uniqueIndex;not null"`
 
-	Gender                  string     `json:"gender,omitempty" gorm:"size:10"`
-	IsPregnant              bool       `json:"isPregnant" gorm:"default:false"`
-	PregnancyWeeks          int        `json:"pregnancyWeeks,omitempty"`
-	IDNumber                string     `json:"idNumber,omitempty" gorm:"size:32"`
-	BirthDate               *time.Time `json:"birthDate,omitempty" gorm:"type:date"`
-	Age                     int        `json:"age,omitempty"`
-	Ethnicity               string     `json:"ethnicity,omitempty" gorm:"size:50"`
-	EducationLevel          string     `json:"educationLevel,omitempty" gorm:"size:50"`
-	WorkOnPlateauStartDate  *time.Time `json:"workOnPlateauStartDate,omitempty" gorm:"type:date"`
-	Department              string     `json:"department,omitempty" gorm:"size:100"`
-	SpecificOccupation      string     `json:"specificOccupation,omitempty" gorm:"size:100"`
-	MedicalPersonnelType    string     `json:"medicalPersonnelType,omitempty" gorm:"size:50"`
-	OtherPositionName       string     `json:"otherPositionName,omitempty" gorm:"size:100"`
-	OtherPhoneNumber        string     `json:"otherPhoneNumber,omitempty" gorm:"size:20"`
-	EmergencyContactName    string     `json:"emergencyContactName,omitempty" gorm:"size:100"`
-	EmergencyContactPhone   string     `json:"emergencyContactPhoneNumber,omitempty" gorm:"size:20"`
-	EmergencyContactRelation string    `json:"emergencyContactRelation,omitempty" gorm:"size:50"`
+	Gender                   string     `json:"gender,omitempty" gorm:"size:10"`
+	IsPregnant               bool       `json:"isPregnant" gorm:"default:false"`
+	PregnancyWeeks           int        `json:"pregnancyWeeks,omitempty"`
+	IDNumber                 string     `json:"idNumber,omitempty" gorm:"size:32"`
+	BirthDate                *time.Time `json:"birthDate,omitempty" gorm:"type:date"`
+	Age                      int        `json:"age,omitempty"`
+	Ethnicity                string     `json:"ethnicity,omitempty" gorm:"size:50"`
+	EducationLevel           string     `json:"educationLevel,omitempty" gorm:"size:50"`
+	WorkOnPlateauStartDate   *time.Time `json:"workOnPlateauStartDate,omitempty" gorm:"type:date"`
+	Department               string     `json:"department,omitempty" gorm:"size:100"`
+	SpecificOccupation       string     `json:"specificOccupation,omitempty" gorm:"size:100"`
+	MedicalPersonnelType     string     `json:"medicalPersonnelType,omitempty" gorm:"size:50"`
+	OtherPositionName        string     `json:"otherPositionName,omitempty" gorm:"size:100"`
+	OtherPhoneNumber         string     `json:"otherPhoneNumber,omitempty" gorm:"size:20"`
+	EmergencyContactName     string     `json:"emergencyContactName,omitempty" gorm:"size:100"`
+	EmergencyContactPhone    string     `json:"emergencyContactPhoneNumber,omitempty" gorm:"size:20"`
+	EmergencyContactRelation string     `json:"emergencyContactRelation,omitempty" gorm:"size:50"`
 
 	HasMedicalHistory              bool   `json:"hasMedicalHistory" gorm:"default:false"`
 	HasHypertension                bool   `json:"hasHypertension" gorm:"default:false"`
@@ -59,10 +59,10 @@ type EmployeeProfile struct {
 	HasOtherDiseases               bool   `json:"hasOtherDiseases" gorm:"default:false"`
 	OtherDiseasesName              string `json:"otherDiseasesName,omitempty" gorm:"size:200"`
 
-	SmokingStatus string `json:"smokingStatus,omitempty" gorm:"size:50"`
+	SmokingStatus  string `json:"smokingStatus,omitempty" gorm:"size:50"`
 	DrinkingStatus string `json:"drinkingStatus,omitempty" gorm:"size:50"`
-	Height        int    `json:"height,omitempty"`
-	Weight        int    `json:"weight,omitempty"`
+	Height         int    `json:"height,omitempty"`
+	Weight         int    `json:"weight,omitempty"`
 
 	IsVaccinatedForCOVID     bool `json:"isVaccinatedForCOVID" gorm:"default:false"`
 	IsVaccinatedForFlu       bool `json:"isVaccinatedForFlu" gorm:"default:false"`

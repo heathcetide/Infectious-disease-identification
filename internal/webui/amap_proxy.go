@@ -84,7 +84,7 @@ func MountAMapProxy(r *gin.Engine) {
 			c.String(http.StatusBadGateway, "amap upstream: "+err.Error())
 			return
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		seen := map[string]struct{}{}
 		for k, vals := range resp.Header {

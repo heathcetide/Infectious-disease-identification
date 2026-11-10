@@ -6,10 +6,11 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
 )
 
 // AIGetAutoWeight GET /api/v1/ai/auto-weight

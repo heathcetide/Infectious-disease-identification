@@ -7,8 +7,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 type feedbackTemplate struct {

@@ -11,9 +11,10 @@ import (
 	"github.com/heathcetide/infectious-disease/internal/types"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
 )
 
 // File upload / download / delete
@@ -57,7 +58,7 @@ func (h *Handlers) UploadFile(c *gin.Context) {
 		respgin.WriteError(c, response.New(response.CodeInternal, "failed to open file: "+err.Error()))
 		return
 	}
-	defer src.Close()
+	defer func() { _ = src.Close() }()
 
 	// Write to storage
 	if err = pkgstorage.Write(key, src); err != nil {
@@ -91,7 +92,7 @@ func (h *Handlers) DownloadFile(c *gin.Context) {
 		respgin.WriteError(c, response.New(response.CodeNotFound, "file not found"))
 		return
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filepath.Base(key)))
 	c.DataFromReader(200, size, "application/octet-stream", reader, nil)

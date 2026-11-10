@@ -7,9 +7,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 func silentDB(db *gorm.DB) *gorm.DB {
@@ -18,16 +19,16 @@ func silentDB(db *gorm.DB) *gorm.DB {
 
 // Realistic subtypes used in Chinese infectious-disease reporting / clinical forms.
 var diseaseSubtypeCatalog = map[string][]string{
-	"鼠疫": {"腺鼠疫", "肺鼠疫", "败血症型鼠疫"},
-	"炭疽": {"皮肤炭疽", "肠炭疽", "肺炭疽"},
-	"疟疾（蚊媒传染病）": {"间日疟", "恶性疟", "三日疟", "卵形疟"},
+	"鼠疫":         {"腺鼠疫", "肺鼠疫", "败血症型鼠疫"},
+	"炭疽":         {"皮肤炭疽", "肠炭疽", "肺炭疽"},
+	"疟疾（蚊媒传染病）":  {"间日疟", "恶性疟", "三日疟", "卵形疟"},
 	"登革热（蚊媒传染病）": {"登革热", "登革出血热"},
-	"结核病": {"肺结核", "肺外结核"},
-	"流感": {"甲型流感", "乙型流感"},
-	"感染性腹泻": {"细菌性腹泻", "病毒性腹泻", "寄生虫性腹泻"},
-	"斑疹伤寒": {"流行性斑疹伤寒", "地方性斑疹伤寒"},
-	"流行性出血热": {"轻型", "中型", "重型", "危重型"},
-	"新型冠状病毒感染": {"轻型", "普通型", "重型", "危重型"},
+	"结核病":        {"肺结核", "肺外结核"},
+	"流感":         {"甲型流感", "乙型流感"},
+	"感染性腹泻":      {"细菌性腹泻", "病毒性腹泻", "寄生虫性腹泻"},
+	"斑疹伤寒":       {"流行性斑疹伤寒", "地方性斑疹伤寒"},
+	"流行性出血热":     {"轻型", "中型", "重型", "危重型"},
+	"新型冠状病毒感染":   {"轻型", "普通型", "重型", "危重型"},
 }
 
 func seedDiseaseSubtypes(db *gorm.DB) error {
@@ -75,64 +76,64 @@ func seedSatisfactionDemo(db *gorm.DB) error {
 
 	surveys := []models.SatisfactionSurvey{
 		{
-			SurveyTitle: "2026年职工健康筛查系统使用满意度（一季度）",
+			SurveyTitle:   "2026年职工健康筛查系统使用满意度（一季度）",
 			SurveyContent: "本问卷面向一线职工，了解您对健康筛查小程序的整体使用感受。请结合日常打卡、宣教阅读与异常提醒等场景，评价操作是否顺畅、信息是否清楚、是否对您的健康管理有帮助。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 3, 15, 9, 0, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 3, 15, 9, 0, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "高原工区宣教材料阅读体验调查",
+			SurveyTitle:   "高原工区宣教材料阅读体验调查",
 			SurveyContent: "请评价高原工区传染病与高原相关不适宣教材料：内容是否易懂、是否贴合现场实际、阅读后是否清楚该如何防护与报告。您的反馈将用于优化宣教重点与表述方式。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 6, 20, 10, 30, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 6, 20, 10, 30, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "日打卡流程与定位准确性反馈",
+			SurveyTitle:   "日打卡流程与定位准确性反馈",
 			SurveyContent: "请从「入口是否好找、定位是否准确、提交是否稳定、失败提示是否清楚」等方面评价每日健康打卡流程，便于我们优先修复影响出勤打卡的问题。",
-			IsOpen:     false,
-			CreateTime: time.Date(2026, 8, 8, 14, 0, 0, 0, time.Local),
+			IsOpen:        false,
+			CreateTime:    time.Date(2026, 8, 8, 14, 0, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "疾控预警短信/站内提醒满意度",
+			SurveyTitle:   "疾控预警短信/站内提醒满意度",
 			SurveyContent: "当系统对重点关注人员或异常症状发出提醒时，请评价通知是否及时、渠道是否合适、文案是否可理解、是否清楚下一步该做什么。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 9, 12, 11, 0, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 9, 12, 11, 0, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "医护诊断协同与报告回传体验",
+			SurveyTitle:   "医护诊断协同与报告回传体验",
 			SurveyContent: "请从医护协同视角评价：诊断信息录入是否方便、检验/报告查看是否及时、结果回传链路是否完整，以及跨岗位协作中最影响效率的环节。",
-			IsOpen:     false,
-			CreateTime: time.Date(2026, 10, 5, 16, 20, 0, 0, time.Local),
+			IsOpen:        false,
+			CreateTime:    time.Date(2026, 10, 5, 16, 20, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "2026年秋季传染病防控专项满意度",
+			SurveyTitle:   "2026年秋季传染病防控专项满意度",
 			SurveyContent: "针对秋季呼吸道传染病防控，请评价宣教覆盖、筛查提醒、工区管理措施是否到位，以及您是否感到被充分告知风险与防护要点。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 10, 28, 9, 40, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 10, 28, 9, 40, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "高原工区宿舍通风与健康管理满意度",
+			SurveyTitle:   "高原工区宿舍通风与健康管理满意度",
 			SurveyContent: "请结合宿舍居住体验，评价通风习惯引导、消杀安排、健康管理提醒是否实用，以及是否有仍需加强的卫生或空间管理问题。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 7, 18, 10, 0, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 7, 18, 10, 0, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "移动端症状打卡易用性调查",
+			SurveyTitle:   "移动端症状打卡易用性调查",
 			SurveyContent: "请评价小程序症状打卡的易用性：页面是否简洁、选项是否好理解、定位与提交耗时是否可接受，以及最希望改进的一步是什么。",
-			IsOpen:     false,
-			CreateTime: time.Date(2026, 5, 22, 15, 30, 0, 0, time.Local),
+			IsOpen:        false,
+			CreateTime:    time.Date(2026, 5, 22, 15, 30, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "疾控重点人员随访服务评价",
+			SurveyTitle:   "疾控重点人员随访服务评价",
 			SurveyContent: "若您曾被标记为重点关注人员，请评价随访是否及时、沟通是否尊重、健康建议是否可执行，以及对后续随访频次与方式的期望。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 9, 30, 9, 10, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 9, 30, 9, 10, 0, 0, time.Local),
 		},
 		{
-			SurveyTitle: "铁路医院协同转诊体验调查",
+			SurveyTitle:   "铁路医院协同转诊体验调查",
 			SurveyContent: "请评价从现场发现异常到铁路医院协同处置的全流程：转诊指引是否清楚、对接是否顺畅、检查与结果回传是否及时，以及您认为最需要优化的环节。",
-			IsOpen:     true,
-			CreateTime: time.Date(2026, 8, 26, 11, 20, 0, 0, time.Local),
+			IsOpen:        true,
+			CreateTime:    time.Date(2026, 8, 26, 11, 20, 0, 0, time.Local),
 		},
 	}
 
@@ -304,8 +305,8 @@ func seedScatteredCheckIns(db *gorm.DB) error {
 func fillStaffProfiles(db *gorm.DB) error {
 	type staffSpec struct {
 		phone, gender, ethnicity, edu, dept, occ string
-		age                                       int
-		plateau                                   time.Time
+		age                                      int
+		plateau                                  time.Time
 	}
 	specs := []staffSpec{
 		{"13800000000", "男", "汉族", "大专/本科", "工程技术部", "否", 36, time.Date(2019, 3, 1, 0, 0, 0, 0, time.Local)},
@@ -342,13 +343,13 @@ func fillStaffProfiles(db *gorm.DB) error {
 		}
 		if err == gorm.ErrRecordNotFound {
 			p = models.EmployeeProfile{UserID: u.ID}
-			if err := db.Create(&p).Error; err != nil {
+			if err = db.Create(&p).Error; err != nil {
 				return err
 			}
 		} else if err != nil {
 			return err
 		}
-		if err := db.Model(&p).Updates(fields).Error; err != nil {
+		if err = db.Model(&p).Updates(fields).Error; err != nil {
 			return err
 		}
 	}

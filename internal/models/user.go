@@ -7,8 +7,9 @@ import (
 
 	"github.com/heathcetide/infectious-disease/internal/constants"
 
-	"github.com/heathcetide/infectious-disease/pkg/common"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/pkg/common"
 )
 
 // User status constants.
@@ -30,16 +31,16 @@ const (
 // Embeds common.BaseModel for ID (snowflake), timestamps, soft delete, and audit fields.
 type User struct {
 	common.BaseModel
-	Username    string  `json:"username" gorm:"size:50;uniqueIndex;not null"`
-	Email       string  `json:"email" gorm:"size:200;uniqueIndex;not null"`
-	Name        string  `json:"name,omitempty" gorm:"size:100"`
-	PhoneNumber string  `json:"phoneNumber,omitempty" gorm:"size:20;uniqueIndex"`
-	Phone       string  `json:"phone,omitempty" gorm:"size:20"`
-	Password    string  `json:"-" gorm:"size:255;not null"` // never serialized to JSON
-	Avatar      string  `json:"avatar,omitempty" gorm:"size:500"`
-	Role        string  `json:"role" gorm:"size:20;default:user;not null"`
-	Status      int     `json:"status" gorm:"default:1;not null"` // 1=active, 0=disabled
-	LastLoginAt *int64  `json:"lastLoginAt,omitempty"`            // unix timestamp
+	Username    string `json:"username" gorm:"size:50;uniqueIndex;not null"`
+	Email       string `json:"email" gorm:"size:200;uniqueIndex;not null"`
+	Name        string `json:"name,omitempty" gorm:"size:100"`
+	PhoneNumber string `json:"phoneNumber,omitempty" gorm:"size:20;uniqueIndex"`
+	Phone       string `json:"phone,omitempty" gorm:"size:20"`
+	Password    string `json:"-" gorm:"size:255;not null"` // never serialized to JSON
+	Avatar      string `json:"avatar,omitempty" gorm:"size:500"`
+	Role        string `json:"role" gorm:"size:20;default:user;not null"`
+	Status      int    `json:"status" gorm:"default:1;not null"` // 1=active, 0=disabled
+	LastLoginAt *int64 `json:"lastLoginAt,omitempty"`            // unix timestamp
 }
 
 func (User) TableName() string { return constants.TableUsers }

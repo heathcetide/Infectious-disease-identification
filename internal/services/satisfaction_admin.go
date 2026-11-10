@@ -7,9 +7,10 @@ import (
 	"math"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	"gorm.io/gorm"
 )
 
 // SatisfactionSurveyCreateDTO is create/update body for admin surveys.
@@ -21,11 +22,11 @@ type SatisfactionSurveyCreateDTO struct {
 
 // SatisfactionSurveyRow is list item for admin satisfaction table.
 type SatisfactionSurveyRow struct {
-	SurveyID      uint     `json:"surveyID"`
-	SurveyTitle   string   `json:"surveyTitle"`
-	SurveyContent string   `json:"surveyContent"`
-	IsOpen        bool     `json:"isOpen"`
-	Satisfaction  *float64 `json:"satisfaction"`
+	SurveyID      uint      `json:"surveyID"`
+	SurveyTitle   string    `json:"surveyTitle"`
+	SurveyContent string    `json:"surveyContent"`
+	IsOpen        bool      `json:"isOpen"`
+	Satisfaction  *float64  `json:"satisfaction"`
 	CreateTime    time.Time `json:"createTime"`
 }
 
@@ -39,11 +40,11 @@ type SatisfactionStatsVO struct {
 }
 
 var satisfactionLevelScore = map[string]float64{
-	"非常满意":   5,
-	"满意":     4,
-	"一般":     3,
-	"不满意":    2,
-	"非常不满意":  1,
+	"非常满意":  5,
+	"满意":    4,
+	"一般":    3,
+	"不满意":   2,
+	"非常不满意": 1,
 }
 
 func satisfactionAvg(db *gorm.DB, surveyID uint) *float64 {

@@ -171,7 +171,7 @@ func (c *Client) chatAnthropicVision(ctx context.Context, system, user, mime, b6
 	if !strings.Contains(url, "/v1/messages") {
 		url = url + "/v1/messages"
 	}
-	mediaType := mime
+	var mediaType string
 	switch {
 	case strings.Contains(mime, "png"):
 		mediaType = "image/png"
@@ -346,7 +346,7 @@ func (c *Client) doJSON(ctx context.Context, method, url string, body any, heade
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() { _ = res.Body.Close() }()
 	raw, err := io.ReadAll(io.LimitReader(res.Body, 4<<20))
 	if err != nil {
 		return nil, err

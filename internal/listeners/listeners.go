@@ -18,10 +18,11 @@
 package listeners
 
 import (
-	"github.com/heathcetide/infectious-disease/pkg/common"
-	"github.com/heathcetide/infectious-disease/pkg/common/logger"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/pkg/common"
+	"github.com/heathcetide/infectious-disease/pkg/common/logger"
 )
 
 // Register connects all event listeners to the signal bus.

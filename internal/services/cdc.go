@@ -5,9 +5,10 @@ package services
 import (
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	"gorm.io/gorm"
 )
 
 // CDCPageLearningMaterials delegates to learning material pagination.

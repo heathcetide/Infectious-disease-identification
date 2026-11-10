@@ -14,10 +14,11 @@ import (
 	"time"
 	"unicode"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
-	"gorm.io/gorm"
 )
 
 // LabMetrics is the structured OCR output for blood / imaging reports.
@@ -26,7 +27,7 @@ type LabMetrics struct {
 	Summary    string             `json:"summary"`
 	Findings   []string           `json:"findings,omitempty"`
 	Indicators map[string]float64 `json:"indicators,omitempty"` // e.g. wbc, crp, esr, neut%, hb, plt
-	Flags      []string           `json:"flags,omitempty"`       // elevated_wbc, lung_opacity, ...
+	Flags      []string           `json:"flags,omitempty"`      // elevated_wbc, lung_opacity, ...
 }
 
 // ShouldOCRReportType is true for blood / imaging reports in the P3 OCR scope.
@@ -88,7 +89,7 @@ func readReportBytes(key, fileName string) ([]byte, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	raw, err := io.ReadAll(io.LimitReader(r, 8<<20))
 	if err != nil {
 		return nil, "", err
@@ -280,7 +281,7 @@ func formatLabMetricsForLLM(metrics []LabMetrics) string {
 		if i >= 5 {
 			break
 		}
-		b.WriteString(fmt.Sprintf("- [%s] %s", m.ReportKind, m.Summary))
+		fmt.Fprintf(&b, "- [%s] %s", m.ReportKind, m.Summary)
 		if len(m.Indicators) > 0 {
 			parts := make([]string, 0, len(m.Indicators))
 			for k, v := range m.Indicators {
@@ -368,19 +369,6 @@ func labOCRBonus(disease string, metrics []LabMetrics) (float64, string) {
 	return bonus, why
 }
 
-func applyLabOCRFusion(scores []models.DiseaseScoring, metrics []LabMetrics) {
-	for i := range scores {
-		bonus, _ := labOCRBonus(scores[i].DiseaseTypeName, metrics)
-		if bonus == 0 {
-			continue
-		}
-		scores[i].Score += bonus
-		if scores[i].Score > 100 {
-			scores[i].Score = 100
-		}
-	}
-}
-
 // EnqueueDiagnosisReportOCR fires OCR in background (best-effort).
 func EnqueueDiagnosisReportOCR(db *gorm.DB, chat *llm.Client, reportID uint) {
 	if reportID == 0 {
@@ -397,4 +385,3 @@ func EnqueueDiagnosisReportOCR(db *gorm.DB, chat *llm.Client, reportID uint) {
 		}
 	}()
 }
-

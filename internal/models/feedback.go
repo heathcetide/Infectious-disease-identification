@@ -10,13 +10,13 @@ import (
 
 // UserFeedback is free-form user feedback submitted to the system.
 type UserFeedback struct {
-	FeedbackID    uint `json:"feedbackId" gorm:"primaryKey;autoIncrement"`
-	UserID        uint `json:"userId" gorm:"index"`
+	FeedbackID uint `json:"feedbackId" gorm:"primaryKey;autoIncrement"`
+	UserID     uint `json:"userId" gorm:"index"`
 
-	Name         string    `json:"name" gorm:"size:100"`
-	PhoneNumber  string    `json:"phoneNumber" gorm:"size:20"`
-	FeedbackTitle string   `json:"feedbackTitle" gorm:"size:200"`
-	FeedbackText  string   `json:"feedbackText" gorm:"type:text"`
+	Name          string    `json:"name" gorm:"size:100"`
+	PhoneNumber   string    `json:"phoneNumber" gorm:"size:20"`
+	FeedbackTitle string    `json:"feedbackTitle" gorm:"size:200"`
+	FeedbackText  string    `json:"feedbackText" gorm:"type:text"`
 	FeedbackDate  time.Time `json:"feedbackDate"`
 }
 

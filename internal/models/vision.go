@@ -10,20 +10,20 @@ import (
 
 // SymptomPhoto is a check-in skin/rash photo; YOLO/VLM labels are auxiliary features.
 type SymptomPhoto struct {
-	PhotoID   uint `json:"photoId" gorm:"primaryKey;autoIncrement"`
-	UserID    uint `json:"userId" gorm:"index;not null"`
-	StatusID  uint `json:"statusId" gorm:"index"`
+	PhotoID  uint `json:"photoId" gorm:"primaryKey;autoIncrement"`
+	UserID   uint `json:"userId" gorm:"index;not null"`
+	StatusID uint `json:"statusId" gorm:"index"`
 
 	FileName   string    `json:"fileName,omitempty" gorm:"size:255"`
 	FilePath   string    `json:"filePath,omitempty" gorm:"size:500"`
 	UploadDate time.Time `json:"uploadDate"`
 
 	// LabelsJSON: [{"label":"painful_red_rash","symptomField":"HasPainfulRedRash","confidence":0.82}]
-	LabelsJSON   string  `json:"labelsJson,omitempty" gorm:"type:text"`
-	TopLabel     string  `json:"topLabel,omitempty" gorm:"size:80"`
-	Confidence   float64 `json:"confidence,omitempty"`
-	Classifier   string  `json:"classifier,omitempty" gorm:"size:40"` // yolo | llm_vision
-	RawResponse  string  `json:"rawResponse,omitempty" gorm:"type:text"`
+	LabelsJSON  string  `json:"labelsJson,omitempty" gorm:"type:text"`
+	TopLabel    string  `json:"topLabel,omitempty" gorm:"size:80"`
+	Confidence  float64 `json:"confidence,omitempty"`
+	Classifier  string  `json:"classifier,omitempty" gorm:"size:40"` // yolo | llm_vision
+	RawResponse string  `json:"rawResponse,omitempty" gorm:"type:text"`
 }
 
 func (SymptomPhoto) TableName() string { return constants.TableSymptomPhotos }

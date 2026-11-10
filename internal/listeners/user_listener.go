@@ -5,10 +5,11 @@ package listeners
 import (
 	"github.com/heathcetide/infectious-disease/internal/constants"
 
-	"github.com/heathcetide/infectious-disease/pkg/common"
-	"github.com/heathcetide/infectious-disease/pkg/common/logger"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/pkg/common"
+	"github.com/heathcetide/infectious-disease/pkg/common/logger"
 )
 
 // registerUserListeners connects handlers for user-related events.

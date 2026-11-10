@@ -13,10 +13,11 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := pkgstorage.InitWithOptions(
+	if err = pkgstorage.InitWithOptions(
 		cfg.Storage.Driver, cfg.Storage.Root, cfg.Storage.Region,
 		cfg.Storage.Endpoint, cfg.Storage.AccessKey, cfg.Storage.SecretKey,
 		cfg.Storage.PublicURLBase, cfg.Storage.MaxFileSize,
@@ -54,7 +55,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "init db: %v\n", err)
 		os.Exit(1)
 	}
-	if err := db.AutoMigrate(&models.DiseaseLearningMaterial{}, &models.DiseaseType{}); err != nil {
+	if err = db.AutoMigrate(&models.DiseaseLearningMaterial{}, &models.DiseaseType{}); err != nil {
 		fmt.Fprintf(os.Stderr, "migrate: %v\n", err)
 		os.Exit(1)
 	}

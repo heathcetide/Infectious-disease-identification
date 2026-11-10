@@ -9,78 +9,79 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/password"
-	"gorm.io/gorm"
 )
 
 // AdminCreateUserDTO matches the admin "添加用户" drawer payload.
 type AdminCreateUserDTO struct {
-	UserType    json.RawMessage `json:"userType"`
-	Name        string          `json:"name"`
-	PhoneNumber string          `json:"phoneNumber"`
-	Gender      string          `json:"gender"`
-	Ethnicity   string          `json:"ethnicity"`
-	Age         json.RawMessage `json:"age"`
-	IDNumber    string          `json:"idNumber"`
-	Department  string          `json:"department"`
-	EducationLevel string       `json:"educationLevel"`
-	SmokingStatus  string       `json:"smokingStatus"`
-	DrinkingStatus string       `json:"drinkingStatus"`
-	SpecificOccupation   string `json:"specificOccupation"`
-	MedicalPersonnelType string `json:"medicalPersonnelType"`
-	WorkOnPlateauStartDate string `json:"workOnPlateauStartDate"`
+	UserType               json.RawMessage `json:"userType"`
+	Name                   string          `json:"name"`
+	PhoneNumber            string          `json:"phoneNumber"`
+	Gender                 string          `json:"gender"`
+	Ethnicity              string          `json:"ethnicity"`
+	Age                    json.RawMessage `json:"age"`
+	IDNumber               string          `json:"idNumber"`
+	Department             string          `json:"department"`
+	EducationLevel         string          `json:"educationLevel"`
+	SmokingStatus          string          `json:"smokingStatus"`
+	DrinkingStatus         string          `json:"drinkingStatus"`
+	SpecificOccupation     string          `json:"specificOccupation"`
+	MedicalPersonnelType   string          `json:"medicalPersonnelType"`
+	WorkOnPlateauStartDate string          `json:"workOnPlateauStartDate"`
 
-	Height json.RawMessage `json:"height"`
-	Weight json.RawMessage `json:"weight"`
+	Height         json.RawMessage `json:"height"`
+	Weight         json.RawMessage `json:"weight"`
 	PregnancyWeeks json.RawMessage `json:"pregnancyWeeks"`
 
-	IsPregnant             bool `json:"isPregnant"`
-	IsPostpartumInSixWeeks bool `json:"isPostpartumInSixWeeks"`
-	HasMedicalHistory      bool `json:"hasMedicalHistory"`
-	HasHypertension        bool `json:"hasHypertension"`
-	HasDiabetes            bool `json:"hasDiabetes"`
-	HasHyperlipidemia      bool `json:"hasHyperlipidemia"`
-	HasHyperuricemia       bool `json:"hasHyperuricemia"`
-	HasCoronaryHeartDisease bool `json:"hasCoronaryHeartDisease"`
-	HasStroke              bool `json:"hasStroke"`
+	IsPregnant                     bool `json:"isPregnant"`
+	IsPostpartumInSixWeeks         bool `json:"isPostpartumInSixWeeks"`
+	HasMedicalHistory              bool `json:"hasMedicalHistory"`
+	HasHypertension                bool `json:"hasHypertension"`
+	HasDiabetes                    bool `json:"hasDiabetes"`
+	HasHyperlipidemia              bool `json:"hasHyperlipidemia"`
+	HasHyperuricemia               bool `json:"hasHyperuricemia"`
+	HasCoronaryHeartDisease        bool `json:"hasCoronaryHeartDisease"`
+	HasStroke                      bool `json:"hasStroke"`
 	HasOtherCardiovascularDiseases bool `json:"hasOtherCardiovascularDiseases"`
-	HasAsthma              bool `json:"hasAsthma"`
-	HasCOPD                bool `json:"hasCOPD"`
-	HasPepticUlcer         bool `json:"hasPepticUlcer"`
-	HasMalignantTumor      bool `json:"hasMalignantTumor"`
-	HasLungCancer          bool `json:"hasLungCancer"`
-	HasOtherCancer         bool `json:"hasOtherCancer"`
-	HasSevereMentalDisorders bool `json:"hasSevereMentalDisorders"`
-	HasTuberculosis        bool `json:"hasTuberculosis"`
-	HasHepatitis           bool `json:"hasHepatitis"`
-	HasOccupationalDisease bool `json:"hasOccupationalDisease"`
-	HasChronicKidneyDisease bool `json:"hasChronicKidneyDisease"`
-	HasChronicLiverDisease bool `json:"hasChronicLiverDisease"`
-	HasImmunodeficiency    bool `json:"hasImmunodeficiency"`
-	HasTyphus              bool `json:"hasTyphus"`
-	HasDustExposure        bool `json:"hasDustExposure"`
-	HasOtherDiseases       bool `json:"hasOtherDiseases"`
-	IsVaccinatedForCOVID   bool `json:"isVaccinatedForCOVID"`
-	IsVaccinatedForFlu     bool `json:"isVaccinatedForFlu"`
-	IsVaccinatedForPlague  bool `json:"isVaccinatedForPlague"`
-	IsVaccinatedForBCG     bool `json:"isVaccinatedForBCG"`
-	IsVaccinatedForHepatitis bool `json:"isVaccinatedForHepatitis"`
+	HasAsthma                      bool `json:"hasAsthma"`
+	HasCOPD                        bool `json:"hasCOPD"`
+	HasPepticUlcer                 bool `json:"hasPepticUlcer"`
+	HasMalignantTumor              bool `json:"hasMalignantTumor"`
+	HasLungCancer                  bool `json:"hasLungCancer"`
+	HasOtherCancer                 bool `json:"hasOtherCancer"`
+	HasSevereMentalDisorders       bool `json:"hasSevereMentalDisorders"`
+	HasTuberculosis                bool `json:"hasTuberculosis"`
+	HasHepatitis                   bool `json:"hasHepatitis"`
+	HasOccupationalDisease         bool `json:"hasOccupationalDisease"`
+	HasChronicKidneyDisease        bool `json:"hasChronicKidneyDisease"`
+	HasChronicLiverDisease         bool `json:"hasChronicLiverDisease"`
+	HasImmunodeficiency            bool `json:"hasImmunodeficiency"`
+	HasTyphus                      bool `json:"hasTyphus"`
+	HasDustExposure                bool `json:"hasDustExposure"`
+	HasOtherDiseases               bool `json:"hasOtherDiseases"`
+	IsVaccinatedForCOVID           bool `json:"isVaccinatedForCOVID"`
+	IsVaccinatedForFlu             bool `json:"isVaccinatedForFlu"`
+	IsVaccinatedForPlague          bool `json:"isVaccinatedForPlague"`
+	IsVaccinatedForBCG             bool `json:"isVaccinatedForBCG"`
+	IsVaccinatedForHepatitis       bool `json:"isVaccinatedForHepatitis"`
 
 	// Frontend sometimes uses lowercase "name" suffix.
-	EmergencyContactName         string `json:"emergencyContactname"`
-	EmergencyContactNameAlt      string `json:"emergencyContactName"`
-	EmergencyContactPhoneNumber  string `json:"emergencyContactphoneNumber"`
-	EmergencyContactPhoneAlt     string `json:"emergencyContactPhoneNumber"`
-	EmergencyContactRelation     string `json:"emergencyContactRelation"`
+	EmergencyContactName        string `json:"emergencyContactname"`
+	EmergencyContactNameAlt     string `json:"emergencyContactName"`
+	EmergencyContactPhoneNumber string `json:"emergencyContactphoneNumber"`
+	EmergencyContactPhoneAlt    string `json:"emergencyContactPhoneNumber"`
+	EmergencyContactRelation    string `json:"emergencyContactRelation"`
 	OtherCancerName             string `json:"otherCancername"`
 	OtherCancerNameAlt          string `json:"otherCancerName"`
-	OtherDiseasesName            string `json:"otherDiseasesname"`
-	OtherDiseasesNameAlt         string `json:"otherDiseasesName"`
-	OtherPositionName            string `json:"otherPositionname"`
-	OtherPositionNameAlt         string `json:"otherPositionName"`
-	OtherPhoneNumber             string `json:"otherphoneNumber"`
-	OtherPhoneNumberAlt          string `json:"otherPhoneNumber"`
+	OtherDiseasesName           string `json:"otherDiseasesname"`
+	OtherDiseasesNameAlt        string `json:"otherDiseasesName"`
+	OtherPositionName           string `json:"otherPositionname"`
+	OtherPositionNameAlt        string `json:"otherPositionName"`
+	OtherPhoneNumber            string `json:"otherphoneNumber"`
+	OtherPhoneNumberAlt         string `json:"otherPhoneNumber"`
 }
 
 func parseFlexibleInt(raw json.RawMessage) int {
@@ -197,7 +198,7 @@ func AdminCreateStaffUser(db *gorm.DB, dto AdminCreateUserDTO) (*models.User, er
 	}
 
 	var existing models.User
-	if err := db.Where("phone_number = ? OR phone = ? OR username = ?", phone, phone, phone).
+	if err = db.Where("phone_number = ? OR phone = ? OR username = ?", phone, phone, phone).
 		First(&existing).Error; err == nil {
 		return nil, fmt.Errorf("手机号已存在")
 	} else if err != gorm.ErrRecordNotFound {

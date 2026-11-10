@@ -8,9 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/password"
-	"gorm.io/gorm"
 )
 
 // PhoneLogin finds an active user by Phone or PhoneNumber.
@@ -116,7 +117,7 @@ func UpdateEmployeeProfileFields(db *gorm.DB, userID uint, profile models.Employ
 	var existing models.EmployeeProfile
 	err := db.Where("user_id = ?", userID).First(&existing).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		if err := db.Create(&profile).Error; err != nil {
+		if err = db.Create(&profile).Error; err != nil {
 			return nil, err
 		}
 	} else if err != nil {

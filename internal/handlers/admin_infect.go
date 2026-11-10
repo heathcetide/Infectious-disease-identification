@@ -3,10 +3,11 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
 )
 
 func bindPageQuery(c *gin.Context) services.PageQuery {

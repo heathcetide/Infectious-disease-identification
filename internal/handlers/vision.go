@@ -9,12 +9,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
-	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
+	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 )
 
 // CheckInUploadSymptomPhoto POST /api/v1/checkin/symptom-photo
@@ -40,9 +41,9 @@ func (h *Handlers) CheckInUploadSymptomPhoto(c *gin.Context) {
 		return
 	}
 	respgin.Created(c, gin.H{
-		"photo":      photo,
-		"labels":     labels,
-		"publicUrl":  pkgstorage.PublicURL(key),
+		"photo":     photo,
+		"labels":    labels,
+		"publicUrl": pkgstorage.PublicURL(key),
 		"classifyError": func() string {
 			if classErr != nil {
 				return classErr.Error()
@@ -174,7 +175,7 @@ func (h *Handlers) AdminVisionSampleFile(c *gin.Context) {
 		c.File(path)
 		return
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 	c.Header("Content-Type", "image/jpeg")
 	_, _ = io.Copy(c.Writer, r)
 }
@@ -192,7 +193,7 @@ func (h *Handlers) AdminVisionClassifyTrial(c *gin.Context) {
 		respgin.WriteError(c, response.Err(response.CodeBadRequest))
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	raw, err := io.ReadAll(io.LimitReader(f, 8<<20))
 	if err != nil || len(raw) == 0 {
 		respgin.WriteError(c, response.Err(response.CodeBadRequest))

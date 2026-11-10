@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"os"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/password"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -224,7 +225,7 @@ func seed(db *gorm.DB) error {
 		var dt models.DiseaseType
 		if err := db.Where("disease_type_name = ?", name).First(&dt).Error; err == gorm.ErrRecordNotFound {
 			dt = models.DiseaseType{DiseaseTypeName: name}
-			if err := db.Create(&dt).Error; err != nil {
+			if err = db.Create(&dt).Error; err != nil {
 				return err
 			}
 		} else if err != nil {

@@ -8,9 +8,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // Mid/small-town anchors — avoid provincial capitals / mega hubs.

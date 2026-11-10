@@ -10,9 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/models"
-	"gorm.io/gorm"
 )
 
 // CheckIn creates today's DailyHealthStatus for the user.
@@ -213,28 +214,28 @@ func SaveSymptomsAndScore(db *gorm.DB, chat *llm.Client, userID uint, symptoms A
 		sid := status.StatusID
 		general := symptoms.Generalsymptoms.ToModel()
 		general.StatusID = sid
-		if err := upsertSymptomRow(tx, &general, sid); err != nil {
+		if err = upsertSymptomRow(tx, &general, sid); err != nil {
 			return err
 		}
 		symptoms.Respiratorysymptoms.StatusID = sid
-		if err := upsertSymptomRow(tx, &symptoms.Respiratorysymptoms, sid); err != nil {
+		if err = upsertSymptomRow(tx, &symptoms.Respiratorysymptoms, sid); err != nil {
 			return err
 		}
 		digestive := symptoms.Digestivesymptoms.ToModel()
 		digestive.StatusID = sid
-		if err := upsertSymptomRow(tx, &digestive, sid); err != nil {
+		if err = upsertSymptomRow(tx, &digestive, sid); err != nil {
 			return err
 		}
 		symptoms.Circulatorysymptoms.StatusID = sid
-		if err := upsertSymptomRow(tx, &symptoms.Circulatorysymptoms, sid); err != nil {
+		if err = upsertSymptomRow(tx, &symptoms.Circulatorysymptoms, sid); err != nil {
 			return err
 		}
 		symptoms.NeurologicalSymptoms.StatusID = sid
-		if err := upsertSymptomRow(tx, &symptoms.NeurologicalSymptoms, sid); err != nil {
+		if err = upsertSymptomRow(tx, &symptoms.NeurologicalSymptoms, sid); err != nil {
 			return err
 		}
 		symptoms.LocalSymptoms.StatusID = sid
-		if err := upsertSymptomRow(tx, &symptoms.LocalSymptoms, sid); err != nil {
+		if err = upsertSymptomRow(tx, &symptoms.LocalSymptoms, sid); err != nil {
 			return err
 		}
 		other := symptoms.OtherSymptoms
@@ -242,12 +243,12 @@ func SaveSymptomsAndScore(db *gorm.DB, chat *llm.Client, userID uint, symptoms A
 			other.WorkLifeStress = "小"
 		}
 		other.StatusID = sid
-		if err := upsertSymptomRow(tx, &other, sid); err != nil {
+		if err = upsertSymptomRow(tx, &other, sid); err != nil {
 			return err
 		}
 		risk := symptoms.RiskFactorsAndExposure.ToModel()
 		risk.StatusID = sid
-		if err := upsertSymptomRow(tx, &risk, sid); err != nil {
+		if err = upsertSymptomRow(tx, &risk, sid); err != nil {
 			return err
 		}
 		return nil
@@ -475,7 +476,7 @@ func SaveWorkEnvironment(db *gorm.DB, userID uint, dto WorkEnvironmentDTO) (*mod
 	var existing models.WorkEnvironmentInfo
 	err := db.Where("user_id = ? AND year_month = ?", userID, yearMonth).First(&existing).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		if err := db.Create(&info).Error; err != nil {
+		if err = db.Create(&info).Error; err != nil {
 			return nil, err
 		}
 		return &info, nil

@@ -9,6 +9,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/configs"
 	"github.com/heathcetide/infectious-disease/internal/constants"
 	"github.com/heathcetide/infectious-disease/internal/handlers"
@@ -17,24 +21,21 @@ import (
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/webui"
-	pkgcache "github.com/heathcetide/infectious-disease/pkg/cache"
-	pkglock "github.com/heathcetide/infectious-disease/pkg/lock"
-	pkgretry "github.com/heathcetide/infectious-disease/pkg/retry"
-	pkgfallback "github.com/heathcetide/infectious-disease/pkg/fallback"
-	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 	"github.com/heathcetide/infectious-disease/pkg/apidocs"
 	"github.com/heathcetide/infectious-disease/pkg/bootstrap"
-	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
-	jwtingin "github.com/heathcetide/infectious-disease/pkg/common/jwtutil/gin"
+	pkgcache "github.com/heathcetide/infectious-disease/pkg/cache"
 	"github.com/heathcetide/infectious-disease/pkg/common/i18n"
 	i18ngin "github.com/heathcetide/infectious-disease/pkg/common/i18n/gin"
-	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/heathcetide/infectious-disease/pkg/common/response"
+	"github.com/heathcetide/infectious-disease/pkg/common/jwtutil"
+	jwtingin "github.com/heathcetide/infectious-disease/pkg/common/jwtutil/gin"
 	"github.com/heathcetide/infectious-disease/pkg/common/logger"
 	"github.com/heathcetide/infectious-disease/pkg/common/middleware"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
+	"github.com/heathcetide/infectious-disease/pkg/common/response"
+	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
+	pkgfallback "github.com/heathcetide/infectious-disease/pkg/fallback"
+	pkglock "github.com/heathcetide/infectious-disease/pkg/lock"
+	pkgretry "github.com/heathcetide/infectious-disease/pkg/retry"
+	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 )
 
 // Build metadata (injected via ldflags).
@@ -63,7 +64,7 @@ func main() {
 	logger.InitTimezone(constants.TimezoneShanghai)
 
 	// Initialize logger (zap + lumberjack rotation + sensitive field masking)
-	if err := logger.Init(&logger.LogConfig{
+	if err = logger.Init(&logger.LogConfig{
 		Level:           cfg.Logging.Level,
 		Filename:        cfg.Logging.Filename,
 		MaxSize:         cfg.Logging.MaxSize,
@@ -156,8 +157,8 @@ func main() {
 			OpenTimeout:           recoveryTimeout,
 			MaxConcurrentRequests: cfg.CircuitBreaker.MinRequests,
 		},
-		true,                        // enableTimeout
-		cfg.CircuitBreaker.Enabled,  // enableCircuitBreaker
+		true,                       // enableTimeout
+		cfg.CircuitBreaker.Enabled, // enableCircuitBreaker
 	)
 
 	// Initialize JWT authentication (ling-base/common/jwtutil)
@@ -184,15 +185,19 @@ func main() {
 	})
 
 	// Register HTTP server as a lifecycle component
-	app.Register("http-server", &httpServerComponent{
-		info: info,
-		cfg:  cfg,
-		db:   db,
-		jwtAuth: jwtAuth,
+	if err := app.Register("http-server", &httpServerComponent{
+		info:        info,
+		cfg:         cfg,
+		db:          db,
+		jwtAuth:     jwtAuth,
 		i18nManager: i18nManager,
-	})
+	}); err != nil {
+		logger.Lg.Fatal("register http-server", zap.Error(err))
+	}
 	// Register cache as a lifecycle component (graceful shutdown)
-	app.Register("cache", &cacheComponent{})
+	if err := app.Register("cache", &cacheComponent{}); err != nil {
+		logger.Lg.Fatal("register cache", zap.Error(err))
+	}
 
 	// Start (blocks until a shutdown signal is received)
 	if err := app.Run(); err != nil {
@@ -204,11 +209,11 @@ func main() {
 // HTTP server lifecycle component
 
 type httpServerComponent struct {
-	info   *handlers.AppInfo
-	cfg    *configs.Config
-	db     *gorm.DB
-	server *http.Server
-	jwtAuth *jwtutil.Auth
+	info        *handlers.AppInfo
+	cfg         *configs.Config
+	db          *gorm.DB
+	server      *http.Server
+	jwtAuth     *jwtutil.Auth
 	i18nManager *i18n.Manager
 }
 

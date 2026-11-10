@@ -7,9 +7,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 const targetRailwayWorkers = 12000
@@ -283,54 +284,4 @@ func pickHomeStation(rng *rand.Rand, i int) railStation {
 		return qingzangStations[5+rng.Intn(len(qingzangStations)-5)]
 	}
 	return qingzangStations[(i-1)%len(qingzangStations)]
-}
-
-func ensureSparseOutliers(db *gorm.DB, rng *rand.Rand, userID uint, today time.Time, n int) error {
-	var outlierCnt int64
-	_ = db.Model(&models.DailyHealthStatus{}).
-		Where("user_id = ? AND province NOT IN ?", userID,
-			[]string{"青海省", "西藏自治区"}).
-		Count(&outlierCnt)
-	if int(outlierCnt) >= n {
-		return nil
-	}
-	need := n - int(outlierCnt)
-	for i := 0; i < need*4 && need > 0; i++ {
-		day := today.AddDate(0, 0, -(1 + rng.Intn(50)))
-		var cnt int64
-		_ = db.Model(&models.DailyHealthStatus{}).
-			Where("user_id = ? AND check_in_date = ?", userID, day).Count(&cnt)
-		if cnt > 0 {
-			continue
-		}
-		st := nationwideStations[rng.Intn(len(nationwideStations))]
-		h := true
-		if rng.Float64() < 0.06 {
-			h = false
-		}
-		disease := ""
-		if !h {
-			disease = symptomDiseases[rng.Intn(len(symptomDiseases))]
-		}
-		checkTime := time.Date(day.Year(), day.Month(), day.Day(), 7+rng.Intn(4), rng.Intn(60), 0, 0, time.Local)
-		hh := h
-		rec := models.DailyHealthStatus{
-			UserID:          userID,
-			CheckInDate:     day,
-			CheckInTime:     checkTime,
-			IsHealth:        &hh,
-			DiseaseTypeName: disease,
-			Longitude:       round6(st.Longitude + (rng.Float64()-0.5)*0.05),
-			Latitude:        round6(st.Latitude + (rng.Float64()-0.5)*0.04),
-			Province:        st.Province,
-			City:            st.City,
-			County:          st.County,
-			LocationName:    st.Name,
-		}
-		if err := db.Create(&rec).Error; err != nil {
-			return err
-		}
-		need--
-	}
-	return nil
 }

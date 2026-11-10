@@ -86,7 +86,7 @@ func main() {
 		"note":       "Pure-Go YOLO weight training is not practical; use scripts/vision/yolo_train.py after this prepare step. Inference can stay Go-orchestrated via SYMPTOM_YOLO_BIN.",
 	}
 	b, _ := json.MarshalIndent(payload, "", "  ")
-	if err := os.WriteFile(*manifestOut, b, 0o644); err != nil {
+	if err = os.WriteFile(*manifestOut, b, 0o644); err != nil {
 		fatal(err)
 	}
 	fmt.Printf("wrote %s (%d items)\n", *manifestOut, len(items))
@@ -154,18 +154,18 @@ func downloadSeeds(root string) error {
 			}
 			if resp.StatusCode >= 400 {
 				errs = append(errs, fmt.Sprintf("%s -> %d", u, resp.StatusCode))
-				resp.Body.Close()
+				_ = resp.Body.Close()
 				continue
 			}
 			f, err := os.Create(dest)
 			if err != nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 				errs = append(errs, err.Error())
 				continue
 			}
 			_, copyErr := io.Copy(f, io.LimitReader(resp.Body, 8<<20))
-			f.Close()
-			resp.Body.Close()
+			_ = f.Close()
+			_ = resp.Body.Close()
 			if copyErr != nil {
 				_ = os.Remove(dest)
 				errs = append(errs, copyErr.Error())
@@ -200,8 +200,7 @@ func scanLocal(root string) ([]map[string]any, error) {
 				}
 				name := f.Name()
 				low := strings.ToLower(name)
-				if !(strings.HasSuffix(low, ".jpg") || strings.HasSuffix(low, ".jpeg") ||
-					strings.HasSuffix(low, ".png") || strings.HasSuffix(low, ".webp")) {
+				if !strings.HasSuffix(low, ".jpg") && !strings.HasSuffix(low, ".jpeg") && !strings.HasSuffix(low, ".png") && !strings.HasSuffix(low, ".webp") {
 					continue
 				}
 				rel := filepath.ToSlash(filepath.Join(root, split, class, name))
@@ -265,10 +264,10 @@ func writeSynthetic(root string, perClass int) error {
 					return err
 				}
 				if err := jpeg.Encode(f, img, &jpeg.Options{Quality: 85}); err != nil {
-					f.Close()
+					_ = f.Close()
 					return err
 				}
-				f.Close()
+				_ = f.Close()
 				fmt.Println("synthetic", dest)
 			}
 		}

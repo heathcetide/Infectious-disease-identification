@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/heathcetide/infectious-disease/internal/models"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/internal/models"
 )
 
 // weightCatalog lists every slider field expected by admin weight UI.
@@ -193,7 +194,7 @@ var diseaseWeightFocus = map[string]map[string]float64{
 		"HasFever": 14, "HasChills": 12, "HasSweating": 8, "HasFatigue": 6,
 		"HasHeadache": 5, "HasMusclePain": 4, "HasPeriodicAttack": 10,
 		"HasNausea": 3, "HasVomiting": 3, "HasAbdominalPain": 3,
-		"HasSuddenOnset": 4,
+		"HasSuddenOnset":  4,
 		"HasMosquitoBite": 14, "MalariaArea": 10, "OutdoorStayOrWorkWithinMonth": 4,
 	},
 	"森林脑炎（蜱媒传染病）": {
@@ -202,7 +203,7 @@ var diseaseWeightFocus = map[string]map[string]float64{
 		"HasDelirium": 4, "HasConvulsion": 4, "HasDizziness": 4,
 		"HasMuscleParalysisNeckShoulder": 6, "HasMuscleParalysisLimbs": 5,
 		"HasSuddenOnset": 5,
-		"TickBite": 14, "OutdoorStayOrWorkWithinMonth": 7, "IsHillyOrMountainous": 4,
+		"TickBite":       14, "OutdoorStayOrWorkWithinMonth": 7, "IsHillyOrMountainous": 4,
 	},
 	"发热伴血小板减少综合征（蜱媒传染病）": {
 		"HasFever": 12, "HasFatigue": 6, "HasHeadache": 5, "HasMusclePain": 5,
@@ -210,7 +211,7 @@ var diseaseWeightFocus = map[string]map[string]float64{
 		"HasGumBleeding": 5, "HasMucosalBleedingInOralOrNasal": 5, "HasSkinBleedingPoints": 5,
 		"HasNausea": 3, "HasVomiting": 3, "HasAbdominalPain": 3, "HasOliguriaOrAnuria": 4,
 		"HasSuddenOnset": 5,
-		"TickBite": 12, "OutdoorStayOrWorkWithinMonth": 6, "IsHillyOrMountainous": 3,
+		"TickBite":       12, "OutdoorStayOrWorkWithinMonth": 6, "IsHillyOrMountainous": 3,
 	},
 	"斑疹伤寒": {
 		"HasFever": 12, "HasChills": 5, "HasHeadache": 8, "HasFatigue": 5,
@@ -226,7 +227,7 @@ var diseaseWeightFocus = map[string]map[string]float64{
 		"HasConjunctivalCongestion": 5, "HasEyelidEdema": 4,
 		"HasKidneyPain": 8, "HasLowBackPain": 6, "HasOrbitalPain": 5,
 		"HasOliguriaOrAnuria": 8, "HasSubcutaneousAndMucosalBleedingSpots": 5,
-		"HasSuddenOnset": 5,
+		"HasSuddenOnset":          5,
 		"ContactWithRatIn2Months": 6, "EatenFoodContaminatedByRatFeces": 5,
 		"RatOrRatDroppingsAtWorkplace": 5, "OutdoorStayOrWorkWithinMonth": 4,
 	},
@@ -234,7 +235,7 @@ var diseaseWeightFocus = map[string]map[string]float64{
 		"HasFever": 6, "HasNightSweats": 10, "HasWeightLoss": 10, "HasFatigue": 6,
 		"HasCough": 12, "HasSputum": 6, "HasBloodySputum": 8, "HasHemoptysis": 6,
 		"HasChestTightness": 4, "HasShortnessOfBreath": 4,
-		"HasSuddenOnset": 2,
+		"HasSuddenOnset":                 2,
 		"ContactWithTuberculosisPatient": 14, "GroupOutbreak": 6, "ContactWithFeverPatient": 6,
 	},
 }
@@ -252,7 +253,7 @@ func seedFullWeights(db *gorm.DB) error {
 		var dt models.DiseaseType
 		if err := db.Where("disease_type_name = ?", name).First(&dt).Error; err == gorm.ErrRecordNotFound {
 			dt = models.DiseaseType{DiseaseTypeName: name}
-			if err := db.Create(&dt).Error; err != nil {
+			if err = db.Create(&dt).Error; err != nil {
 				return err
 			}
 		} else if err != nil {
@@ -353,4 +354,3 @@ func seedFullWeights(db *gorm.DB) error {
 		len(models.JavaScoringDiseaseNames), totalRows, len(weightCatalog))
 	return nil
 }
-

@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/llm"
 	"github.com/heathcetide/infectious-disease/internal/models"
-	"gorm.io/gorm"
 )
 
 type llmDiseaseScore struct {
@@ -182,15 +183,6 @@ func ComputeLLMScores(ctx context.Context, db *gorm.DB, client *llm.Client, stat
 	return out, byName, nil
 }
 
-func scoreOf(scores []models.DiseaseScoring, name string) float64 {
-	for _, s := range scores {
-		if s.DiseaseTypeName == name {
-			return s.Score
-		}
-	}
-	return 0
-}
-
 func parseLLMScoreJSON(raw string) (*llmScoreResponse, error) {
 	raw = strings.TrimSpace(raw)
 	if i := strings.Index(raw, "{"); i >= 0 {
@@ -236,14 +228,7 @@ func ComputeAIWeightScores(db *gorm.DB, statusID uint, symptoms AllSymptoms) ([]
 	}
 	projected := make([]models.SymptomWeighting, 0, len(weights))
 	for _, w := range weights {
-		projected = append(projected, models.SymptomWeighting{
-			SymptomWeightingID: w.SymptomWeightingID,
-			DiseaseTypeID:      w.DiseaseTypeID,
-			DiseaseTypeName:    w.DiseaseTypeName,
-			SourceTable:        w.SourceTable,
-			SymptomFieldName:   w.SymptomFieldName,
-			WeightScore:        w.WeightScore,
-		})
+		projected = append(projected, models.SymptomWeighting(w))
 	}
 
 	active := activeSymptomFields(symptoms)

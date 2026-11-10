@@ -9,14 +9,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/internal/types"
-	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 )
 
 // DiagnosisSubmitResult POST /api/v1/diagnosis/result

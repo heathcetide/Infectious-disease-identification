@@ -7,10 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
-	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
+	"github.com/gin-gonic/gin"
+
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
+	pkgstorage "github.com/heathcetide/infectious-disease/pkg/storage"
 )
 
 func (h *Handlers) uploadMultipartFile(c *gin.Context, dir string) (key, filename string, err error) {
@@ -27,7 +28,7 @@ func (h *Handlers) uploadMultipartFile(c *gin.Context, dir string) (key, filenam
 	if err != nil {
 		return "", "", err
 	}
-	defer src.Close()
+	defer func() { _ = src.Close() }()
 	if err = pkgstorage.Write(key, src); err != nil {
 		return "", "", err
 	}
@@ -44,7 +45,7 @@ func (h *Handlers) serveStorageKey(c *gin.Context, key, downloadName string) {
 		respgin.WriteError(c, response.Err(response.CodeNotFound))
 		return
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 	name := downloadName
 	if name == "" {
 		name = filepath.Base(key)

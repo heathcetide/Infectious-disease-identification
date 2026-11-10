@@ -5,8 +5,9 @@ package services
 import (
 	"time"
 
-	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	"gorm.io/gorm"
+
+	"github.com/heathcetide/infectious-disease/pkg/common/response"
 )
 
 // MedicalPageDiagnosis lists diagnosis records for medical staff.

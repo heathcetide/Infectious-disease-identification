@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/models"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
-	"gorm.io/gorm"
 )
 
 // PageUsers returns a paginated user list for admin (with employee profile fields).
@@ -336,7 +337,7 @@ type LabReportListItem struct {
 	Gender                      string `json:"gender"`
 	Age                         int    `json:"age"`
 	Department                  string `json:"department"`
-	IsVirusAntigenTestDone     *bool  `json:"isVirusAntigenTestDone"`
+	IsVirusAntigenTestDone      *bool  `json:"isVirusAntigenTestDone"`
 	IsVirusNucleicAcidTestDone  *bool  `json:"isVirusNucleicAcidTestDone"`
 	IsVirusCultureIsolationDone *bool  `json:"isVirusCultureIsolationDone"`
 	IsSerologicalTestDone       *bool  `json:"isSerologicalTestDone"`
@@ -484,7 +485,7 @@ func PageLabReports(db *gorm.DB, q PageQuery) (*response.Page, error) {
 			Gender:                      r.Gender,
 			Age:                         r.Age,
 			Department:                  r.Department,
-			IsVirusAntigenTestDone:     r.IsVirusAntigenTestDone,
+			IsVirusAntigenTestDone:      r.IsVirusAntigenTestDone,
 			IsVirusNucleicAcidTestDone:  r.IsVirusNucleicAcidTestDone,
 			IsVirusCultureIsolationDone: r.IsVirusCultureIsolationDone,
 			IsSerologicalTestDone:       r.IsSerologicalTestDone,

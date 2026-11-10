@@ -5,11 +5,12 @@ package handlers
 import (
 	"errors"
 
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	"github.com/heathcetide/infectious-disease/internal/services"
 	"github.com/heathcetide/infectious-disease/pkg/common/response"
 	respgin "github.com/heathcetide/infectious-disease/pkg/common/response/gin"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func (h *Handlers) bindAdminPage(c *gin.Context) (page, size int, surveyID uint) {
