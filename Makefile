@@ -63,10 +63,10 @@ benchmark:
 vet:
 	go vet ./...
 
-## lint: golangci-lint（需先安装）
+## lint: golangci-lint（需先安装；与 CI 一致，仅扫应用代码）
 lint:
 	@command -v golangci-lint >/dev/null 2>&1 || { echo "请先安装 golangci-lint: https://golangci-lint.run/usage/install/"; exit 1; }
-	golangci-lint run ./...
+	golangci-lint run --timeout 5m ./cmd/... ./internal/...
 
 ## fmt: 格式化代码
 fmt:
@@ -83,7 +83,7 @@ tidy:
 ## vuln: 漏洞扫描（需要 govulncheck: go install golang.org/x/vuln/cmd/govulncheck@latest）
 vuln:
 	@command -v govulncheck >/dev/null 2>&1 || { echo "请先安装 govulncheck: go install golang.org/x/vuln/cmd/govulncheck@latest"; exit 1; }
-	govulncheck ./...
+	govulncheck ./cmd/... ./internal/...
 
 ## clean: 清理构建产物
 clean:
